@@ -4,7 +4,13 @@ import "../styles/index.css";
 import LoginPage from "../features/auth/pages/LoginPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import HomePage from "../features/home/pages/HomePage";
+import ProfilePage from "../features/profile/pages/ProfilePage";
+import CoursesPage from "../features/courses/pages/CoursesPage";
+import ShopPage from "../features/shop/pages/ShopPage";
+import SettingsPage from "../features/settings/pages/SettingsPage";
+import MainLayout from "../shared/components/MainLayout";
 import { api, setAuthToken } from "../api/client";
+import LearningPage from "../features/learning/pages/LearningPage";
 
 function App() {
     const [user, setUser] = useState(null);
@@ -56,7 +62,16 @@ function App() {
         <BrowserRouter>
             <Routes>
                 {/* by default -> to Registration */}
-                <Route path="/" element={<Navigate to={"/register"} replace />} />
+                <Route
+                    path="/"
+                    element={
+                        user ? (
+                            <Navigate to="/home" replace />
+                        ) : (
+                            <Navigate to="/register" replace />
+                        )
+                    }
+                />
 
                 <Route
                     path="/register"
@@ -81,15 +96,20 @@ function App() {
                 />
 
                 <Route
-                    path="/home"
                     element={
                         user ? (
-                            <HomePage user={user} onLogout={handleLogout} />
+                            <MainLayout user={user} onLogout={handleLogout} />
                         ) : (
                             <Navigate to="/login" replace />
                         )
                     }
-                />
+                >
+                    <Route path="/home" element={<HomePage user={user}/>}/>
+                    <Route path="/profile" element={<ProfilePage user={user}/>}/>
+                    <Route path="/courses" element={<CoursesPage />}/>
+                    <Route path="/shop" element={<ShopPage />}/>
+                    <Route path="/settings" element={<SettingsPage />}/>
+                </Route>
 
                 {/* if smth went wrong */}
                 <Route path="*" element={<Navigate to="/" replace />} />

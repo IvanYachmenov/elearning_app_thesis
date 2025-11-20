@@ -1,115 +1,66 @@
-function HomePage({ user, onLogout }) {
+function HomePage({ user}) {
   return (
-    <div style={{ maxWidth: 900,
-        margin: "40px auto",
-        fontFamily: "sans-serif",
-        display: "grid",
-        gridTemplateColumns: "250px 1fr",
-        gap: "24px",
-    }}
-    >
-        {/* left side */}
-        <aside
-        style={{
-          padding: "16px",
-          borderRadius: "12px",
-          backgroundColor: "#020617",
-          border: "1px solid #1e293b",
-        }}
-        >
-            <h2 style={{ fontSize: "18px", marginBottom: "16px" }}>Menu</h2>
-            <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <button style={{ textAlign: "left", padding: "8px 10px" }}>
-                    Profile
-                </button>
-                <button style={{ textAlign: "left", padding: "8px 10px" }}>
-                    Courses
-                </button>
-                <button style={{ textAlign: "left", padding: "8px 10px" }}>
-                    Shop
-                </button>
-                <button style={{ textAlign: "left", padding: "8px 10px" }}>
-                    Settings
-                </button>
-            </nav>
-
-             <hr style={{ margin: "16px 0", borderColor: "#1e293b" }} />
-
-             <button
-                 onClick={onLogout}
-                 style={{ width: "100%", padding: "8px 10px" }}
-             >
-                Logout
-             </button>
-        </aside>
-
-        {/* right side */}
-         <main
-        style={{
-          padding: "16px",
-          borderRadius: "12px",
-          backgroundColor: "#020617",
-          border: "1px solid #1e293b",
-        }}
-      >
-        <h1 style={{ fontSize: "24px", marginBottom: "12px" }}>
-          Welcome, {user.username}
+    <div>
+        <h1 style={{ fontSize: "24px", marginBottom: "12px"}}>
+            Welcome back, {user.username}!
         </h1>
 
-        <p style={{ marginBottom: "8px", color: "#9ca3af" }}>
-          This is your main page. Later here will be quick access to your
-          courses, progress and recommendations.
+        <p style={{ marginBottom: "16px", color: "#9ca3af" }}>
+            This app is small, focused e-learning platform that will help you to connect theory
+            and practice for programming languages(as Python, etc.) and another different topics you can imagine.
         </p>
 
         <section
-          style={{
-            marginTop: "20px",
-            padding: "12px",
-            borderRadius: "10px",
-            backgroundColor: "#020617",
-            border: "1px solid #1e293b",
-          }}
+            style={{
+                marginTop: "12px",
+                padding: "16px",
+                borderRadius: "10px",
+                backgroundColor: "#020617",
+                border: "1px solid #1e293b",
+            }}
         >
-          <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Profile</h2>
-          <div style={{ display: "grid", gap: "6px" }}>
-            <div>
-              <strong>Username:</strong> {user.username}
-            </div>
-            {user.first_name || user.last_name ? (
-              <div>
-                <strong>Name:</strong> {user.first_name} {user.last_name}
-              </div>
-            ) : null}
-            {user.email && (
-              <div>
-                <strong>Email:</strong> {user.email}
-              </div>
-            )}
-            <div>
-              <strong>Role:</strong> {user.role}
-            </div>
-            <div>
-              <strong>Points:</strong> {user.points}
-            </div>
-            <div>
-              <strong>Two-factor:</strong>{" "}
-              {user.two_factor_enabled ? "enabled" : "disabled"}
-            </div>
-          </div>
+            <h2 style={{ fontSize: "18px", marginBottom: "8px" }}>
+                What's hidden under the hood in this app?
+            </h2>
+
+            <p style={{ marginBottom: "8px", color: "#e5e7eb" }}>
+                The goal of this platform is to offer a modern, responsive
+                web-application for online learning. Instead of only watching
+                long video courses, students read short lessons and can immediately
+                try the concept in quizzes or coding tasks directly in the browser.
+            </p>
+
+            <p style={{ marginBottom: "8px", color: "#e5e7eb" }}>
+                For Python courses there will be an integrated online interpreter:
+                students will write code in an editor on the page, run it on the
+                server and get automatic feedback based on prepared test cases.
+                This lowers the barrier for beginners – they only need a browser,
+                not a full local development setup.
+            </p>
         </section>
 
-        <section style={{ marginTop: "24px" }}>
-          <h2 style={{ fontSize: "18px", marginBottom: "8px" }}>
-            What&apos;s next
-          </h2>
-          <ul style={{ marginLeft: "18px" }}>
-            <li>In the Profile section, you will edit your data later.</li>
-            <li>The Courses section will show your enrolled courses.</li>
-            <li>The Shop will let you spend points on cosmetics / bonuses.</li>
-          </ul>
+        <section
+            style={{
+                marginTop: "20px",
+                padding: "16px",
+                borderRadius: "10px",
+                backgroundColor: "#020617",
+                border: "1px solid #1e293b",
+            }}
+        >
+            <h2 style={{ fontSize: "18px", marginBottom: "8px" }}>For teachers</h2>
+            <p style={{ marginBottom: "8px", color: "#e5e7eb" }}>
+                The platform is designed to be open for content creators. Teachers
+                will be able to create their own courses, split them into modules
+                and topics, add quiz questions and coding exercises, and later mark
+                some content as free or premium.
+            </p>
+            <p style={{ marginBottom: "8px", color: "#e5e7eb" }}>
+                In the future there will also be support for payments and a simple
+                gamification system with points and an internal shop, but this is
+                not part of the first MVP.
+            </p>
         </section>
-      </main>
-
     </div>
   );
 }
