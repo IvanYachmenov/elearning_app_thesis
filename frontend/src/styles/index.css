@@ -5,13 +5,13 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #020617; /* очень тёмный синий/чёрный */
-  color: #e5e7eb;            /* светло-серый текст */
+  background-color: #020617;
+  color: #e5e7eb;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 a {
-  color: #38bdf8;            /* голубые ссылочки */
+  color: #38bdf8;
   text-decoration: none;
 }
 
@@ -29,4 +29,105 @@ button {
 
 button:hover {
   background-color: #334155;
+}
+
+/* ---------- generic page layout ---------- */
+
+.page {
+  max-width: 900px;
+  margin: 24px auto 40px;
+  padding: 0 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.page__title {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.page__subtitle {
+  margin: 0 0 16px;
+  color: #9ca3af;
+}
+
+/* ---------- courses / learning ---------- */
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.course-card {
+  background-color: #020617;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+  padding: 16px;
+}
+
+.course-card__title {
+  font-size: 18px;
+  margin: 0 0 6px;
+}
+
+.course-card__author {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.course-card__description {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.course-card__footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #38bdf8;
+  background-color: #38bdf8;
+  color: #0f172a;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
+
+.course-content {
+  margin-top: 24px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.module-list {
+  list-style: decimal;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.module-item {
+  margin-bottom: 10px;
+}
+
+.topic-list {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 4px 0 0;
+}
+
+.topic-item {
+  font-size: 14px;
 }

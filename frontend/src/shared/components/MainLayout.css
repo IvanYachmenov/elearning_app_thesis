@@ -1,0 +1,85 @@
+/* Общий фон приложения */
+.app-root {
+  min-height: 100vh;
+  background-color: #020617;
+  color: #e5e7eb;
+}
+
+/* Шапка */
+.app-header {
+  border-bottom: 1px solid #1e293b;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #020617;
+}
+
+/* Левая часть шапки */
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Логотип / название */
+.app-logo {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Навигация сверху */
+.app-nav {
+  display: flex;
+  gap: 8px;
+}
+
+/* Кнопки навигации */
+.app-nav-link {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  color: #e5e7eb;
+}
+
+/* Активный пункт меню */
+.app-nav-link--active {
+  color: #0f172a;
+  background-color: #38bdf8;
+  border-color: #38bdf8;
+}
+
+/* Правая часть шапки (имя + logout) */
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.app-header-right span {
+  color: #9ca3af;
+}
+
+/* Кнопка logout */
+.app-logout-btn {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #475569;
+  background-color: #0f172a;
+  color: #e5e7eb;
+  cursor: pointer;
+}
+
+/* Контент */
+.app-main {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 16px 40px;
+  font-family: sans-serif;
+}

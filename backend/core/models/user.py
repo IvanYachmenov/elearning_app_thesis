@@ -15,7 +15,7 @@ class User(AbstractUser):
 
     points = models.PositiveIntegerField(default=0)
 
-    bought_courses = models.ManyToManyField(
+    enrolled_courses = models.ManyToManyField(
         "Course",
         related_name="students",
         blank=True,

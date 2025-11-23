@@ -27,11 +27,7 @@ class ModuleSerializer(serializers.ModelSerializer):
 
 
 class CourseListSerializer(serializers.ModelSerializer):
-    author_username = serializers.CharField(
-        source="author.username",
-        read_only=True,
-    )
-    modules_count = serializers.SerializerMethodField()
+    author_name = serializers.SerializerMethodField()
     is_enrolled = serializers.SerializerMethodField()
 
     class Meta:
@@ -41,27 +37,27 @@ class CourseListSerializer(serializers.ModelSerializer):
             "title",
             "slug",
             "description",
-            "author_username",
-            "modules_count",
+            "author_name",
             "is_enrolled",
         )
 
-    def get_modules_count(self, obj):
-        return obj.modules.count()
+    def get_author_name(self, obj):
+        author = obj.author
+        if not author:
+            return None
+        if author.first_name or author.last_name:
+            return f"{author.first_name} {author.last_name}".strip()
+        return author.username
 
     def get_is_enrolled(self, obj):
         request = self.context.get("request")
-        user = getattr(request, "user", None)
-        if not user or not user.is_authenticated:
+        if not request or request.user.is_anonymous:
             return False
-        return obj.students.filter(pk=user.pk).exists()
+        return obj.students.filter(pk=request.user.pk).exists()
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):
-    author_username = serializers.CharField(
-        source="author.username",
-        read_only=True,
-    )
+    author_name = serializers.SerializerMethodField()
     modules = ModuleSerializer(many=True, read_only=True)
     is_enrolled = serializers.SerializerMethodField()
 
@@ -72,14 +68,21 @@ class CourseDetailSerializer(serializers.ModelSerializer):
             "title",
             "slug",
             "description",
-            "author_username",
-            "modules",
+            "author_name",
             "is_enrolled",
+            "modules",
         )
+
+    def get_author_name(self, obj):
+        author = obj.author
+        if not author:
+            return None
+        if author.first_name or author.last_name:
+            return f"{author.first_name} {author.last_name}".strip()
+        return author.username
 
     def get_is_enrolled(self, obj):
         request = self.context.get("request")
-        user = getattr(request, "user", None)
-        if not user or not user.is_authenticated:
+        if not request or request.user.is_anonymous:
             return False
-        return obj.students.filter(pk=user.pk).exists()
+        return obj.students.filter(pk=request.user.pk).exists()

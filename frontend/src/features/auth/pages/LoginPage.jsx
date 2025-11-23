@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api, setAuthToken } from "../../../api/client.js";
 import { Link, useNavigate } from "react-router-dom";
+import "./LoginPage.css";
 
 function LoginPage({ onAuth }) {
     const [username, setUsername] = useState("");
@@ -63,66 +64,60 @@ function LoginPage({ onAuth }) {
         }
     }
     return (
-        <div style={{ maxWidth:400, margin: "40px auto", fontFamily: "sans-serif" }}>
-            <h1>Login page</h1>
-            <form onSubmit={handleLogin} style={{ marginBottom: 20 }}>
-                <div style={{ marginBottom: 10 }}>
-                    <label>
-                        Username:
-                        <input
-                            style={{ width: "100%", padding: 6, marginTop: 4 }}
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                    </label>
-                </div>
+        <div className="auth-page">
+      <h1 className="auth-title">Login</h1>
 
-                <div style={{ marginBottom: 10 }}>
-                    <label>
-                        Password:
-                        <input
-                            type="password"
-                            style={{ width: "100%", padding: 6, marginTop: 4 }}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </label>
-                </div>
-
-                <button type="submit" style={{ padding: "6px 12px"}}>
-                    Login
-                </button>
-            </form>
-
-             <p>
-                 Don't have an account?{" "}
-                 <Link to="/register">Register</Link>
-             </p>
-
-            <button onClick={handleLoadProfile} style={{padding: "6px 12px"}}>
-                Load Profile
-            </button>
-
-            {error && (
-                <p style={{ color: "red", marginTop: 15 }}>
-                  {error}
-                </p>
-            )}
-
-            {accessToken && (
-                <p style={{ marginTop: 15, wordBreak: "break-all" }}>
-                  <strong>Access token:</strong> {accessToken}
-                </p>
-            )}
-
-            {profile && (
-                <div style={{ marginTop: 20 }}>
-                  <h2>Profile:</h2>
-                  <pre>{JSON.stringify(profile, null, 2)}</pre>
-                </div>
-            )}
-
+      <form className="auth-form" onSubmit={handleLogin}>
+        <div className="auth-field">
+          <label className="auth-label">
+            Username:
+            <input
+              className="auth-input"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </label>
         </div>
+
+        <div className="auth-field">
+          <label className="auth-label">
+            Password:
+            <input
+              type="password"
+              className="auth-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+        </div>
+
+        <button type="submit" className="auth-button">
+          Login
+        </button>
+      </form>
+
+      <p>
+        Don't have an account?{" "}
+        <Link className="auth-link" to="/register">
+          Register
+        </Link>
+      </p>
+
+      {error && <p className="auth-error">{error}</p>}
+
+      {accessToken && (
+        <p className="auth-token">
+          <strong>Access token:</strong> {accessToken}
+        </p>
+      )}
+
+      {profile && (
+        <div style={{ marginTop: 20 }}>
+          <h2>Profile:</h2>
+          <pre>{JSON.stringify(profile, null, 2)}</pre>
+        </div>
+      )}
+    </div>
     );
 }
 

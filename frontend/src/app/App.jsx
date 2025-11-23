@@ -1,44 +1,50 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import "../styles/index.css";
+
 import LoginPage from "../features/auth/pages/LoginPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import HomePage from "../features/home/pages/HomePage";
 import ProfilePage from "../features/profile/pages/ProfilePage";
+
 import CoursesPage from "../features/courses/pages/CoursesPage";
+import CourseDetailPage from "../features/courses/pages/CourseDetailPage";
+import LearningPage from "../features/learning/pages/LearningPage";
+
 import ShopPage from "../features/shop/pages/ShopPage";
 import SettingsPage from "../features/settings/pages/SettingsPage";
+
 import MainLayout from "../shared/components/MainLayout";
 import { api, setAuthToken } from "../api/client";
-import LearningPage from "../features/learning/pages/LearningPage";
 
 function App() {
     const [user, setUser] = useState(null);
-    const[isCheckedAuth, setIsCheckedAuth] = useState(true);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-    // try to get user from localStorage (not to log in twice)
     useEffect(() => {
-        const token = localStorage.getItem("access");
-        if(!token) {
-            setIsCheckedAuth(false);
-            return;
-        }
+    const token = localStorage.getItem("access");
+    if (!token) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIsCheckingAuth(false);
+        return;
+    }
 
-        setAuthToken(token);
-        api
-            .get("/api/auth/me/")
+    setAuthToken(token);
+    api
+        .get("/api/auth/me/")
             .then((resp) => {
                 setUser(resp.data);
-            })
-            .catch(() => {
-                localStorage.removeItem("access");
-                localStorage.removeItem("refresh");
-                setAuthToken(null);
-                setUser(null);
-            })
-            .finally(() => {
-                setIsCheckedAuth(false);
-            });
+        })
+        .catch(() => {
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
+            setAuthToken(null);
+            setUser(null);
+        })
+        .finally(() => {
+            setIsCheckingAuth(false);
+        });
     }, []);
 
     const handleAuthSuccess = (accessToken, profile) => {
@@ -54,20 +60,19 @@ function App() {
         setUser(null);
     };
 
-    if(isCheckedAuth){
-        return <div style={{ padding:24 }}>Loading...</div>
+    if (isCheckingAuth) {
+        return <div style={{ padding: 24 }}>Loading...</div>;
     }
 
     return (
         <BrowserRouter>
             <Routes>
-                {/* by default -> to Registration */}
                 <Route
                     path="/"
                     element={
                         user ? (
                             <Navigate to="/home" replace />
-                        ) : (
+                            ) : (
                             <Navigate to="/register" replace />
                         )
                     }
@@ -76,14 +81,13 @@ function App() {
                 <Route
                     path="/register"
                     element={
-                    user ? (
+                        user ? (
                             <Navigate to="/home" replace />
                         ) : (
                             <RegisterPage onAuth={handleAuthSuccess} />
                         )
                     }
                 />
-
                 <Route
                     path="/login"
                     element={
@@ -98,20 +102,24 @@ function App() {
                 <Route
                     element={
                         user ? (
-                            <MainLayout user={user} onLogout={handleLogout} />
+                          <MainLayout user={user} onLogout={handleLogout} />
                         ) : (
-                            <Navigate to="/login" replace />
+                          <Navigate to="/login" replace />
                         )
                     }
                 >
-                    <Route path="/home" element={<HomePage user={user}/>}/>
-                    <Route path="/profile" element={<ProfilePage user={user}/>}/>
-                    <Route path="/courses" element={<CoursesPage />}/>
-                    <Route path="/shop" element={<ShopPage />}/>
-                    <Route path="/settings" element={<SettingsPage />}/>
+                    <Route path="/home" element={<HomePage user={user} />} />
+                    <Route path="/profile" element={<ProfilePage user={user} />} />
+
+                    <Route path="/courses" element={<CoursesPage />} />
+                    <Route path="/courses/:id" element={<CourseDetailPage />} />
+
+                    <Route path="/learning" element={<LearningPage />} />
+
+                    <Route path="/shop" element={<ShopPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
                 </Route>
 
-                {/* if smth went wrong */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>

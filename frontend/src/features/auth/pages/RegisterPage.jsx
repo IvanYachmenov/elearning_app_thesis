@@ -45,7 +45,7 @@ function RegisterPage({ onAuth }) {
               onAuth(access, meResp.data);
           }
 
-          navigate("/home");
+          navigate("/login"); //
 
       } catch (err) {
           console.error(err);
@@ -54,88 +54,87 @@ function RegisterPage({ onAuth }) {
     };
 
     return (
-        <div style={{ maxWidth: 400, margin: "40px auto", fontFamily: "sans-serif" }}>
-        <h1>Sign up</h1>
-        <form onSubmit={handleSubmit} style={{ marginBottom: 20 }}>
-            <div style={{ marginBottom: 10 }}>
-              <label>
-                Username:
-                <input
-                  name="username"
-                  style={{ width: "100%", padding: 6, marginTop: 4 }}
-                  value={form.username}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
-            </div>
+        <div className="auth-page">
+        <h1 className="auth-title">Sign up</h1>
 
-            <div style={{ marginBottom: 10 }}>
-              <label>
-                Email:
-                <input
-                  name="email"
-                  type="email"
-                  style={{ width: "100%", padding: 6, marginTop: 4 }}
-                  value={form.email}
-                  onChange={handleChange}
-                />
-              </label>
-            </div>
+        <form className="auth-form" onSubmit={handleSubmit}>
+        <div className="auth-field">
+        <label className="auth-label">
+        Username:
+        <input
+          className="auth-input"
+          name="username"
+          value={form.username}
+          onChange={handleChange}
+          required
+        />
+        </label>
+        </div>
 
-            <div style={{ marginBottom: 10 }}>
-              <label>
-                Password:
-                <input
-                  name="password"
-                  type="password"
-                  style={{ width: "100%", padding: 6, marginTop: 4 }}
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
-            </div>
+        <div className="auth-field">
+        <label className="auth-label">
+        Email:
+        <input
+          className="auth-input"
+          type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+        />
+        </label>
+        </div>
 
-            <div style={{ marginBottom: 10 }}>
-              <label>
-                First name:
-                <input
-                  name="first_name"
-                  style={{ width: "100%", padding: 6, marginTop: 4 }}
-                  value={form.first_name}
-                  onChange={handleChange}
-                />
-              </label>
-            </div>
+        <div className="auth-field">
+        <label className="auth-label">
+        Password:
+        <input
+          className="auth-input"
+          type="password"
+          name="password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+        </label>
+        </div>
 
-            <div style={{ marginBottom: 10 }}>
-              <label>
-                Last name:
-                <input
-                  name="last_name"
-                  style={{ width: "100%", padding: 6, marginTop: 4 }}
-                  value={form.last_name}
-                  onChange={handleChange}
-                />
-              </label>
-            </div>
+        <div className="auth-field">
+        <label className="auth-label">
+        First name:
+        <input
+          className="auth-input"
+          name="first_name"
+          value={form.first_name}
+          onChange={handleChange}
+        />
+        </label>
+        </div>
 
-            <button type="submit" style={{ padding: "6px 12px" }}>
-              Register
-            </button>
+        <div className="auth-field">
+        <label className="auth-label">
+        Last name:
+        <input
+          className="auth-input"
+          name="last_name"
+          value={form.last_name}
+          onChange={handleChange}
+        />
+        </label>
+        </div>
+
+        <button type="submit" className="auth-button">
+        Create account
+        </button>
         </form>
 
         <p>
-            Already have an account?{" "}
-            <Link to="/login">Log in</Link>
+        Already have an account?{" "}
+        <Link className="auth-link" to="/login">
+        Log in
+        </Link>
         </p>
 
-        {error && (
-            <p style={{ color: "red", marginTop: 15 }}>
-                {error}
-            </p>
-        )}
+        {error && <p className="auth-error">{error}</p>}
         </div>
     );
 }

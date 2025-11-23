@@ -18,7 +18,9 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from core.views import CourseDetailView, CourseListView, EnrollCourseView
 from core.views.auth import RegisterView, MeView
+from core.views.courses import MyCoursesListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,4 +30,10 @@ urlpatterns = [
     path("api/auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/auth/me/", MeView.as_view(), name="me"),
+
+    #courses
+    path("api/courses/", CourseListView.as_view(), name="course-list"),
+    path("api/courses/<int:pk>/", CourseDetailView.as_view(), name="course-detail"),
+    path("api/courses/<int:pk>/enroll/", EnrollCourseView.as_view(), name="course-enroll"),
+    path("api/my-courses/", MyCoursesListView.as_view(), name="my-courses"),
 ]
