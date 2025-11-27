@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { api } from "../../../api/client";
-import CourseCard from "../components/CourseCard";
+import { useEffect, useState } from 'react';
+import { api } from '../../../api/client';
+import CourseCard from '../components/CourseCard';
+import '../courses.css';
 
 function CoursesPage() {
   const [courses, setCourses] = useState([]);
@@ -12,39 +13,38 @@ function CoursesPage() {
     setError(null);
 
     api
-      .get("/api/courses/")
+      .get('/api/courses/')
       .then((resp) => {
         setCourses(resp.data.results || resp.data || []);
       })
       .catch((err) => {
         console.error(err);
-        setError("Failed to load courses.");
+        setError('Failed to load courses.');
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   }, []);
 
   return (
-    <div className="page">
+    <div className="page page-enter">
       <h1 className="page__title">Courses</h1>
       <p className="page__subtitle">
-        Browse available courses. After you enroll, they will appear on the
-        <strong> Learning</strong> page.
+        Browse available courses. After you enroll, they will appear on the <strong>Learning</strong> page.
       </p>
 
       {loading && <p>Loading courses...</p>}
-      {error && <p style={{ color: "salmon" }}>{error}</p>}
+      {error && <p style={{ color: '#dc2626' }}>{error}</p>}
 
       {!loading && !error && courses.length === 0 && (
-        <p>No courses yet. Ask administrator to create at least one course.</p>
+        <p>No courses available yet. Check back soon!</p>
       )}
 
-      <div className="courses-grid">
-        {courses.map((course) => (
-          <CourseCard key={course.id} course={course} />
-        ))}
-      </div>
+      {!loading && !error && courses.length > 0 && (
+        <div className="courses-grid">
+          {courses.map((course) => (
+            <CourseCard key={course.id} course={course} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

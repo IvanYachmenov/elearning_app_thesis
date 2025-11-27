@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { api } from "../../../api/client";
+import { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { api } from '../../../api/client';
+import '../courses.css';
 
 function CourseDetailPage() {
   const { id } = useParams();
@@ -19,17 +20,13 @@ function CourseDetailPage() {
       .get(`/api/courses/${id}/`)
       .then((resp) => {
         setCourse(resp.data);
-        if (resp.data.is_enrolled) {
-          setEnrolled(true);
-        }
+        if (resp.data.is_enrolled) setEnrolled(true);
       })
       .catch((err) => {
         console.error(err);
-        setError("Course not found or failed to load.");
+        setError('Course not found or failed to load.');
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   }, [id]);
 
   const handleEnroll = async () => {
@@ -41,7 +38,7 @@ function CourseDetailPage() {
       setEnrolled(true);
     } catch (err) {
       console.error(err);
-      setError("Failed to enroll. Maybe you are not logged in?");
+      setError('Failed to enroll. Please try again.');
     } finally {
       setEnrolling(false);
     }
@@ -49,7 +46,7 @@ function CourseDetailPage() {
 
   if (loading) {
     return (
-      <div className="page">
+      <div className="page page-enter">
         <p>Loading course...</p>
       </div>
     );
@@ -57,8 +54,11 @@ function CourseDetailPage() {
 
   if (error || !course) {
     return (
-      <div className="page">
-        <p style={{ color: "salmon" }}>{error || "Course not found."}</p>
+      <div className="page page-enter">
+        <p style={{ color: '#dc2626' }}>{error || 'Course not found.'}</p>
+        <Link to="/courses" className="btn-primary" style={{ marginTop: '16px' }}>
+          ← Back to courses
+        </Link>
       </div>
     );
   }
@@ -69,37 +69,49 @@ function CourseDetailPage() {
     null;
 
   return (
-    <div className="page">
-      <h1 className="page__title">{course.title}</h1>
+    <div className="page page-enter">
+      <div className="course-detail-header">
+        <h1 className="page__title">{course.title}</h1>
 
-      {authorName && (
-        <p className="page__subtitle">Author: <strong>{authorName}</strong></p>
-      )}
+        {authorName && (
+          <p className="page__subtitle">
+            by <strong>{authorName}</strong>
+          </p>
+        )}
 
-      {course.description && (
-        <p style={{ marginTop: 16, marginBottom: 24 }}>{course.description}</p>
-      )}
+        {course.description && (
+          <p style={{ marginTop: '16px', fontSize: '15px' }}>
+            {course.description}
+          </p>
+        )}
 
-      <div style={{ marginBottom: 24 }}>
-        <button
-          className="btn-primary"
-          onClick={handleEnroll}
-          disabled={enrolling || enrolled}
-        >
-          {enrolled ? "You are enrolled" : enrolling ? "Enrolling..." : "Enroll in this course"}
-        </button>
+        <div className="course-detail-actions">
+          {enrolled ? (
+            <Link to="/learning" className="btn-primary">
+              Continue learning →
+            </Link>
+          ) : (
+            <button
+              className="btn-primary"
+              onClick={handleEnroll}
+              disabled={enrolling}
+            >
+              {enrolling ? 'Enrolling...' : 'Enroll in this course'}
+            </button>
+          )}
+        </div>
+
+        {error && (
+          <p style={{ color: '#dc2626', marginTop: '12px' }}>{error}</p>
+        )}
       </div>
-
-      {error && (
-        <p style={{ color: "salmon", marginBottom: 16 }}>{error}</p>
-      )}
 
       {course.modules && course.modules.length > 0 && (
         <section className="course-content">
-          <h2 className="section-title">Course content</h2>
-          <ol className="module-list">
+          <h2 className="section-title">Course Content</h2>
+          <div className="module-list">
             {course.modules.map((mod) => (
-              <li key={mod.id} className="module-item">
+              <div key={mod.id} className="module-item">
                 <strong>{mod.title}</strong>
                 {mod.topics && mod.topics.length > 0 && (
                   <ul className="topic-list">
@@ -110,9 +122,9 @@ function CourseDetailPage() {
                     ))}
                   </ul>
                 )}
-              </li>
+              </div>
             ))}
-          </ol>
+          </div>
         </section>
       )}
     </div>

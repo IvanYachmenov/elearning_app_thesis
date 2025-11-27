@@ -1,66 +1,57 @@
-function HomePage({ user}) {
+import '../home.css';
+
+function HomePage({ user }) {
   return (
-    <div>
-        <h1 style={{ fontSize: "24px", marginBottom: "12px"}}>
-            Welcome back, {user.username}!
-        </h1>
-
-        <p style={{ marginBottom: "16px", color: "#9ca3af" }}>
-            This app is small, focused e-learning platform that will help you to connect theory
-            and practice for programming languages(as Python, etc.) and another different topics you can imagine.
+    <div className="page page-enter">
+      <div className="home-welcome">
+        <h1 className="page__title">Welcome back, {user.username}! 👋</h1>
+        <p className="page__subtitle">
+          Your personal learning platform for mastering programming and beyond.
         </p>
+      </div>
 
-        <section
-            style={{
-                marginTop: "12px",
-                padding: "16px",
-                borderRadius: "10px",
-                backgroundColor: "#020617",
-                border: "1px solid #1e293b",
-            }}
-        >
-            <h2 style={{ fontSize: "18px", marginBottom: "8px" }}>
-                What's hidden under the hood in this app?
-            </h2>
+      <section className="home-section">
+        <h2 className="home-section__title">
+          <span className="home-section__icon">✨</span>
+          What&apos;s E-Learning Platform?
+        </h2>
+        <p className="home-section__text">
+          This is a modern, focused e-learning platform designed to help you connect
+          theory and practice for programming languages like Python and many other topics.
+        </p>
+        <p className="home-section__text">
+          Instead of just watching long video courses, you&apos;ll read concise lessons and
+          immediately apply concepts through quizzes and coding tasks directly in the browser.
+        </p>
+      </section>
 
-            <p style={{ marginBottom: "8px", color: "#e5e7eb" }}>
-                The goal of this platform is to offer a modern, responsive
-                web-application for online learning. Instead of only watching
-                long video courses, students read short lessons and can immediately
-                try the concept in quizzes or coding tasks directly in the browser.
-            </p>
+      <section className="home-section">
+        <h2 className="home-section__title">
+          <span className="home-section__icon">💻</span>
+          Interactive Learning Experience
+        </h2>
+        <p className="home-section__text">
+          For Python courses, we provide an integrated online interpreter. You can write code
+          in an editor on the page, run it on our server, and get automatic feedback.
+        </p>
+        <p className="home-section__text">
+          This lowers the barrier for beginners—you only need a browser, not a full local setup.
+        </p>
+      </section>
 
-            <p style={{ marginBottom: "8px", color: "#e5e7eb" }}>
-                For Python courses there will be an integrated online interpreter:
-                students will write code in an editor on the page, run it on the
-                server and get automatic feedback based on prepared test cases.
-                This lowers the barrier for beginners – they only need a browser,
-                not a full local development setup.
-            </p>
-        </section>
-
-        <section
-            style={{
-                marginTop: "20px",
-                padding: "16px",
-                borderRadius: "10px",
-                backgroundColor: "#020617",
-                border: "1px solid #1e293b",
-            }}
-        >
-            <h2 style={{ fontSize: "18px", marginBottom: "8px" }}>For teachers</h2>
-            <p style={{ marginBottom: "8px", color: "#e5e7eb" }}>
-                The platform is designed to be open for content creators. Teachers
-                will be able to create their own courses, split them into modules
-                and topics, add quiz questions and coding exercises, and later mark
-                some content as free or premium.
-            </p>
-            <p style={{ marginBottom: "8px", color: "#e5e7eb" }}>
-                In the future there will also be support for payments and a simple
-                gamification system with points and an internal shop, but this is
-                not part of the first MVP.
-            </p>
-        </section>
+      <section className="home-section">
+        <h2 className="home-section__title">
+          <span className="home-section__icon">🎓</span>
+          For Teachers &amp; Content Creators
+        </h2>
+        <p className="home-section__text">
+          Teachers can create their own courses, organize them into modules and topics, add
+          quiz questions and coding exercises.
+        </p>
+        <p className="home-section__text">
+          Future updates will include payments, gamification with points and an internal shop.
+        </p>
+      </section>
     </div>
   );
 }

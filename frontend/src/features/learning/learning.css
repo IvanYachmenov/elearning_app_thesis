@@ -1,0 +1,21 @@
+.learning-empty {
+  text-align: center;
+  padding: 64px 24px;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.learning-empty__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.learning-empty__text {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}

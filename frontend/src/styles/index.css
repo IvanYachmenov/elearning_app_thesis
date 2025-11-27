@@ -1,133 +1,143 @@
 :root {
-  color-scheme: dark;
+  --bg-primary: #f5f3ff;
+  --bg-secondary: #ffffff;
+
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+
+  --accent-violet: #7c3aed;
+  --accent-purple: #a855f7;
+  --accent-blue: #38bdf8;
+
+  --header-bg-gradient: linear-gradient(135deg, #4c1d95, #7c3aed);
+  --header-text: #f9fafb;
+  --header-text-muted: #e5e7eb;
+  --header-link-hover-bg: rgba(255, 255, 255, 0.12);
+  --header-link-active-bg: rgba(255, 255, 255, 0.22);
+
+  --border-light: #e5e7eb;
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.12);
+  --shadow-md: 0 4px 6px rgba(15, 23, 42, 0.14);
+  --shadow-lg: 0 10px 15px rgba(15, 23, 42, 0.16);
+
+  --transition-speed: 0.2s;
+}
+
+html {
+    overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #020617;
-  color: #e5e7eb;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
 }
 
 a {
-  color: #38bdf8;
+  color: var(--accent-violet);
   text-decoration: none;
+  transition: color var(--transition-speed);
 }
 
 a:hover {
-  text-decoration: underline;
+  color: var(--accent-purple);
 }
 
 button {
-  background-color: #1e293b;
-  color: #e5e7eb;
-  border: 1px solid #475569;
-  border-radius: 6px;
+  font-family: inherit;
   cursor: pointer;
+  border: none;
+  background: none;
 }
 
-button:hover {
-  background-color: #334155;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* ---------- generic page layout ---------- */
+.page-enter {
+  animation: fadeIn 0.3s ease-out;
+}
 
 .page {
-  max-width: 900px;
-  margin: 24px auto 40px;
-  padding: 0 16px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
 }
 
 .page__title {
-  font-size: 24px;
-  margin-bottom: 8px;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--text-primary);
 }
 
 .page__subtitle {
-  margin: 0 0 16px;
-  color: #9ca3af;
-}
-
-/* ---------- courses / learning ---------- */
-
-.courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-}
-
-.course-card {
-  background-color: #020617;
-  border-radius: 12px;
-  border: 1px solid #1e293b;
-  padding: 16px;
-}
-
-.course-card__title {
-  font-size: 18px;
-  margin: 0 0 6px;
-}
-
-.course-card__author {
-  margin: 0 0 8px;
-  font-size: 14px;
-  color: #9ca3af;
-}
-
-.course-card__description {
-  margin: 0 0 12px;
-  font-size: 14px;
-}
-
-.course-card__footer {
-  display: flex;
-  justify-content: flex-end;
+  font-size: 15px;
+  margin: 0 0 24px;
+  color: var(--text-secondary);
 }
 
 .btn-primary {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid #38bdf8;
-  background-color: #38bdf8;
-  color: #0f172a;
-  font-size: 14px;
-  cursor: pointer;
-  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    var(--accent-violet),
+    var(--accent-purple)
+  );
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+
+  transform: translateY(0);
+  border: none;
+
+  transition:
+    transform 0.18s ease-out,
+    box-shadow 0.18s ease-out,
+    background 0.18s ease-out,
+    color 0.18s ease-out;
+  will-change: transform, box-shadow;
 }
 
-.btn-primary:hover {
-  filter: brightness(1.08);
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+  color: #ffffff;
 }
 
-.course-content {
-  margin-top: 24px;
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
 }
 
-.section-title {
-  font-size: 18px;
-  margin-bottom: 12px;
-}
-
-.module-list {
-  list-style: decimal;
-  padding-left: 20px;
-  margin: 0;
-}
-
-.module-item {
-  margin-bottom: 10px;
-}
-
-.topic-list {
-  list-style: disc;
-  padding-left: 20px;
-  margin: 4px 0 0;
-}
-
-.topic-item {
-  font-size: 14px;
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

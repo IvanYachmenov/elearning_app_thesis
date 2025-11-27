@@ -1,124 +1,107 @@
 import { useState } from 'react';
-import { api, setAuthToken } from "../../../api/client.js";
-import { Link, useNavigate } from "react-router-dom";
-import "./LoginPage.css";
+import { api, setAuthToken } from '../../../api/client';
+import { Link, useNavigate } from 'react-router-dom';
+import '../auth.css';
 
 function LoginPage({ onAuth }) {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [accessToken, setAccessToken] = useState(null);
-    const [profile, setProfile] = useState(null);
-    const [error, setError] = useState(null);
-    const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setError(null);
-        setProfile(null)
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
-        try {
-            const resp = await api.post("/api/auth/token/", {
-                username,
-                password,
-            });
+    try {
+      const resp = await api.post('/api/auth/token/', {
+        username,
+        password,
+      });
 
-            const { access, refresh } = resp.data;
-            setAccessToken(access);
+      const { access, refresh } = resp.data;
 
-            localStorage.setItem("access", access);
-            localStorage.setItem("refresh", refresh);
+      localStorage.setItem('access', access);
+      localStorage.setItem('refresh', refresh);
 
-            setAuthToken(access);
+      setAuthToken(access);
 
-            const meResp = await api.get("/api/auth/me/");
-            setProfile(meResp.data);
+      const meResp = await api.get('/api/auth/me/');
 
-            if(onAuth) {
-                onAuth(access, meResp.data);
-            }
+      if (onAuth) {
+        onAuth(access, meResp.data);
+      }
 
-            navigate("/home");
-
-        } catch (err) {
-            console.error(err);
-            setError("Login failed. Invalid username or password.");
-        }
+      navigate('/home');
+    } catch (err) {
+      console.error(err);
+      setError('Login failed. Invalid username or password.');
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const handleLoadProfile = async () => {
-        setError(null);
-
-        try {
-            const token = accessToken || localStorage.getItem("access");
-            if(!token) {
-                setError("No access token. Please log in first!");
-                return;
-            }
-
-            setAuthToken(token);
-            const meResp = await api.get("/api/auth/me/");
-            setProfile(meResp.data);
-        } catch (err) {
-            console.error(err);
-            setError("Failed to load profile.");
-        }
-    }
-    return (
-        <div className="auth-page">
-      <h1 className="auth-title">Login</h1>
-
-      <form className="auth-form" onSubmit={handleLogin}>
-        <div className="auth-field">
-          <label className="auth-label">
-            Username:
-            <input
-              className="auth-input"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </label>
+  return (
+    <div className="auth-container">
+      <div className="auth-left">
+        <div className="auth-left__content">
+          <div className="auth-left__logo">📚</div>
+          <h1 className="auth-left__title">Welcome Back!</h1>
+          <p className="auth-left__subtitle">
+            Continue your learning journey and explore new courses to expand your knowledge.
+          </p>
         </div>
+      </div>
 
-        <div className="auth-field">
-          <label className="auth-label">
-            Password:
-            <input
-              type="password"
-              className="auth-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
+      <div className="auth-right">
+        <div className="auth-form-wrapper">
+          <h1 className="auth-title">Log in</h1>
+          <p className="auth-subtitle">Enter your credentials to access your account</p>
+
+          <form className="auth-form" onSubmit={handleLogin}>
+            <div className="auth-field">
+              <label className="auth-label">Username</label>
+              <input
+                className="auth-input"
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="auth-field">
+              <label className="auth-label">Password</label>
+              <input
+                className="auth-input"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type="submit" className="auth-button" disabled={isLoading}>
+              {isLoading ? 'Logging in...' : 'Log in'}
+            </button>
+          </form>
+
+          {error && <div className="auth-error">{error}</div>}
+
+          <p className="auth-footer">
+            Don&apos;t have an account?{' '}
+            <Link to="/register" className="auth-link">
+              Sign up
+            </Link>
+          </p>
         </div>
-
-        <button type="submit" className="auth-button">
-          Login
-        </button>
-      </form>
-
-      <p>
-        Don't have an account?{" "}
-        <Link className="auth-link" to="/register">
-          Register
-        </Link>
-      </p>
-
-      {error && <p className="auth-error">{error}</p>}
-
-      {accessToken && (
-        <p className="auth-token">
-          <strong>Access token:</strong> {accessToken}
-        </p>
-      )}
-
-      {profile && (
-        <div style={{ marginTop: 20 }}>
-          <h2>Profile:</h2>
-          <pre>{JSON.stringify(profile, null, 2)}</pre>
-        </div>
-      )}
+      </div>
     </div>
-    );
+  );
 }
 
 export default LoginPage;

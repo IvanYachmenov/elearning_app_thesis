@@ -1,0 +1,234 @@
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: linear-gradient(90deg, #7c3aed, #8b5cf6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-header__container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.app-header__left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-logo {
+  font-weight: 700;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.app-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.app-nav-link {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all var(--transition-speed);
+}
+
+.app-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.app-nav-link--active {
+  background-color: #7c3aed;
+  color: #111827;
+}
+
+.app-mobile-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color var(--transition-speed),
+    transform var(--transition-speed),
+    box-shadow var(--transition-speed);
+}
+
+.app-mobile-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.35);
+}
+
+.app-mobile-toggle__icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.app-header__right {
+  position: relative;
+}
+
+.profile-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background-color: transparent;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color var(--transition-speed);
+}
+
+.profile-button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-violet));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.profile-chevron {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--transition-speed);
+}
+
+.profile-chevron.open {
+  transform: rotate(180deg);
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.18s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  width: 100%;
+  background: none;
+  font-size: 14px;
+  color: var(--text-primary);
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-speed),
+    color var(--transition-speed);
+}
+
+.profile-dropdown__item:hover {
+  background-color: rgba(124, 58, 237, 0.06);
+}
+
+.profile-dropdown__item--danger {
+  color: #dc2626;
+}
+
+.profile-dropdown__item--danger:hover {
+  background-color: rgba(220, 38, 38, 0.06);
+}
+
+.app-main {
+  flex: 1;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .app-header__container {
+    padding: 10px 12px;
+  }
+
+  .app-header__left {
+    flex: 1;
+    justify-content: space-between;
+  }
+
+  .app-nav {
+    display: none;
+  }
+
+  .app-nav.app-nav--mobile {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, #7c3aed, #6d28d9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.45);
+    padding: 8px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: dropdownFadeIn 0.2s ease-out;
+    z-index: 90;
+  }
+
+  .app-nav.app-nav--mobile .app-nav-link {
+    width: 100%;
+  }
+
+  .app-mobile-toggle {
+    display: flex;
+  }
+
+  .app-main {
+    padding-top: 8px;
+  }
+}

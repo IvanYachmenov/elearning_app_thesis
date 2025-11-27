@@ -1,11 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 function CourseCard({ course }) {
-  const description = course.description || "";
-
+  const description = course.description || '';
   const shortDescription =
     description.length > 160
-      ? description.slice(0, 160).trimEnd() + "…"
+      ? description.slice(0, 160).trimEnd() + '…'
       : description;
 
   const authorName =
@@ -17,9 +16,7 @@ function CourseCard({ course }) {
     <article className="course-card">
       <h3 className="course-card__title">{course.title}</h3>
 
-      {authorName && (
-        <p className="course-card__author">Author: {authorName}</p>
-      )}
+      {authorName && <p className="course-card__author">by {authorName}</p>}
 
       {shortDescription && (
         <p className="course-card__description">{shortDescription}</p>
@@ -27,7 +24,7 @@ function CourseCard({ course }) {
 
       <div className="course-card__footer">
         <Link to={`/courses/${course.id}`} className="btn-primary">
-          View details
+          View details →
         </Link>
       </div>
     </article>
