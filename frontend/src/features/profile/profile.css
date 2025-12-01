@@ -1,57 +1,57 @@
 .profile-container {
-  background-color: var(--bg-secondary);
-  border-radius: 12px;
-  padding: 32px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-light);
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
 }
 
 .profile-header {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .profile-avatar-large {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-violet), var(--accent-purple));
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 32px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-violet), var(--accent-purple));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 32px;
 }
 
 .profile-info h2 {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 4px;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 4px;
 }
 
 .profile-info p {
-  font-size: 15px;
-  color: var(--text-secondary);
-  margin: 0;
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin: 0;
 }
 
 .profile-data {
-  background-color: rgba(124, 58, 237, 0.03);
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 20px;
+    background-color: rgba(124, 58, 237, 0.03);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
 }
 
 .profile-data pre {
-  margin: 0;
-  font-family: 'Monaco', 'Courier New', monospace;
-  font-size: 13px;
-  color: var(--text-primary);
-  overflow-x: auto;
+    margin: 0;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--text-primary);
+    overflow-x: auto;
 }

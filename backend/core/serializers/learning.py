@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
 from .course import ModuleSerializer, TopicSerializer, CourseDetailSerializer
-from ..models import Topic, TopicProgress
+from ..models import Topic, TopicProgress, TopicQuestionAnswer, TopicQuestionOption, TopicQuestion
+
 
 class LearningTopicSerializer(TopicSerializer):
     """
@@ -72,3 +73,93 @@ class LearningCourseSerializer(CourseDetailSerializer):
             return 0
         completed = self.get_completed_topics(obj)
         return round(completed * 100 / total)
+
+class TopicTheorySerializer(TopicSerializer):
+    """
+    One page of topic -> theory page
+    """
+    course_id = serializers.IntegerField(source="module.course.id", read_only=True)
+    course_title = serializers.CharField(source="module.course.title", read_only=True)
+    module_id = serializers.IntegerField(source="module.id", read_only=True)
+    module_title = serializers.CharField(source="module.title", read_only=True)
+
+    status = serializers.SerializerMethodField()
+    total_questions = serializers.SerializerMethodField()
+    answered_questions = serializers.SerializerMethodField()
+    progress_percent = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Topic
+        fields = (
+            "id",
+            "title",
+            "content",
+            "order",
+            "course_id",
+            "course_title",
+            "module_id",
+            "module_title",
+            "status",
+            "total_questions",
+            "answered_questions",
+            "progress_percent",
+        )
+
+    def get_status(self, obj):
+        progress = self.context.get("topic_progress")
+        if progress:
+            return progress.status
+        return TopicProgress.Status.NOT_STARTED
+
+    def get_total_questions(self, obj):
+        return TopicQuestion.objects.filter(topic=obj).count()
+
+    def get_answered_questions(self, obj):
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+        if not user or user.is_anonymous:
+            return 0
+        return TopicQuestionAnswer.objects.filter(user=user, question__topic=obj, is_correct=True,).count()
+
+    def get_progress_percent(self, obj):
+        total = self.get_total_questions(obj)
+        if not total:
+            return 0
+        answered = self.get_answered_questions(obj)
+        return round(answered * 100 / total)
+
+
+class TopicQuestionOptionSerializer(serializers.ModelSerializer):
+    """
+    Answer
+    """
+    class Meta:
+        model = TopicQuestionOption
+        fields = ("id", "text")
+
+class TopicPracticeQuestionSerializer(serializers.ModelSerializer):
+    """
+    Question with options for answer
+    """
+    options = TopicQuestionOptionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TopicQuestion
+        fields = (
+            "id",
+            "text",
+            "order",
+            "question_type",
+            "max_score",
+            "options",
+        )
+
+
+class TopicQuestionAnswerSubmitSerializer(serializers.Serializer):
+    """
+    {selected options -> [x, y, z ...]}
+    """
+    selected_options = serializers.ListField(
+        child=serializers.IntegerField(),
+        allow_empty=False,
+    )

@@ -1,203 +1,203 @@
 .app-root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .profile-dropdown__icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
 }
 
 .app-header {
-  background: var(--header-gradient);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+    background: var(--header-gradient);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .app-header__container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
 }
 
 .app-header__left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .app-logo {
-  font-weight: 700;
-  font-size: 20px;
-  color: #ffffff;
+    font-weight: 700;
+    font-size: 20px;
+    color: #ffffff;
 }
 
 .app-nav {
-  display: flex;
-  gap: 4px;
+    display: flex;
+    gap: 4px;
 }
 
 .app-nav-link {
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 15px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: none;
-  transition: all var(--transition-speed);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all var(--transition-speed);
 }
 
 .app-nav-link:hover:not(.app-nav-link--active) {
-  background-color: #000;
-  color: #ffffff;
+    background-color: #000;
+    color: #ffffff;
 }
 
 .app-nav-link--active {
-  background-color: #fff;
-  color: #111827;
+    background-color: #fff;
+    color: #111827;
 }
 
 .app-nav-link--active:hover {
-  background-color: #fff;
-  color: #111827;
+    background-color: #fff;
+    color: #111827;
 }
 
 
 .app-header__right {
-  position: relative;
+    position: relative;
 }
 
 .profile-button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background-color: transparent;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color var(--transition-speed);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background-color: transparent;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color var(--transition-speed);
 }
 
 .profile-button:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
 .profile-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-violet));
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-violet));
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
 }
 
 .profile-chevron {
-  width: 16px;
-  height: 16px;
-  transition: transform var(--transition-speed);
+    width: 16px;
+    height: 16px;
+    transition: transform var(--transition-speed);
 }
 
 .profile-chevron.open {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 
 .profile-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  background-color: var(--bg-secondary);
-  border-radius: 12px;
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-lg);
-  min-width: 220px;
-  overflow: hidden;
-  animation: dropdownFadeIn 0.18s ease-out;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-lg);
+    min-width: 220px;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.18s ease-out;
 }
 
 .profile-dropdown__nav {
-  display: none;
+    display: none;
 }
 
 .profile-dropdown__divider {
-  height: 1px;
-  margin: 4px 0;
-  background-color: var(--border-light);
+    height: 1px;
+    margin: 4px 0;
+    background-color: var(--border-light);
 }
 
 @keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .profile-dropdown__item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  width: 100%;
-  background: none;
-  font-size: 14px;
-  color: var(--text-primary);
-  text-align: left;
-  border: none;
-  cursor: pointer;
-  transition: background-color var(--transition-speed),
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    width: 100%;
+    background: none;
+    font-size: 14px;
+    color: var(--text-primary);
+    text-align: left;
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-speed),
     color var(--transition-speed);
 }
 
 .profile-dropdown__item:hover {
-  background-color: rgba(124, 58, 237, 0.06);
+    background-color: rgba(124, 58, 237, 0.06);
 }
 
 .profile-dropdown__item--danger {
-  color: #dc2626;
+    color: #dc2626;
 }
 
 .profile-dropdown__item--danger:hover {
-  background-color: rgba(220, 38, 38, 0.06);
+    background-color: rgba(220, 38, 38, 0.06);
 }
 
 .app-main {
-  flex: 1;
-  width: 100%;
+    flex: 1;
+    width: 100%;
 }
 
 @media (max-width: 768px) {
-  .app-header__container {
-    padding: 10px 12px;
-  }
+    .app-header__container {
+        padding: 10px 12px;
+    }
 
-  .app-header__left {
-    flex: 1;
-    justify-content: space-between;
-  }
+    .app-header__left {
+        flex: 1;
+        justify-content: space-between;
+    }
 
-  .app-nav {
-    display: none;
-  }
+    .app-nav {
+        display: none;
+    }
 
-  .profile-dropdown__nav {
-    display: block;
-  }
+    .profile-dropdown__nav {
+        display: block;
+    }
 }

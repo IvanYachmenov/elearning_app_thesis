@@ -36,3 +36,77 @@ class TopicProgress(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.topic} ({self.status})"
+
+
+class TopicQuestion(models.Model):
+    class QuestionType(models.TextChoices):
+        SINGLE = "single_choice", "Single choice"
+        MULTI = "multiple_choice", "Multiple choice"
+        CODE = "code", "Python code"
+
+    topic = models.ForeignKey(
+        "Topic",
+        on_delete=models.CASCADE,
+        related_name="questions",
+    )
+    text = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+
+    question_type = models.CharField(
+        max_length=32,
+        choices=QuestionType.choices,
+        default=QuestionType.SINGLE,
+    )
+    max_score = models.PositiveSmallIntegerField(default=100)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.topic} – Q{self.order}"
+
+
+class TopicQuestionOption(models.Model):
+    question = models.ForeignKey(
+        TopicQuestion,
+        on_delete=models.CASCADE,
+        related_name="options",
+    )
+    text = models.CharField(max_length=255)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.question_id}: {self.text[:30]}"
+
+
+class TopicQuestionAnswer(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="question_answers",
+    )
+    question = models.ForeignKey(
+        TopicQuestion,
+        on_delete=models.CASCADE,
+        related_name="answers",
+    )
+
+    # single/multi choice
+    selected_options = models.ManyToManyField(
+        TopicQuestionOption,
+        blank=True,
+        related_name="answers",
+    )
+
+    is_correct = models.BooleanField(default=False)
+    score = models.PositiveSmallIntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+    )
+    answered_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("user", "question")
+
+    def __str__(self):
+        return f"{self.user} – Q{self.question_id} ({self.score}%)"

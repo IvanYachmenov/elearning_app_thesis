@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import User, Course, Module, Topic
+from .models import User, Course, Module, Topic, TopicQuestion, TopicQuestionOption, TopicQuestionAnswer, TopicProgress
 
 
 @admin.register(User)
@@ -44,3 +44,29 @@ class TopicAdmin(admin.ModelAdmin):
     list_display = ("title", "module", "order")
     list_filter = ("module",)
     ordering = ("module", "order")
+
+
+class TopicQuestionOptionInline(admin.TabularInline):
+    model = TopicQuestionOption
+    extra = 2
+
+@admin.register(TopicQuestion)
+class TopicQuestionAdmin(admin.ModelAdmin):
+    list_display = ("id", "topic", "order", "question_type", "max_score")
+    list_filter = ("topic", "question_type")
+    inlines = [TopicQuestionOptionInline]
+
+@admin.register(TopicQuestionOption)
+class TopicQuestionOptionAdmin(admin.ModelAdmin):
+    list_display = ("id", "question", "text", "is_correct")
+    list_filter = ("is_correct",)
+
+@admin.register(TopicQuestionAnswer)
+class TopicQuestionAnswerAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "question", "is_correct", "score", "answered_at")
+    list_filter = ("is_correct", "question__topic")
+
+@admin.register(TopicProgress)
+class TopicProgressAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "topic", "status", "score", "completed_at")
+    list_filter = ("status",)
