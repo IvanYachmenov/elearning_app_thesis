@@ -57,7 +57,7 @@ function PracticeCompletionPanel({
                     </button>
                 )}
 
-                {(!passed || timedOut) && onRetry && (
+                {onRetry && (
                     <button
                         type="button"
                         className="topic-practice__secondary-btn"

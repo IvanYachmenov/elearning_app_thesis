@@ -354,6 +354,22 @@ function TopicPracticePage() {
 
                 setTotalQuestions(data.total_questions ?? totalQuestions);
 
+                const completed =
+                    data.test_completed ||
+                    (typeof data.topic_progress_percent === 'number' && data.topic_progress_percent >= 100);
+
+                if (typeof data.score_percent === 'number') {
+                    setScorePercent(data.score_percent);
+                }
+
+                if (completed) {
+                    setPracticeCompleted(true);
+                    setPassed(Boolean(data.passed));
+                    setPracticeQuestion(null);
+                    setSelectedOptions([]);
+                    setAnswerFeedback(null);
+                }
+
                 if (data.is_correct) {
                     setAnsweredCount(data.answered_questions ?? answeredCount);
                     setCorrectAnswers(data.correct_answers ?? data.answered_questions ?? answeredCount);
@@ -361,7 +377,6 @@ function TopicPracticePage() {
                     if (typeof data.topic_progress_percent === 'number') {
                         setTopicProgressPercent(data.topic_progress_percent);
                         if (data.topic_progress_percent >= 100 || data.test_completed) {
-                            setPracticeCompleted(true);
                             setTopic((prev) => (prev ? {...prev, status: 'completed'} : prev));
                         }
                     }
@@ -446,13 +461,25 @@ function TopicPracticePage() {
     return (
         <div className="page page-enter">
             <header className="topic-page-header">
-                <button
-                    type="button"
-                    className="learning-back-link"
-                    onClick={handleBackToTheory}
-                >
-                    ← Back to theory
-                </button>
+                 <div className="topic-page-header__row">
+                    <button
+                        type="button"
+                        className="learning-back-link"
+                        onClick={handleBackToTheory}
+                    >
+                        ← Back to theory
+                    </button>
+
+                    {practiceCompleted && isReviewMode && (
+                        <button
+                            type="button"
+                            className="learning-back-link topic-page-header__back-results"
+                            onClick={() => setIsReviewMode(false)}
+                        >
+                            Back to results →
+                        </button>
+                    )}
+                </div>
 
                 <div className="topic-meta">
                     {topic.course_title} · {topic.module_title}
