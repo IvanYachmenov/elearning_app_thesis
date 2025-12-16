@@ -2,13 +2,20 @@ import {NavLink, Outlet} from 'react-router-dom';
 import {useState, useRef, useEffect} from 'react';
 import '../../styles/layout.css';
 import AppFooter from './AppFooter';
+import {useNavigationLock} from '../contexts/NavigationLockContext';
 
 function MainLayout({user, onLogout}) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const {isLocked, lockReason} = useNavigationLock();
 
     const getLinkClassName = ({isActive}) =>
         isActive ? 'app-nav-link app-nav-link--active' : 'app-nav-link';
+
+    const getNavLinkClass = (props) => {
+        const base = getLinkClassName(props);
+        return isLocked ? `${base} app-nav-link--disabled` : base;
+    };
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -33,6 +40,13 @@ function MainLayout({user, onLogout}) {
         setIsDropdownOpen(false);
     };
 
+    const handlePreventNavigation = (event) => {
+        if (isLocked) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    };
+
     return (
         <div className="app-root">
             <header className="app-header">
@@ -41,19 +55,39 @@ function MainLayout({user, onLogout}) {
                         <div className="app-logo">E-Learning</div>
 
                         <nav className="app-nav">
-                            <NavLink to="/home" className={getLinkClassName}>
+                             <NavLink
+                                to="/home"
+                                className={getNavLinkClass}
+                                onClick={handlePreventNavigation}
+                                aria-disabled={isLocked}
+                            >
                                 Home
                             </NavLink>
 
-                            <NavLink to="/courses" className={getLinkClassName}>
+                            <NavLink
+                                to="/courses"
+                                className={getNavLinkClass}
+                                onClick={handlePreventNavigation}
+                                aria-disabled={isLocked}
+                            >
                                 Courses
                             </NavLink>
 
-                            <NavLink to="/learning" className={getLinkClassName}>
+                            <NavLink
+                                to="/learning"
+                                className={getNavLinkClass}
+                                onClick={handlePreventNavigation}
+                                aria-disabled={isLocked}
+                            >
                                 Learning
                             </NavLink>
 
-                            <NavLink to="/shop" className={getLinkClassName}>
+                            <NavLink
+                                to="/shop"
+                                className={getNavLinkClass}
+                                onClick={handlePreventNavigation}
+                                aria-disabled={isLocked}
+                            >
                                 Shop
                             </NavLink>
                         </nav>
@@ -63,7 +97,14 @@ function MainLayout({user, onLogout}) {
                         <button
                             type="button"
                             className="profile-button"
-                            onClick={() => setIsDropdownOpen((prev) => !prev)}
+                            onClick={(event) => {
+                                if (isLocked) {
+                                    event.preventDefault();
+                                    return;
+                                }
+                                setIsDropdownOpen((prev) => !prev);
+                            }}
+                            aria-disabled={isLocked}
                         >
                             <div className="profile-avatar">{getInitials(user.username)}</div>
                             <span>{user.username}</span>
@@ -90,7 +131,11 @@ function MainLayout({user, onLogout}) {
                                     <NavLink
                                         to="/home"
                                         className="profile-dropdown__item"
-                                        onClick={handleDropdownNavClick}
+                                        onClick={(event) => {
+                                            handlePreventNavigation(event);
+                                            handleDropdownNavClick();
+                                        }}
+                                        aria-disabled={isLocked}
                                     >
                                         <img
                                             src={"../../../public/assets/icons/home.png"}
@@ -102,7 +147,11 @@ function MainLayout({user, onLogout}) {
                                     <NavLink
                                         to="/courses"
                                         className="profile-dropdown__item"
-                                        onClick={handleDropdownNavClick}
+                                        onClick={(event) => {
+                                            handlePreventNavigation(event);
+                                            handleDropdownNavClick();
+                                        }}
+                                        aria-disabled={isLocked}
                                     >
                                         <img
                                             src={"../../../public/assets/icons/courses.png"}
@@ -114,7 +163,11 @@ function MainLayout({user, onLogout}) {
                                     <NavLink
                                         to="/learning"
                                         className="profile-dropdown__item"
-                                        onClick={handleDropdownNavClick}
+                                        onClick={(event) => {
+                                            handlePreventNavigation(event);
+                                            handleDropdownNavClick();
+                                        }}
+                                        aria-disabled={isLocked}
                                     >
                                         <img
                                             src={"../../../public/assets/icons/learning.png"}
@@ -126,7 +179,11 @@ function MainLayout({user, onLogout}) {
                                     <NavLink
                                         to="/shop"
                                         className="profile-dropdown__item"
-                                        onClick={handleDropdownNavClick}
+                                        onClick={(event) => {
+                                            handlePreventNavigation(event);
+                                            handleDropdownNavClick();
+                                        }}
+                                        aria-disabled={isLocked}
                                     >
                                         <img
                                             src={"../../../public/assets/icons/shop.png"}
@@ -142,7 +199,11 @@ function MainLayout({user, onLogout}) {
                                 <NavLink
                                     to="/profile"
                                     className="profile-dropdown__item"
-                                    onClick={handleDropdownNavClick}
+                                    onClick={(event) => {
+                                        handlePreventNavigation(event);
+                                        handleDropdownNavClick();
+                                    }}
+                                    aria-disabled={isLocked}
                                 >
                                     <img
                                         src={"../../../public/assets/icons/profile.png"}
@@ -154,7 +215,11 @@ function MainLayout({user, onLogout}) {
                                 <NavLink
                                     to="/settings"
                                     className="profile-dropdown__item"
-                                    onClick={handleDropdownNavClick}
+                                    onClick={(event) => {
+                                        handlePreventNavigation(event);
+                                        handleDropdownNavClick();
+                                    }}
+                                    aria-disabled={isLocked}
                                 >
                                     <img
                                         src={"../../../public/assets/icons/settings.png"}
@@ -166,10 +231,15 @@ function MainLayout({user, onLogout}) {
                                 <button
                                     type="button"
                                     className="profile-dropdown__item profile-dropdown__item--danger"
-                                    onClick={() => {
+                                    onClick={(event) => {
+                                        if (isLocked) {
+                                            event.preventDefault();
+                                            return;
+                                        }
                                         setIsDropdownOpen(false);
                                         onLogout();
                                     }}
+                                    aria-disabled={isLocked}
                                 >
                                     <img
                                         src={"../../../public/assets/icons/logout.png"}
@@ -185,6 +255,12 @@ function MainLayout({user, onLogout}) {
             </header>
 
             <main className="app-main">
+                {isLocked && (
+                    <div className="app-navigation-lock">
+                        <span className="app-navigation-lock__dot"/>
+                        <span>{lockReason || 'Navigation is temporarily locked.'}</span>
+                    </div>
+                )}
                 <Outlet/>
             </main>
 

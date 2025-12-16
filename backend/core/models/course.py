@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from .user import User
 
@@ -43,6 +44,13 @@ class Topic(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     order = models.PositiveIntegerField(default=0)
+    is_timed_test = models.BooleanField(default=False)
+    time_limit_seconds = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(120)],
+        help_text="Time limit for timed tests in seconds (minimum 120)",
+    )
 
     class Meta:
         ordering = ["order"]

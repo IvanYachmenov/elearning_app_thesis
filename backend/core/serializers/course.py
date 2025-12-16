@@ -10,6 +10,8 @@ class TopicSerializer(serializers.ModelSerializer):
             "title",
             "content",
             "order",
+            "is_timed_test",
+            "time_limit_seconds",
         )
 
 

@@ -100,6 +100,8 @@ class TopicTheorySerializer(TopicSerializer):
             "module_id",
             "module_title",
             "status",
+            "is_timed_test",
+            "time_limit_seconds",
             "total_questions",
             "answered_questions",
             "progress_percent",
@@ -161,7 +163,7 @@ class TopicQuestionAnswerSubmitSerializer(serializers.Serializer):
     """
     selected_options = serializers.ListField(
         child=serializers.IntegerField(),
-        allow_empty=False,
+        allow_empty=True,
     )
 
 

@@ -21,6 +21,54 @@ from ..serializers import (
 )
 from ..serializers.learning import TopicPracticeHistoryQuestionSerializer
 
+def get_topic_time_limit_seconds(topic: Topic):
+    if not topic.is_timed_test:
+        return None
+    if topic.time_limit_seconds and topic.time_limit_seconds >= 120:
+        return topic.time_limit_seconds
+    return 120
+
+
+def calculate_score_percent(correct_count: int, total_questions: int) -> int:
+    if not total_questions:
+        return 0
+    return round(correct_count * 100 / total_questions)
+
+
+def ensure_topic_progress(user, topic: Topic, is_timed: bool, time_limit_seconds: int | None):
+    progress, _ = TopicProgress.objects.get_or_create(
+        user=user,
+        topic=topic,
+        defaults={
+            "status": TopicProgress.Status.IN_PROGRESS,
+            "is_timed": is_timed,
+            "time_limit_seconds": time_limit_seconds if is_timed else None,
+            "started_at": timezone.now() if is_timed else None,
+        },
+    )
+
+    updates = []
+    if progress.status == TopicProgress.Status.NOT_STARTED:
+        progress.status = TopicProgress.Status.IN_PROGRESS
+        updates.append("status")
+
+    if progress.is_timed != is_timed:
+        progress.is_timed = is_timed
+        updates.append("is_timed")
+
+    if is_timed:
+        effective_limit = time_limit_seconds or 120
+        if progress.time_limit_seconds != effective_limit:
+            progress.time_limit_seconds = effective_limit
+            updates.append("time_limit_seconds")
+        if not progress.started_at:
+            progress.started_at = timezone.now()
+            updates.append("started_at")
+
+    if updates:
+        progress.save(update_fields=updates)
+
+    return progress
 
 class LearningCourseDetailView(APIView):
     """
@@ -113,6 +161,10 @@ class TopicNextQuestionView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
+        time_limit_seconds = get_topic_time_limit_seconds(topic)
+        is_timed = bool(time_limit_seconds)
+        progress = ensure_topic_progress(request.user, topic, is_timed, time_limit_seconds)
+
         questions = list(
             TopicQuestion.objects.filter(topic=topic).order_by("order", "id")
         )
@@ -127,6 +179,106 @@ class TopicNextQuestionView(APIView):
         answers_by_qid = {a.question_id: a for a in answers_qs}
 
         correct_count = sum(1 for a in answers_qs if a.is_correct)
+
+        if is_timed:
+            now = timezone.now()
+            limit_seconds = progress.time_limit_seconds or time_limit_seconds or 0
+            elapsed_seconds = (
+                int((now - progress.started_at).total_seconds())
+                if progress.started_at else 0
+            )
+            remaining_seconds = max(limit_seconds - elapsed_seconds, 0)
+
+            timed_out = progress.timed_out or remaining_seconds <= 0
+            answered_total = len(answers_by_qid)
+            completed = (
+                    timed_out
+                    or answered_total >= total_questions
+                    or progress.status in (
+                        TopicProgress.Status.COMPLETED,
+                        TopicProgress.Status.FAILED,
+                    )
+            )
+            score_percent = calculate_score_percent(correct_count, total_questions)
+            passed = (
+                    completed
+                    and not timed_out
+                    and total_questions > 0
+                    and correct_count == total_questions
+            )
+
+            if timed_out and not progress.timed_out:
+                progress.timed_out = True
+
+            if completed:
+                status_value = (
+                    TopicProgress.Status.COMPLETED
+                    if passed
+                    else TopicProgress.Status.FAILED
+                )
+                progress.status = status_value
+                progress.score = score_percent
+                if not progress.completed_at:
+                    progress.completed_at = now
+                progress.is_timed = True
+                progress.time_limit_seconds = limit_seconds
+                progress.save(
+                    update_fields=[
+                        "status",
+                        "score",
+                        "completed_at",
+                        "timed_out",
+                        "is_timed",
+                        "time_limit_seconds",
+                    ],
+                )
+                return Response({
+                    "completed": True,
+                    "is_timed": True,
+                    "timed_out": timed_out,
+                    "passed": passed,
+                    "topic_id": topic.id,
+                    "topic_title": topic.title,
+                    "total_questions": total_questions,
+                    "answered_questions": answered_total,
+                    "correct_answers": correct_count,
+                    "progress_percent": calculate_score_percent(
+                        answered_total,
+                        total_questions,
+                    ),
+                    "score_percent": score_percent,
+                    "remaining_seconds": remaining_seconds,
+                    "time_limit_seconds": limit_seconds,
+                    "question": None,
+                    "last_answer": None,
+                })
+
+            next_question = None
+            for q in questions:
+                if q.id not in answers_by_qid:
+                    next_question = q
+                    break
+
+            serializer = TopicPracticeQuestionSerializer(next_question)
+            return Response({
+                "completed": False,
+                "is_timed": True,
+                "timed_out": False,
+                "topic_id": topic.id,
+                "topic_title": topic.title,
+                "total_questions": total_questions,
+                "answered_questions": answered_total,
+                "correct_answers": correct_count,
+                "progress_percent": calculate_score_percent(
+                    answered_total,
+                    total_questions,
+                ),
+                "score_percent": score_percent,
+                "time_limit_seconds": limit_seconds,
+                "remaining_seconds": remaining_seconds,
+                "question": serializer.data,
+                "last_answer": None,
+            })
 
         next_question = None
         last_answer = None
@@ -164,11 +316,18 @@ class TopicNextQuestionView(APIView):
             )
             return Response({
                 "completed": True,
+                "is_timed": False,
+                "timed_out": False,
+                "passed": True,
                 "topic_id": topic.id,
                 "topic_title": topic.title,
                 "total_questions": total_questions,
                 "answered_questions": answered_count,
+                "correct_answers": answered_count,
                 "progress_percent": 100,
+                "score_percent": 100,
+                "time_limit_seconds": None,
+                "remaining_seconds": None,
                 "question": None,
                 "last_answer": None,
             })
@@ -187,11 +346,18 @@ class TopicNextQuestionView(APIView):
 
         return Response({
             "completed": False,
+            "is_timed": False,
+            "timed_out": False,
+            "passed": None,
             "topic_id": topic.id,
             "topic_title": topic.title,
             "total_questions": total_questions,
             "answered_questions": answered_count,
+            "correct_answers": answered_count,
             "progress_percent": progress_percent,
+            "score_percent": progress_percent,
+            "time_limit_seconds": None,
+            "remaining_seconds": None,
             "question": serializer.data,
             "last_answer": last_answer_payload,
         })
@@ -222,36 +388,105 @@ class TopicQuestionAnswerView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
+        time_limit_seconds = get_topic_time_limit_seconds(topic)
+        is_timed = bool(time_limit_seconds)
+        progress = ensure_topic_progress(request.user, topic, is_timed, time_limit_seconds)
+
         data_serializer = TopicQuestionAnswerSubmitSerializer(data=request.data)
         data_serializer.is_valid(raise_exception=True)
         option_ids = data_serializer.validated_data["selected_options"]
 
         options_qs = TopicQuestionOption.objects.filter(
             question=question, id__in=option_ids,
-        )
-        if options_qs.count() != len(option_ids):
+        ) if option_ids else TopicQuestionOption.objects.none()
+
+        if option_ids and options_qs.count() != len(option_ids):
             return Response(
                 {"detail": "Invalid options for this question."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         # validation
-        if (
-            question.question_type == TopicQuestion.QuestionType.SINGLE
-            and len(option_ids) != 1
-        ):
-            return Response(
-                {"detail": "Exactly one option must be selected."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        if not is_timed:
+            if (
+                    question.question_type == TopicQuestion.QuestionType.SINGLE
+                    and len(option_ids) != 1
+            ):
+                return Response(
+                    {"detail": "Exactly one option must be selected."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-        if (
+            if (
                 question.question_type == TopicQuestion.QuestionType.MULTI
                 and len(option_ids) < 1
-        ):
-            return Response(
-                {"detail": "Select at least one option."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            ):
+                return Response(
+                    {"detail": "Select at least one option."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            else:
+                if (
+                        question.question_type == TopicQuestion.QuestionType.SINGLE
+                        and len(option_ids) > 1
+                ):
+                    return Response(
+                        {"detail": "Select no more than one option."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+            if is_timed:
+                now = timezone.now()
+                limit_seconds = progress.time_limit_seconds or time_limit_seconds or 0
+                elapsed_seconds = (
+                    int((now - progress.started_at).total_seconds())
+                    if progress.started_at else 0
+                )
+                remaining_seconds = max(limit_seconds - elapsed_seconds, 0)
+
+                answers_before = TopicQuestionAnswer.objects.filter(
+                    user=request.user,
+                    question__topic=topic,
+                )
+                correct_before = answers_before.filter(is_correct=True).count()
+
+                if remaining_seconds <= 0:
+                    score_percent = calculate_score_percent(
+                        correct_before,
+                        TopicQuestion.objects.filter(topic=topic).count(),
+                    )
+                    progress.status = TopicProgress.Status.FAILED
+                    progress.timed_out = True
+                    progress.score = score_percent
+                    progress.completed_at = progress.completed_at or now
+                    progress.save(
+                        update_fields=[
+                            "status",
+                            "timed_out",
+                            "score",
+                            "completed_at",
+                        ]
+                    )
+                    return Response(
+                        {
+                            "is_correct": False,
+                            "score": 0,
+                            "answered_questions": answers_before.count(),
+                            "total_questions": TopicQuestion.objects.filter(topic=topic).count(),
+                            "topic_progress_percent": calculate_score_percent(
+                                answers_before.count(),
+                                TopicQuestion.objects.filter(topic=topic).count(),
+                            ),
+                            "test_completed": True,
+                            "timed_out": True,
+                            "passed": False,
+                            "remaining_seconds": 0,
+                            "correct_answers": correct_before,
+                            "score_percent": score_percent,
+                            "time_limit_seconds": limit_seconds,
+                            "is_timed": True,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
 
         correct_ids = set(
             question.options.filter(is_correct=True).values_list("id", flat=True)
@@ -288,6 +523,75 @@ class TopicQuestionAnswerView(APIView):
             else 0
         )
 
+        answered_total = TopicQuestionAnswer.objects.filter(
+            user=request.user,
+            question__topic=topic,
+        ).count()
+
+        if is_timed:
+            now = timezone.now()
+            limit_seconds = progress.time_limit_seconds or time_limit_seconds or 0
+            elapsed_seconds = (
+                int((now - progress.started_at).total_seconds())
+                if progress.started_at else 0
+            )
+            remaining_seconds = max(limit_seconds - elapsed_seconds, 0)
+            timed_out = progress.timed_out or remaining_seconds <= 0
+            completed = timed_out or answered_total >= all_q_count
+            score_percent = calculate_score_percent(
+                correct_answers_qs.count(),
+                all_q_count,
+            )
+            passed = (
+                    completed
+                    and not timed_out
+                    and all_q_count > 0
+                    and correct_answers_qs.count() == all_q_count
+            )
+
+            if timed_out and not progress.timed_out:
+                progress.timed_out = True
+
+            progress.status = (
+                TopicProgress.Status.COMPLETED
+                if passed
+                else TopicProgress.Status.FAILED
+                if completed
+                else TopicProgress.Status.IN_PROGRESS
+            )
+            progress.score = score_percent
+            if completed and not progress.completed_at:
+                progress.completed_at = now
+            progress.save(
+                update_fields=[
+                    "status",
+                    "score",
+                    "completed_at",
+                    "timed_out",
+                ]
+            )
+
+            return Response(
+                {
+                    "is_correct": is_correct,
+                    "score": score,
+                    "answered_questions": answered_total,
+                    "total_questions": all_q_count,
+                    "topic_progress_percent": calculate_score_percent(
+                        answered_total,
+                        all_q_count,
+                    ),
+                    "test_completed": completed,
+                    "timed_out": timed_out,
+                    "passed": passed,
+                    "remaining_seconds": remaining_seconds,
+                    "correct_answers": correct_answers_qs.count(),
+                    "score_percent": score_percent,
+                    "time_limit_seconds": limit_seconds,
+                    "is_timed": True,
+                }
+            )
+
         status_value = TopicProgress.Status.IN_PROGRESS
         completed_at = None
         if all_q_count and answered_count >= all_q_count:
@@ -311,8 +615,56 @@ class TopicQuestionAnswerView(APIView):
                 "answered_questions": answered_count,
                 "total_questions": all_q_count,
                 "topic_progress_percent": progress_percent,
+                "is_timed": False,
+                "timed_out": False,
+                "test_completed": status_value == TopicProgress.Status.COMPLETED,
+                "passed": status_value == TopicProgress.Status.COMPLETED,
+                "correct_answers": answered_count,
+                "score_percent": progress_percent,
+                "time_limit_seconds": None,
+                "remaining_seconds": None,
             }
         )
+
+class TopicPracticeResetView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, pk):
+        try:
+            topic = Topic.objects.select_related("module__course").get(pk=pk)
+        except Topic.DoesNotExist:
+            return Response(
+                {"detail": "Topic not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        course = topic.module.course
+        if not course.students.filter(pk=request.user.pk).exists():
+            return Response(
+                {"detail": "You are not enrolled in this course."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        TopicQuestionAnswer.objects.filter(
+            user=request.user,
+            question__topic=topic,
+        ).delete()
+
+        TopicProgress.objects.update_or_create(
+            user=request.user,
+            topic=topic,
+            defaults={
+                "status": TopicProgress.Status.NOT_STARTED,
+                "score": None,
+                "completed_at": None,
+                "started_at": None,
+                "timed_out": False,
+                "is_timed": topic.is_timed_test,
+                "time_limit_seconds": get_topic_time_limit_seconds(topic),
+            },
+        )
+
+        return Response({"detail": "Practice progress has been reset."})
 
 
 class TopicPracticeHistoryView(APIView):
@@ -344,7 +696,10 @@ class TopicPracticeHistoryView(APIView):
             user=request.user,
             topic=topic
         ).first())
-        if not progress or progress.status != TopicProgress.Status.COMPLETED:
+        if not progress or progress.status not in (
+                TopicProgress.Status.COMPLETED,
+                TopicProgress.Status.FAILED,
+        ):
             return Response(
                 {"detail": "History is available only for completed topics."},
                 status=status.HTTP_400_BAD_REQUEST,

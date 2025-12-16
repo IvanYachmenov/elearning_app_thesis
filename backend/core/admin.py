@@ -41,7 +41,7 @@ class ModuleAdmin(admin.ModelAdmin):
 
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ("title", "module", "order")
+    list_display = ("title", "module", "order", "is_timed_test", "time_limit_seconds")
     list_filter = ("module",)
     ordering = ("module", "order")
 
@@ -68,5 +68,18 @@ class TopicQuestionAnswerAdmin(admin.ModelAdmin):
 
 @admin.register(TopicProgress)
 class TopicProgressAdmin(admin.ModelAdmin):
-    list_display = ("id", "user", "topic", "status", "score", "completed_at")
-    list_filter = ("status",)
+    list_display = (
+        "id",
+        "user",
+        "topic",
+        "status",
+        "score",
+        "is_timed",
+        "time_limit_seconds",
+        "timed_out",
+        "started_at",
+        "completed_at",
+    )
+    list_filter = ("status", "is_timed", "timed_out")
+
+

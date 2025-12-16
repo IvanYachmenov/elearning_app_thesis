@@ -7,6 +7,7 @@ class TopicProgress(models.Model):
         NOT_STARTED = "not_started", "Not started"
         IN_PROGRESS = "in_progress", "In progress"
         COMPLETED = "completed", "Completed"
+        FAILED = "failed", "Failed"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -23,13 +24,22 @@ class TopicProgress(models.Model):
         choices=Status.choices,
         default=Status.NOT_STARTED,
     )
+    is_timed = models.BooleanField(default=False)
+    time_limit_seconds = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(120)],
+        help_text="Time limit in seconds for timed tests",
+    )
     score = models.PositiveSmallIntegerField(
         null=True,
         blank=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         help_text="Score is percent (0-100)",
     )
+    started_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
+    timed_out = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ("user","topic")

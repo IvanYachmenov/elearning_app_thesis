@@ -55,6 +55,11 @@
     text-decoration: none;
     transition: all var(--transition-speed);
 }
+.app-nav-link--disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
 .app-nav-link:hover:not(.app-nav-link--active) {
     background-color: #000;
@@ -181,6 +186,26 @@
 .app-main {
     flex: 1;
     width: 100%;
+}
+
+.app-navigation-lock {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: rgba(124, 58, 237, 0.08);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.app-navigation-lock__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-violet), var(--accent-blue));
+    box-shadow: 0 0 0 6px rgba(124, 58, 237, 0.12);
 }
 
 @media (max-width: 768px) {

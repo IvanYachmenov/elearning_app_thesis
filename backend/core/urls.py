@@ -9,7 +9,9 @@ from .views import (
     LearningCourseDetailView,
     TopicTheoryView,
     TopicNextQuestionView,
-    TopicQuestionAnswerView, TopicPracticeHistoryView,
+    TopicQuestionAnswerView,
+    TopicPracticeHistoryView,
+    TopicPracticeResetView,
 )
 
 urlpatterns = [
@@ -28,6 +30,9 @@ urlpatterns = [
     path("learning/topics/<int:pk>/", TopicTheoryView.as_view(), name="learning-topic-detail"),
     path("learning/topics/<int:pk>/next-question/", TopicNextQuestionView.as_view(), name="learning-topic-next-question"),
     path("learning/questions/<int:pk>/answer/", TopicQuestionAnswerView.as_view(), name="learning-question-answer"),
+    path("learning/topics/<int:pk>/reset/", TopicPracticeResetView.as_view(), name="learning-topic-reset"),
+
     # learning - practice history
     path("learning/topics/<int:pk>/history/", TopicPracticeHistoryView.as_view(), name="learning-topic-history"),
+
 ]

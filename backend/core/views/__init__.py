@@ -5,7 +5,7 @@ from .courses import (
     EnrollCourseView,
     MyCoursesListView,
 )
-from .learning import LearningCourseDetailView, TopicTheoryView, TopicNextQuestionView, TopicQuestionAnswerView, TopicPracticeHistoryView
+from .learning import LearningCourseDetailView, TopicTheoryView, TopicNextQuestionView, TopicQuestionAnswerView, TopicPracticeHistoryView, TopicPracticeResetView
 
 __all__ = [
     "RegisterView",
@@ -19,4 +19,5 @@ __all__ = [
     "TopicNextQuestionView",
     "TopicQuestionAnswerView",
     "TopicPracticeHistoryView",
+    "TopicPracticeResetView",
 ]
