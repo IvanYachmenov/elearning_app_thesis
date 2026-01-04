@@ -1,29 +1,24 @@
 import {useEffect, useState} from 'react';
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 
-import '../styles/index.css';
+import '../shared/styles/index.css';
 
-import LoginPage from '../features/auth/pages/LoginPage';
-import RegisterPage from '../features/auth/pages/RegisterPage';
+import {LoginPage, RegisterPage} from '../pages/auth';
 
-import HomePage from '../features/home/pages/HomePage';
-import ProfilePage from '../features/profile/pages/ProfilePage';
-import SettingsPage from '../features/settings/pages/SettingsPage';
-import ShopPage from '../features/shop/pages/ShopPage';
+import {HomePage} from '../pages/home';
+import {ProfilePage} from '../pages/profile';
+import {SettingsPage} from '../pages/settings';
+import {ShopPage} from '../pages/shop';
 
-import CreditsPage from '../features/credits/pages/CreditsPage';
+import {CreditsPage} from '../pages/credits';
 
-import CoursesPage from '../features/courses/pages/CoursesPage';
-import CourseDetailPage from '../features/courses/pages/CourseDetailPage';
+import {CourseDetailPage, CoursesPage} from '../pages/courses';
 
-import LearningPage from '../features/learning/pages/LearningPage';
-import CourseLearningPage from '../features/learning/pages/CourseLearningPage';
-import TopicTheoryPage from "../features/learning/pages/TopicTheoryPage";
-import TopicPracticePage from "../features/learning/pages/TopicPracticePage";
+import {CourseLearningPage, LearningPage, TopicTheoryPage, TopicPracticePage} from '../pages/learning';
 
-import MainLayout from '../shared/components/MainLayout';
+import {MainLayout} from '../widgets/layout';
 
-import {api, setAuthToken} from '../api/client';
+import {api, setAuthToken} from '../shared/api';
 
 
 function App() {
