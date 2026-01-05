@@ -128,6 +128,7 @@ function TopicPracticePage() {
         setPassed(Boolean(data.passed));
 
         if (completedFlag) {
+            unlockNavigation();
             setRemainingSeconds(null);
             timerExpiredRef.current = false;
             setPracticeQuestion(null);
@@ -152,7 +153,7 @@ function TopicPracticePage() {
             setAnswerFeedback(null);
             setTimedAnswerSaved(false);
         }
-    }, []);
+    }, [unlockNavigation]);
 
     const fetchNextQuestion = useCallback(() => {
         if (!topicId) return;
@@ -217,10 +218,16 @@ function TopicPracticePage() {
     }, [isReviewMode, topicId]);
 
     // manage navigation lock for timed mode (NO redirects!)
-    useEffect(() => {
-        const shouldLock = isTimedMode && !practiceCompleted && !timedOut && !!practiceQuestion;
+    const hasTimer = remainingSeconds !== null && remainingSeconds !== undefined;
+    const isTimedTestActive =
+        isTimedMode &&
+        !practiceCompleted &&
+        !timedOut &&
+        !!practiceQuestion &&
+        (!hasTimer || remainingSeconds > 0);
 
-        if (shouldLock) {
+    useEffect(() => {
+        if (isTimedTestActive) {
             lockNavigation(
                 'Timed test in progress. Navigation is locked until you finish or exit the test.',
                 [`/learning/courses/${courseId}/topics/${topicId}/practice`],
@@ -230,7 +237,7 @@ function TopicPracticePage() {
 
         unlockNavigation();
         return undefined;
-    }, [courseId, isTimedMode, lockNavigation, practiceCompleted, practiceQuestion, timedOut, topicId, unlockNavigation]);
+    }, [courseId, isTimedTestActive, lockNavigation, topicId, unlockNavigation]);
 
     useEffect(() => {
         if (!isTimedMode || practiceCompleted || timedOut) {
@@ -239,8 +246,8 @@ function TopicPracticePage() {
     }, [isTimedMode, practiceCompleted, timedOut, unlockNavigation]);
 
     // countdown timer (stable interval, no restart every second)
-    const hasTimer = remainingSeconds !== null && remainingSeconds !== undefined;
 
+    useEffect(() => () => unlockNavigation(), [unlockNavigation]);
     useEffect(() => {
         if (!isTimedMode || practiceCompleted || timedOut) return undefined;
         if (!hasTimer) return undefined;
@@ -442,7 +449,7 @@ function TopicPracticePage() {
     };
 
     const canPractice = useMemo(() => totalQuestions > 0, [totalQuestions]);
-    const isExitLocked = isTimedMode && !practiceCompleted && !timedOut && !!practiceQuestion;
+    const isExitLocked = isTimedTestActive;
     const isAnswerLocked =
         (!!answerFeedback && answerFeedback.type === 'success' && !isTimedMode) ||
         (isTimedMode && timedAnswerSaved);
