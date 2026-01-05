@@ -70,4 +70,5 @@ export function NavigationLockProvider({children}) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useNavigationLock = () => useContext(NavigationLockContext);

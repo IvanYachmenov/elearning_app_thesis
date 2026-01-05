@@ -1,2 +1,2 @@
-export { default as CourseDetailPage } from './CourseDetailPage.jsx';
-export { default as CoursesPage } from './CoursesPage.jsx';
+export { default as CourseDetailPage } from './ui/CourseDetailPage.jsx';
+export { default as CoursesPage } from './ui/CoursesPage.jsx';

@@ -1,2 +1,2 @@
-export {default as AppFooter} from './AppFooter';
-export {default as MainLayout} from './MainLayout';
+export {default as AppFooter} from './ui/AppFooter';
+export {default as MainLayout} from './ui/MainLayout';

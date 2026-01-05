@@ -1,1 +1,1 @@
-export { default as CreditsPage} from './CreditsPage';
+export { default as CreditsPage} from './ui/CreditsPage';

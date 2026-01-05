@@ -60,6 +60,15 @@
     box-shadow: 0 3px 10px rgba(15, 23, 42, 0.2);
 }
 
+.learning-back-link:disabled,
+.learning-back-link[aria-disabled='true'] {
+    opacity: 0.6;
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+    pointer-events: none;
+}
+
 .learning-course-description {
     margin-top: 10px;
     font-size: 15px;

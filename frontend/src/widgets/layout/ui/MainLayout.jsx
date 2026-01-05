@@ -1,8 +1,8 @@
 import {NavLink, Outlet} from 'react-router-dom';
 import {useState, useRef, useEffect} from 'react';
-import '../../shared/styles/layout.css';
+import '../../../shared/styles/layout.css';
 import AppFooter from './AppFooter';
-import {useNavigationLock} from '../../shared/lib/navigation-lock';
+import {useNavigationLock} from '../../../shared/lib/navigation-lock';
 
 function MainLayout({user, onLogout}) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);

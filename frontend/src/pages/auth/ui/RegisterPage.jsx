@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {api, setAuthToken} from '../../../shared/api';
 import {Link, useNavigate} from 'react-router-dom';
-import './auth.css';
+import '../styles/auth.css';
 
 function RegisterPage({onAuth}) {
     const [form, setForm] = useState({

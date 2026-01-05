@@ -1,7 +1,7 @@
 import {useEffect, useState, useRef} from 'react';
 import {useParams, useNavigate, Link} from 'react-router-dom';
-import {api} from '../../shared/api';
-import './learning.css';
+import {api} from '../../../shared/api';
+import '../styles/learning.css';
 
 function CourseLearningPage() {
     const {id} = useParams();

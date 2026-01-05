@@ -1,1 +1,1 @@
-export {NavigationLockProvider, useNavigationLock} from './NavigationLockContext';
+export {NavigationLockProvider, useNavigationLock} from './ui/NavigationLockContext';

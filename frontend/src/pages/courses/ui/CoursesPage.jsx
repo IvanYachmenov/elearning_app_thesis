@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {api} from '../../../shared/api';
-import {CourseCard} from '../../features/courses';
-import './courses.css';
+import {CourseCard} from '../../../features/courses';
+import '../styles/courses.css';
 
 function CoursesPage() {
     const [courses, setCourses] = useState([]);

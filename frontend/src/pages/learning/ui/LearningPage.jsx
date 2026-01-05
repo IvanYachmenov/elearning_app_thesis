@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {api} from '../../shared/api';
-import './learning.css';
-import '../courses/courses.css';
+import {api} from '../../../shared/api';
+import '../styles/learning.css';
+import '../../courses/styles/courses.css';
 
 function LearningPage() {
     const [courses, setCourses] = useState([]);

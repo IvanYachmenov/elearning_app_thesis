@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '../../shared/api';
-import './learning.css';
+import { api } from '../../../shared/api';
+import '../styles/learning.css';
 
 function TopicTheoryPage() {
     const { courseId, topicId } = useParams();

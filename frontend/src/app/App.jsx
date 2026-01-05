@@ -20,6 +20,7 @@ import {MainLayout} from '../widgets/layout';
 
 import {api, setAuthToken} from '../shared/api';
 
+import {NavigationLockProvider} from '../shared/lib/navigation-lock';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -76,7 +77,8 @@ function App() {
 
     return (
         <BrowserRouter>
-            <Routes>
+            <NavigationLockProvider>
+                <Routes>
                 <Route
                     path="/"
                     element={
@@ -120,7 +122,8 @@ function App() {
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace/>}/>
-            </Routes>
+                </Routes>
+            </NavigationLockProvider>
         </BrowserRouter>
     );
 }

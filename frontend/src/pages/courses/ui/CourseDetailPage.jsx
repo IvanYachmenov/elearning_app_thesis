@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useParams, Link} from 'react-router-dom';
 import {api} from '../../../shared/api';
-import './courses.css';
+import '../styles/courses.css';
 
 function CourseDetailPage() {
     const {id} = useParams();

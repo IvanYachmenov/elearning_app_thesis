@@ -1,4 +1,4 @@
-import './profile.css';
+import '../styles/profile.css';
 
 function ProfilePage({user}) {
     const getInitials = (username) =>

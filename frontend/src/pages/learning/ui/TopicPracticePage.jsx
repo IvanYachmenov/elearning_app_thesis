@@ -1,19 +1,20 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {api} from '../../shared/api';
-import './learning.css';
+import {api} from '../../../shared/api';
+import '../styles/learning.css';
 
 import {
     PracticeQuestionCard,
     PracticeCompletionPanel,
     PracticeHistorySection,
     PracticeTimer,
-} from '../../features/learning';
+} from '../../../features/learning';
+import {useNavigationLock} from "../../../shared/lib/navigation-lock/ui/NavigationLockContext.jsx";
 
 function TopicPracticePage() {
     const {courseId, topicId} = useParams();
     const navigate = useNavigate();
-    const {lockNavigation, unlockNavigation} = useNavigationLock();
+    const {lockNavigation, unlockNavigation, isLocked} = useNavigationLock();
 
     const [topic, setTopic] = useState(null);
     const [loadingTopic, setLoadingTopic] = useState(true);
@@ -121,12 +122,14 @@ function TopicPracticePage() {
             }
         }
 
-        const completedFlag = Boolean(data.completed || data.test_completed);
+        const completedFlag = Boolean(data.completed || data.test_completed || data.timed_out);
         setPracticeCompleted(completedFlag);
         setTimedOut(Boolean(data.timed_out));
         setPassed(Boolean(data.passed));
 
         if (completedFlag) {
+            setRemainingSeconds(null);
+            timerExpiredRef.current = false;
             setPracticeQuestion(null);
             setSelectedOptions([]);
             setAnswerFeedback(null);
@@ -182,6 +185,7 @@ function TopicPracticePage() {
             !practiceCompleted &&
             !practiceLoading
         ) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             fetchNextQuestion();
         }
     }, [loadingTopic, error, topic, totalQuestions, practiceQuestion, practiceCompleted, practiceLoading, fetchNextQuestion]);
@@ -191,6 +195,7 @@ function TopicPracticePage() {
         if (!isReviewMode) return;
         if (!topicId) return;
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHistoryLoading(true);
         setHistoryError(null);
 
@@ -227,6 +232,12 @@ function TopicPracticePage() {
         return undefined;
     }, [courseId, isTimedMode, lockNavigation, practiceCompleted, practiceQuestion, timedOut, topicId, unlockNavigation]);
 
+    useEffect(() => {
+        if (!isTimedMode || practiceCompleted || timedOut) {
+            unlockNavigation();
+        }
+    }, [isTimedMode, practiceCompleted, timedOut, unlockNavigation]);
+
     // countdown timer (stable interval, no restart every second)
     const hasTimer = remainingSeconds !== null && remainingSeconds !== undefined;
 
@@ -254,6 +265,7 @@ function TopicPracticePage() {
     }, [fetchNextQuestion, isTimedMode, practiceCompleted, remainingSeconds]);
 
     const handleBackToTheory = () => {
+        if (isLocked) return;
         if (courseId) {
             navigate(`/learning/courses/${courseId}/topics/${topicId}`);
         } else if (topic && topic.course_id) {
@@ -430,6 +442,7 @@ function TopicPracticePage() {
     };
 
     const canPractice = useMemo(() => totalQuestions > 0, [totalQuestions]);
+    const isExitLocked = isTimedMode && !practiceCompleted && !timedOut && !!practiceQuestion;
     const isAnswerLocked =
         (!!answerFeedback && answerFeedback.type === 'success' && !isTimedMode) ||
         (isTimedMode && timedAnswerSaved);
@@ -452,6 +465,7 @@ function TopicPracticePage() {
                     className="learning-back-link"
                     onClick={() => navigate('/learning')}
                     style={{marginTop: '16px'}}
+
                 >
                     ← Back to My Learning
                 </button>
@@ -467,6 +481,8 @@ function TopicPracticePage() {
                         type="button"
                         className="learning-back-link"
                         onClick={handleBackToTheory}
+                        disabled={isExitLocked}
+                        aria-disabled={isExitLocked}
                     >
                         ← Back to theory
                     </button>
@@ -505,7 +521,7 @@ function TopicPracticePage() {
                         </div>
                     </div>
 
-                    {isTimedMode && (
+                    {isTimedMode && !practiceCompleted && !timedOut && (
                         <PracticeTimer
                             remainingSeconds={remainingSeconds}
                             timeLimitSeconds={timeLimitSeconds}
