@@ -9,7 +9,7 @@ import {
     PracticeHistorySection,
     PracticeTimer,
 } from '../../../features/learning';
-import {useNavigationLock} from "../../../shared/lib/navigation-lock/ui/NavigationLockContext.jsx";
+import {useNavigationLock} from '../../../shared/lib/navigation-lock';
 
 function TopicPracticePage() {
     const {courseId, topicId} = useParams();
@@ -218,32 +218,34 @@ function TopicPracticePage() {
     }, [isReviewMode, topicId]);
 
     // manage navigation lock for timed mode (NO redirects!)
-    const hasTimer = remainingSeconds !== null && remainingSeconds !== undefined;
+    // manage navigation lock for timed mode (NO redirects!)
+    const hasTimer = typeof remainingSeconds === 'number';
     const isTimedTestActive =
         isTimedMode &&
         !practiceCompleted &&
         !timedOut &&
         !!practiceQuestion &&
-        (!hasTimer || remainingSeconds > 0);
+        hasTimer &&
+        remainingSeconds > 0;
 
+    // После определения isTimedTestActive (около строки 165)
     useEffect(() => {
         if (isTimedTestActive) {
             lockNavigation(
                 'Timed test in progress. Navigation is locked until you finish or exit the test.',
                 [`/learning/courses/${courseId}/topics/${topicId}/practice`],
             );
-            return () => unlockNavigation();
-        }
-
-        unlockNavigation();
-        return undefined;
-    }, [courseId, isTimedTestActive, lockNavigation, topicId, unlockNavigation]);
-
-    useEffect(() => {
-        if (!isTimedMode || practiceCompleted || timedOut) {
+        } else {
             unlockNavigation();
         }
-    }, [isTimedMode, practiceCompleted, timedOut, unlockNavigation]);
+
+        // Cleanup on unmount
+        return () => {
+            unlockNavigation();
+        };
+    }, [isTimedTestActive, lockNavigation, unlockNavigation, courseId, topicId]);
+
+// Remove the second useEffect - it's now handled above
 
     // countdown timer (stable interval, no restart every second)
 
@@ -272,7 +274,9 @@ function TopicPracticePage() {
     }, [fetchNextQuestion, isTimedMode, practiceCompleted, remainingSeconds]);
 
     const handleBackToTheory = () => {
-        if (isLocked) return;
+        // Only block if timed test is ACTIVELY running
+        if (isTimedTestActive) return;
+
         if (courseId) {
             navigate(`/learning/courses/${courseId}/topics/${topicId}`);
         } else if (topic && topic.course_id) {
@@ -282,9 +286,10 @@ function TopicPracticePage() {
         }
     };
 
+
     const handleOptionToggle = (optionId) => {
         if (!practiceQuestion) return;
-         if (isTimedMode && timedAnswerSaved) return;
+        if (isTimedMode && timedAnswerSaved) return;
 
         const locked = !!answerFeedback && answerFeedback.type === 'success' && !isTimedMode;
         if (locked) return;
@@ -483,7 +488,7 @@ function TopicPracticePage() {
     return (
         <div className="page page-enter">
             <header className="topic-page-header">
-                 <div className="topic-page-header__row">
+                <div className="topic-page-header__row">
                     <button
                         type="button"
                         className="learning-back-link"

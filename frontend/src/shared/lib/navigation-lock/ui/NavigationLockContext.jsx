@@ -1,5 +1,4 @@
-import {createContext, useContext, useEffect, useMemo, useState} from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
+import {createContext, useContext, useEffect, useMemo, useState, useCallback, useRef} from 'react';
 
 const NavigationLockContext = createContext({
     isLocked: false,
@@ -15,18 +14,9 @@ export function NavigationLockProvider({children}) {
         reason: '',
         allowedPaths: [],
     });
-    const location = useLocation();
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!lockState.isLocked || lockState.allowedPaths.length === 0) {
-            return;
-        }
-
-        if (!lockState.allowedPaths.includes(location.pathname)) {
-            navigate(lockState.allowedPaths[0], {replace: true});
-        }
-    }, [lockState, location.pathname, navigate]);
+    // Track if we're in the process of unlocking to prevent race conditions
+    const isUnlocking = useRef(false);
 
     useEffect(() => {
         const handleBeforeUnload = (event) => {
@@ -38,19 +28,26 @@ export function NavigationLockProvider({children}) {
 
         window.addEventListener('beforeunload', handleBeforeUnload);
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [lockState]);
+    }, [lockState.isLocked, lockState.reason]);
 
-    const lockNavigation = (reason, allowedPaths) => {
+    const lockNavigation = useCallback((reason, allowedPaths) => {
+        isUnlocking.current = false;
         setLockState({
             isLocked: true,
             reason: reason || 'Navigation is locked during the current activity.',
-            allowedPaths: allowedPaths && allowedPaths.length ? allowedPaths : [location.pathname],
+            allowedPaths: allowedPaths && allowedPaths.length ? allowedPaths : [],
         });
-    };
+    }, []);
 
-    const unlockNavigation = () => {
+    const unlockNavigation = useCallback(() => {
+        isUnlocking.current = true;
         setLockState({isLocked: false, reason: '', allowedPaths: []});
-    };
+
+        // Clear the unlocking flag after state updates
+        setTimeout(() => {
+            isUnlocking.current = false;
+        }, 0);
+    }, []);
 
     const value = useMemo(
         () => ({
@@ -60,7 +57,7 @@ export function NavigationLockProvider({children}) {
             lockNavigation,
             unlockNavigation,
         }),
-        [lockState],
+        [lockState, lockNavigation, unlockNavigation],
     );
 
     return (
@@ -70,5 +67,4 @@ export function NavigationLockProvider({children}) {
     );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useNavigationLock = () => useContext(NavigationLockContext);
