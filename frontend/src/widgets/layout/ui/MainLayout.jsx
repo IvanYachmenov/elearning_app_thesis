@@ -12,26 +12,19 @@ function MainLayout({user, onLogout}) {
     const getLinkClassName = ({isActive}) =>
         isActive ? 'app-nav-link app-nav-link--active' : 'app-nav-link';
 
-    const getNavLinkClass = (props) => {
+    const getNavLinkClass = (modifier) => (props) => {
         const base = getLinkClassName(props);
-        return isLocked ? `${base} app-nav-link--disabled` : base;
+        const withMod = `${base} ${modifier}`;
+        return isLocked ? `${withMod} app-nav-link--disabled` : withMod;
     };
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsDropdownOpen(false);
-            }
-        };
+        document.body.classList.remove('theme-auth');
+        document.body.classList.add('theme-app');
+        return () => document.body.classList.remove('theme-app');
+    }, []);
 
-        if (isDropdownOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isDropdownOpen]);
 
     const getInitials = (username) =>
         username ? username.charAt(0).toUpperCase() : 'U';
@@ -55,9 +48,9 @@ function MainLayout({user, onLogout}) {
                         <div className="app-logo">E-Learning</div>
 
                         <nav className="app-nav">
-                             <NavLink
+                            <NavLink
                                 to="/home"
-                                className={getNavLinkClass}
+                                className={getNavLinkClass('app-nav-link--home')}
                                 onClick={handlePreventNavigation}
                                 aria-disabled={isLocked}
                             >
@@ -66,7 +59,7 @@ function MainLayout({user, onLogout}) {
 
                             <NavLink
                                 to="/courses"
-                                className={getNavLinkClass}
+                                className={getNavLinkClass('app-nav-link--courses')}
                                 onClick={handlePreventNavigation}
                                 aria-disabled={isLocked}
                             >
@@ -75,7 +68,7 @@ function MainLayout({user, onLogout}) {
 
                             <NavLink
                                 to="/learning"
-                                className={getNavLinkClass}
+                                className={getNavLinkClass('app-nav-link--learning')}
                                 onClick={handlePreventNavigation}
                                 aria-disabled={isLocked}
                             >
@@ -84,7 +77,7 @@ function MainLayout({user, onLogout}) {
 
                             <NavLink
                                 to="/shop"
-                                className={getNavLinkClass}
+                                className={getNavLinkClass('app-nav-link--shop')}
                                 onClick={handlePreventNavigation}
                                 aria-disabled={isLocked}
                             >

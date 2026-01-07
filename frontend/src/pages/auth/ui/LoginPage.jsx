@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {api, setAuthToken} from '../../../shared/api';
 import {Link, useNavigate} from 'react-router-dom';
 import '../styles/auth.css';
@@ -42,12 +42,18 @@ function LoginPage({onAuth}) {
             setIsLoading(false);
         }
     };
+    useEffect(() => {
+        document.body.classList.remove('theme-app');
+        document.body.classList.add('theme-auth');
+        return () => document.body.classList.remove('theme-auth');
+    }, []);
 
+    //TODO <div className="auth-left__logo"></div>
     return (
         <div className="auth-container">
             <div className="auth-left">
                 <div className="auth-left__content">
-                    <div className="auth-left__logo">📚</div>
+                    <div className="auth-left__logo"></div>
                     <h1 className="auth-left__title">Welcome Back!</h1>
                     <p className="auth-left__subtitle">
                         Continue your learning journey and explore new courses to expand your knowledge.

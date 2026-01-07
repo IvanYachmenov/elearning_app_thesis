@@ -1,57 +1,84 @@
 .profile-container {
-    background-color: var(--bg-secondary);
-    border-radius: 12px;
-    padding: 32px;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 18px;
+  align-items: start;
+  animation: fadeUp 0.35s ease-out both;
 }
 
 .profile-header {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border-light);
+  background: var(--bg-secondary);
+  padding: 22px;
+
+  border: 1.5px solid var(--nav-black);
+  box-shadow: var(--shadow-sm);
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  transition: none;
 }
 
 .profile-avatar-large {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-violet), var(--accent-purple));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 32px;
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+
+  background: var(--nav-black);
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 900;
+  font-size: 22px;
 }
 
 .profile-info h2 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0 0 4px;
+  color: var(--text-primary);
 }
 
 .profile-info p {
-    font-size: 15px;
-    color: var(--text-secondary);
-    margin: 0;
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
 .profile-data {
-    background-color: rgba(124, 58, 237, 0.03);
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 20px;
+  background: var(--bg-secondary);
+  padding: 22px;
+
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+
+  transition: border-color var(--transition-speed);
+}
+
+.profile-data:hover {
+  border-color: var(--nav-black);
 }
 
 .profile-data pre {
-    margin: 0;
-    font-family: 'Monaco', 'Courier New', monospace;
-    font-size: 13px;
-    color: var(--text-primary);
-    overflow-x: auto;
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 12.5px;
+
+  color: var(--text-primary);
+  overflow-x: auto;
+
+  background: var(--bg-muted);
+  border: 1px solid var(--border-light);
+  padding: 12px;
+}
+
+@media (max-width: 900px) {
+  .profile-container {
+    grid-template-columns: 1fr;
+  }
 }
