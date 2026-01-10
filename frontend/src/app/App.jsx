@@ -16,11 +16,15 @@ import {CourseDetailPage, CoursesPage} from '../pages/courses';
 
 import {CourseLearningPage, LearningPage, TopicTheoryPage, TopicPracticePage} from '../pages/learning';
 
+import {TeacherCoursesPage} from '../pages/teacher';
+
 import {MainLayout} from '../widgets/layout';
 
 import {api, setAuthToken} from '../shared/api';
 
 import {NavigationLockProvider} from '../shared/lib/navigation-lock';
+import {ThemeProvider} from '../shared/lib/theme/ThemeContext';
+import {LanguageProvider} from '../shared/lib/i18n/LanguageContext';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -77,8 +81,10 @@ function App() {
 
     return (
         <BrowserRouter>
-            <NavigationLockProvider>
-                <Routes>
+            <ThemeProvider>
+                <LanguageProvider>
+                    <NavigationLockProvider>
+                        <Routes>
                 <Route
                     path="/"
                     element={
@@ -109,7 +115,7 @@ function App() {
                     }
                 >
                     <Route path="/home" element={<HomePage user={user}/>}/>
-                    <Route path="/profile" element={<ProfilePage user={user}/>}/>
+                    <Route path="/profile" element={<ProfilePage user={user} onUserUpdate={setUser}/>}/>
                     <Route path="/courses" element={<CoursesPage/>}/>
                     <Route path="/courses/:id" element={<CourseDetailPage/>}/>
                     <Route path="/learning" element={<LearningPage/>}/>
@@ -119,11 +125,19 @@ function App() {
                     <Route path="/credits" element={<CreditsPage/>}/>
                     <Route path="/learning/courses/:courseId/topics/:topicId" element={<TopicTheoryPage/>}/>
                     <Route path="/learning/courses/:courseId/topics/:topicId/practice" element={<TopicPracticePage/>}/>
+                    
+                    {/* Teacher routes - only visible to teachers */}
+                    <Route 
+                        path="/teacher/courses" 
+                        element={<TeacherCoursesPage user={user}/>}
+                    />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace/>}/>
-                </Routes>
-            </NavigationLockProvider>
+                        </Routes>
+                    </NavigationLockProvider>
+                </LanguageProvider>
+            </ThemeProvider>
         </BrowserRouter>
     );
 }

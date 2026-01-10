@@ -1,6 +1,8 @@
 import {Link} from 'react-router-dom';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
 
 function CourseCard({course}) {
+    const {t} = useLanguage();
     const description = course.description || '';
     const shortDescription =
         description.length > 160
@@ -14,18 +16,29 @@ function CourseCard({course}) {
 
     return (
         <article className="course-card">
-            <h3 className="course-card__title">{course.title}</h3>
+            <div className="course-card__image">
+                {course.image ? (
+                    <img src={course.image} alt={course.title} />
+                ) : (
+                    <div className="course-card__image-placeholder">
+                        🐍
+                    </div>
+                )}
+            </div>
+            <div className="course-card__content">
+                <h3 className="course-card__title">{course.title}</h3>
 
-            {authorName && <p className="course-card__author">by {authorName}</p>}
+                {authorName && <p className="course-card__author">by {authorName}</p>}
 
-            {shortDescription && (
-                <p className="course-card__description">{shortDescription}</p>
-            )}
+                {shortDescription && (
+                    <p className="course-card__description">{shortDescription}</p>
+                )}
 
-            <div className="course-card__footer">
-                <Link to={`/courses/${course.id}`} className="btn-primary">
-                    View details →
-                </Link>
+                <div className="course-card__footer">
+                    <Link to={`/courses/${course.id}`} className="btn-primary">
+                        {t('pages.courses.viewDetails')} 
+                    </Link>
+                </div>
             </div>
         </article>
     );

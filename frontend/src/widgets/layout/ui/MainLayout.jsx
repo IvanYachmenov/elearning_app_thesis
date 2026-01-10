@@ -1,13 +1,19 @@
 import {NavLink, Outlet} from 'react-router-dom';
-import {useState, useRef, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import '../../../shared/styles/layout.css';
 import AppFooter from './AppFooter';
 import {useNavigationLock} from '../../../shared/lib/navigation-lock';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
+
+const ANIM_MS = 180;
 
 function MainLayout({user, onLogout}) {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
     const {isLocked, lockReason} = useNavigationLock();
+    const {t} = useLanguage();
+
+    // Fullscreen burger menu state with animated close
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isMenuClosing, setIsMenuClosing] = useState(false);
 
     const getLinkClassName = ({isActive}) =>
         isActive ? 'app-nav-link app-nav-link--active' : 'app-nav-link';
@@ -24,14 +30,16 @@ function MainLayout({user, onLogout}) {
         return () => document.body.classList.remove('theme-app');
     }, []);
 
-
-
-    const getInitials = (username) =>
-        username ? username.charAt(0).toUpperCase() : 'U';
-
-    const handleDropdownNavClick = () => {
-        setIsDropdownOpen(false);
-    };
+    // lock scroll when menu is open
+    useEffect(() => {
+        if (isMenuOpen && !isMenuClosing) {
+            const prev = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            return () => {
+                document.body.style.overflow = prev;
+            };
+        }
+    }, [isMenuOpen, isMenuClosing]);
 
     const handlePreventNavigation = (event) => {
         if (isLocked) {
@@ -40,30 +48,72 @@ function MainLayout({user, onLogout}) {
         }
     };
 
+    const openMenu = () => {
+        setIsMenuOpen(true);
+        setIsMenuClosing(false);
+    };
+
+    const closeMenu = () => {
+        if (!isMenuOpen || isMenuClosing) return;
+        setIsMenuClosing(true);
+        window.setTimeout(() => {
+            setIsMenuOpen(false);
+            setIsMenuClosing(false);
+        }, ANIM_MS);
+    };
+
+    const toggleMenu = (event) => {
+        if (isLocked) {
+            event.preventDefault();
+            return;
+        }
+        if (isMenuOpen && !isMenuClosing) closeMenu();
+        else openMenu();
+    };
+
+    const handleMenuNavClick = (event) => {
+        handlePreventNavigation(event);
+        if (!isLocked) closeMenu();
+    };
+
+    // close by ESC
+    useEffect(() => {
+        const onKeyDown = (event) => {
+            if (event.key === 'Escape') closeMenu();
+        };
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isMenuOpen, isMenuClosing]);
+
+    const initials = user?.username ? user.username.charAt(0).toUpperCase() : 'U';
+
     return (
         <div className="app-root">
             <header className="app-header">
                 <div className="app-header__container">
                     <div className="app-header__left">
                         <div className="app-logo">E-Learning</div>
+                    </div>
 
-                        <nav className="app-nav">
+                    <div className="app-header__right">
+                    <nav className="app-nav" aria-label="Main navigation">
                             <NavLink
                                 to="/home"
                                 className={getNavLinkClass('app-nav-link--home')}
                                 onClick={handlePreventNavigation}
                                 aria-disabled={isLocked}
                             >
-                                Home
+                                {t('nav.home')}
                             </NavLink>
-
+                        
                             <NavLink
                                 to="/courses"
                                 className={getNavLinkClass('app-nav-link--courses')}
                                 onClick={handlePreventNavigation}
                                 aria-disabled={isLocked}
                             >
-                                Courses
+                                {t('nav.courses')}
                             </NavLink>
 
                             <NavLink
@@ -72,192 +122,163 @@ function MainLayout({user, onLogout}) {
                                 onClick={handlePreventNavigation}
                                 aria-disabled={isLocked}
                             >
-                                Learning
-                            </NavLink>
-
-                            <NavLink
-                                to="/shop"
-                                className={getNavLinkClass('app-nav-link--shop')}
-                                onClick={handlePreventNavigation}
-                                aria-disabled={isLocked}
-                            >
-                                Shop
+                                {t('nav.learning')}
                             </NavLink>
                         </nav>
-                    </div>
 
-                    <div className="app-header__right" ref={dropdownRef}>
-                        <button
-                            type="button"
-                            className="profile-button"
-                            onClick={(event) => {
-                                if (isLocked) {
-                                    event.preventDefault();
-                                    return;
-                                }
-                                setIsDropdownOpen((prev) => !prev);
-                            }}
+                        {/* PROFILE: no dropdown, just a link */}
+                        <NavLink
+                            to="/profile"
+                            className={({isActive}) =>
+                                `profile-button profile-button--link${
+                                    isActive ? ' profile-button--active' : ''
+                                }${isLocked ? ' app-nav-link--disabled' : ''}`
+                            }
+                            onClick={handlePreventNavigation}
                             aria-disabled={isLocked}
                         >
-                            <div className="profile-avatar">{getInitials(user.username)}</div>
-                            <span>{user.username}</span>
-                            <svg
-                                className={
-                                    'profile-chevron' + (isDropdownOpen ? ' open' : '')
-                                }
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 9l-7 7-7-7"
-                                />
-                            </svg>
+                            <div className="profile-avatar">{initials}</div>
+                            <span className="profile-name">{user?.username || 'User'}</span>
+                        </NavLink>
+
+                        {/* BURGER */}
+                        <button
+                            type="button"
+                            className="burger-button"
+                            onClick={toggleMenu}
+                            aria-label="Open menu"
+                            aria-disabled={isLocked}
+                        >
+                            <span className={'burger-icon' + (isMenuOpen && !isMenuClosing ? ' open' : '')}>
+                                <span />
+                                <span />
+                                <span />
+                            </span>
                         </button>
-
-                        {isDropdownOpen && (
-                            <div className="profile-dropdown">
-                                <div className="profile-dropdown__nav">
-                                    <NavLink
-                                        to="/home"
-                                        className="profile-dropdown__item"
-                                        onClick={(event) => {
-                                            handlePreventNavigation(event);
-                                            handleDropdownNavClick();
-                                        }}
-                                        aria-disabled={isLocked}
-                                    >
-                                        <img
-                                            src={"../../../public/assets/icons/home.png"}
-                                            alt="Home"
-                                            className="profile-dropdown__icon"
-                                        />
-                                        Home
-                                    </NavLink>
-                                    <NavLink
-                                        to="/courses"
-                                        className="profile-dropdown__item"
-                                        onClick={(event) => {
-                                            handlePreventNavigation(event);
-                                            handleDropdownNavClick();
-                                        }}
-                                        aria-disabled={isLocked}
-                                    >
-                                        <img
-                                            src={"../../../public/assets/icons/courses.png"}
-                                            alt="Courses"
-                                            className="profile-dropdown__icon"
-                                        />
-                                        Courses
-                                    </NavLink>
-                                    <NavLink
-                                        to="/learning"
-                                        className="profile-dropdown__item"
-                                        onClick={(event) => {
-                                            handlePreventNavigation(event);
-                                            handleDropdownNavClick();
-                                        }}
-                                        aria-disabled={isLocked}
-                                    >
-                                        <img
-                                            src={"../../../public/assets/icons/learning.png"}
-                                            alt="Learning"
-                                            className="profile-dropdown__icon"
-                                        />
-                                        Learning
-                                    </NavLink>
-                                    <NavLink
-                                        to="/shop"
-                                        className="profile-dropdown__item"
-                                        onClick={(event) => {
-                                            handlePreventNavigation(event);
-                                            handleDropdownNavClick();
-                                        }}
-                                        aria-disabled={isLocked}
-                                    >
-                                        <img
-                                            src={"../../../public/assets/icons/shop.png"}
-                                            alt="Shop"
-                                            className="profile-dropdown__icon"
-                                        />
-                                        Shop
-                                    </NavLink>
-                                </div>
-
-                                <div className="profile-dropdown__divider"/>
-
-                                <NavLink
-                                    to="/profile"
-                                    className="profile-dropdown__item"
-                                    onClick={(event) => {
-                                        handlePreventNavigation(event);
-                                        handleDropdownNavClick();
-                                    }}
-                                    aria-disabled={isLocked}
-                                >
-                                    <img
-                                        src={"../../../public/assets/icons/profile.png"}
-                                        alt="Profile"
-                                        className="profile-dropdown__icon"
-                                    />
-                                    Profile
-                                </NavLink>
-                                <NavLink
-                                    to="/settings"
-                                    className="profile-dropdown__item"
-                                    onClick={(event) => {
-                                        handlePreventNavigation(event);
-                                        handleDropdownNavClick();
-                                    }}
-                                    aria-disabled={isLocked}
-                                >
-                                    <img
-                                        src={"../../../public/assets/icons/settings.png"}
-                                        alt="Settings"
-                                        className="profile-dropdown__icon"
-                                    />
-                                    Settings
-                                </NavLink>
-                                <button
-                                    type="button"
-                                    className="profile-dropdown__item profile-dropdown__item--danger"
-                                    onClick={(event) => {
-                                        if (isLocked) {
-                                            event.preventDefault();
-                                            return;
-                                        }
-                                        setIsDropdownOpen(false);
-                                        onLogout();
-                                    }}
-                                    aria-disabled={isLocked}
-                                >
-                                    <img
-                                        src={"../../../public/assets/icons/logout.png"}
-                                        alt="Logout"
-                                        className="profile-dropdown__icon"
-                                    />
-                                    Logout
-                                </button>
-                            </div>
-                        )}
                     </div>
                 </div>
             </header>
 
+            {/* FULLSCREEN MENU */}
+            {(isMenuOpen || isMenuClosing) && (
+                <div
+                    className={'app-menu' + (isMenuClosing ? ' is-closing' : '')}
+                    role="dialog"
+                    aria-modal="true"
+                    onMouseDown={(e) => {
+                        // click on backdrop closes
+                        if (e.target === e.currentTarget) closeMenu();
+                    }}
+                >
+                    <div className={'app-menu__panel' + (isMenuClosing ? ' is-closing' : '')} onMouseDown={(e) => e.stopPropagation()}>
+                        <div className="app-menu__top">
+                            <div className="app-menu__title">{t('nav.menu')}</div>
+                            <button type="button" className="app-menu__close" onClick={closeMenu} aria-label="Close menu">
+                                ✕
+                            </button>
+                        </div>
+
+                        <nav className="app-menu__nav" aria-label="Fullscreen navigation">
+                            {/* Main */}
+                            <NavLink 
+                                to="/home" 
+                                className={({isActive}) => `app-menu__link${isActive ? ' active' : ''}`}
+                                onClick={handleMenuNavClick} 
+                                aria-disabled={isLocked}
+                            >
+                                {t('nav.home')}
+                            </NavLink>
+                            <NavLink 
+                                to="/courses" 
+                                className={({isActive}) => `app-menu__link${isActive ? ' active' : ''}`}
+                                onClick={handleMenuNavClick} 
+                                aria-disabled={isLocked}
+                            >
+                                {t('nav.courses')}
+                            </NavLink>
+                            <NavLink 
+                                to="/learning" 
+                                className={({isActive}) => `app-menu__link${isActive ? ' active' : ''}`}
+                                onClick={handleMenuNavClick} 
+                                aria-disabled={isLocked}
+                            >
+                                {t('nav.learning')}
+                            </NavLink>
+                            <NavLink 
+                                to="/shop" 
+                                className={({isActive}) => `app-menu__link${isActive ? ' active' : ''}`}
+                                onClick={handleMenuNavClick} 
+                                aria-disabled={isLocked}
+                            >
+                                {t('nav.shop')}
+                            </NavLink>
+
+                            <div className="app-menu__divider" />
+
+                            {/* Teacher section */}
+                            {user?.role === 'teacher' && (
+                                <>
+                                    <NavLink 
+                                        to="/teacher/courses" 
+                                        className={({isActive}) => `app-menu__link${isActive ? ' active' : ''}`}
+                                        onClick={handleMenuNavClick} 
+                                        aria-disabled={isLocked}
+                                    >
+                                        {t('nav.myCourses')}
+                                    </NavLink>
+                                    <div className="app-menu__divider" />
+                                </>
+                            )}
+
+                            {/* Account */}
+                            <NavLink 
+                                to="/profile" 
+                                className={({isActive}) => `app-menu__link${isActive ? ' active' : ''}`}
+                                onClick={handleMenuNavClick} 
+                                aria-disabled={isLocked}
+                            >
+                                {t('nav.profile')}
+                            </NavLink>
+                            <NavLink 
+                                to="/settings" 
+                                className={({isActive}) => `app-menu__link${isActive ? ' active' : ''}`}
+                                onClick={handleMenuNavClick} 
+                                aria-disabled={isLocked}
+                            >
+                                {t('nav.settings')}
+                            </NavLink>
+
+                            <button
+                                type="button"
+                                className="app-menu__link app-menu__link--danger"
+                                onClick={(event) => {
+                                    if (isLocked) {
+                                        event.preventDefault();
+                                        return;
+                                    }
+                                    closeMenu();
+                                    onLogout();
+                                }}
+                                aria-disabled={isLocked}
+                            >
+                                {t('nav.logout')}
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+            )}
+
             <main className="app-main">
                 {isLocked && (
                     <div className="app-navigation-lock">
-                        <span className="app-navigation-lock__dot"/>
+                        <span className="app-navigation-lock__dot" />
                         <span>{lockReason || 'Navigation is temporarily locked.'}</span>
                     </div>
                 )}
-                <Outlet/>
+                <Outlet />
             </main>
 
-            <AppFooter/>
+            <AppFooter />
         </div>
     );
 }

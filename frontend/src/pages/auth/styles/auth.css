@@ -4,10 +4,10 @@
   background: transparent;
 }
 
-/* Left side (логин по умолчанию — строгий тёмный) */
+/* Left side */
 .auth-left {
   flex: 1;
-  background: linear-gradient(135deg, #0b0b0d 0%, #15171c 60%, #0b0b0d 120%);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #f97316 70%, #fb923c 100%);
   color: #fff;
 
   display: flex;
@@ -194,13 +194,23 @@
   color: var(--text-secondary);
 }
 
-/* ссылка — НЕ синяя, и только где надо */
 .auth-link {
-  color: var(--accent-violet);
+  color: #0f172a;
   font-weight: 900;
 }
+
 .auth-link:hover {
-  color: var(--accent-purple);
+  color: #0f172a;
+  text-decoration: underline;
+}
+
+[data-theme="dark"] .auth-link {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .auth-link:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 
 /* Error */
@@ -215,11 +225,10 @@
   font-size: 13px;
 }
 
-/* -------- REGISTER MODIFIER (зелёный градиент) -------- */
-/* Добавь на контейнер регистрации класс: auth-container--register */
+/* REGISTER */
 .auth-container--register .auth-left {
-  background: linear-gradient(135deg, #064e3b 0%, #10b981 55%, #a7f3d0 120%);
-  border-right: 2px solid #064e3b;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #f97316 70%, #fb923c 100%);
+  border-right: 2px solid var(--nav-black);
 }
 
 .auth-container--register .auth-left::before {
@@ -227,17 +236,17 @@
 }
 
 .auth-container--register .auth-input:focus {
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.22);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.22);
 }
 
 .auth-container--register .auth-button {
-  color: #052e16;
-  background: linear-gradient(135deg, #10b981, #34d399);
-  border-color: transparent;
+  color: #fff;
+  background: var(--nav-black);
+  border-color: var(--nav-black);
 }
 
 .auth-container--register .auth-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0ea371, #2ecf8a);
+  background: #111114;
 }
 
 /* Responsive */

@@ -5,6 +5,11 @@ from .course import (
     CourseListSerializer,
     CourseDetailSerializer,
 )
+from .teacher import (
+    TeacherCourseSerializer,
+    TeacherModuleSerializer,
+    TeacherTopicSerializer,
+)
 from .learning import (
     LearningTopicSerializer,
     LearningModuleSerializer,
@@ -23,6 +28,10 @@ __all__ = [
     "ModuleSerializer",
     "CourseListSerializer",
     "CourseDetailSerializer",
+
+    "TeacherCourseSerializer",
+    "TeacherModuleSerializer",
+    "TeacherTopicSerializer",
 
     "LearningTopicSerializer",
     "LearningModuleSerializer",

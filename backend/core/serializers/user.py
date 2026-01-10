@@ -1,7 +1,19 @@
 from rest_framework import serializers
+from django.conf import settings
 from ..models import User
 
 class UserSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(required=False, allow_null=True, write_only=True)
+    avatar_url = serializers.SerializerMethodField(read_only=True)
+    
+    def get_avatar_url(self, obj):
+        if obj.avatar:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.avatar.url)
+            return f"{settings.MEDIA_URL}{obj.avatar.url}" if obj.avatar else None
+        return None
+    
     class Meta:
         model = User
         fields = (
@@ -13,7 +25,11 @@ class UserSerializer(serializers.ModelSerializer):
             "role",
             "points",
             "two_factor_enabled",
+            "avatar",
+            "avatar_url",
+            "profile_background_gradient",
         )
+        read_only_fields = ("username", "email", "role", "points", "two_factor_enabled", "avatar_url")
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
 

@@ -12,7 +12,7 @@ class LearningTopicSerializer(TopicSerializer):
     score = serializers.SerializerMethodField()
 
     class Meta(TopicSerializer.Meta):
-        fields = ["id", "title", "order", "status", "score"]
+        fields = ["id", "title", "order", "status", "score", "is_timed_test", "time_limit_seconds"]
 
     def _get_progress(self, obj):
         progress_map = self.context.get("progress_map") or {}

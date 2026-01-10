@@ -71,6 +71,16 @@ function CourseDetailPage() {
     return (
         <div className="page page-enter">
             <div className="course-detail-header">
+                <div className="course-detail-header__image">
+                    {course.image ? (
+                        <img src={course.image} alt={course.title} />
+                    ) : (
+                        <div className="course-detail-header__image-placeholder">
+                            🐍
+                        </div>
+                    )}
+                </div>
+                
                 <h1 className="page__title">{course.title}</h1>
 
                 {authorName && (
@@ -118,6 +128,11 @@ function CourseDetailPage() {
                                         {mod.topics.map((topic) => (
                                             <li key={topic.id} className="topic-item">
                                                 {topic.title}
+                                                {topic.is_timed_test && (
+                                                    <span className="topic-item__timed-badge" title="Timed test">
+                                                        ⏱
+                                                    </span>
+                                                )}
                                             </li>
                                         ))}
                                     </ul>

@@ -1,9 +1,11 @@
 import {useEffect, useState} from 'react';
 import {api} from '../../../shared/api';
 import {CourseCard} from '../../../features/courses';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
 import '../styles/courses.css';
 
 function CoursesPage() {
+    const {t} = useLanguage();
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -26,20 +28,20 @@ function CoursesPage() {
 
     return (
         <div className="page page-enter">
-            <h1 className="page__title">Courses</h1>
+            <h1 className="page__title">{t('pages.courses.title')}</h1>
             <p className="page__subtitle">
-                Browse available courses. After you enroll, they will appear on the <strong>Learning</strong> page.
+                {t('pages.courses.subtitle')}
             </p>
 
-            {loading && <p>Loading courses...</p>}
+            {loading && <p>{t('pages.courses.loading')}</p>}
             {error && <p style={{color: '#dc2626'}}>{error}</p>}
 
             {!loading && !error && courses.length === 0 && (
-                <p>No courses available yet. Check back soon!</p>
+                <p>{t('pages.courses.noCourses')}</p>
             )}
 
             {!loading && !error && courses.length > 0 && (
-                <div className="courses-grid">
+                <div className="courses-list">
                     {courses.map((course) => (
                         <CourseCard key={course.id} course={course}/>
                     ))}

@@ -11,11 +11,29 @@ function PracticeQuestionCard({
     isAnswerLocked,
     disableSubmit,
     showNextButton,
+    showFinishButton,
     showTimedNextButton,
     timedAnswerSaved,
 }) {
+    // Remove dots at the start of option text
+    const cleanOptionText = (text) => {
+        if (!text) return text;
+        // Remove leading dots, ellipsis, and whitespace
+        return text.replace(/^[.\s…]+/, '').trim();
+    };
     const renderFeedback = () => {
-        if (!answerFeedback || isTimedMode) return null;
+        if (!answerFeedback) return null;
+        
+        // For timed tests, show neutral gray feedback
+        if (isTimedMode) {
+            return (
+                <div className="topic-practice__feedback topic-practice__feedback--neutral">
+                    {answerFeedback.message}
+                </div>
+            );
+        }
+        
+        // For non-timed tests, show colored feedback
         return (
             <div
                 className={
@@ -69,7 +87,7 @@ function PracticeQuestionCard({
                                     {selected ? '●' : '○'}
                                 </span>
                                 <span className="topic-practice__option-text">
-                                    {opt.text}
+                                    {cleanOptionText(opt.text)}
                                 </span>
                             </button>
                         </li>
@@ -79,11 +97,6 @@ function PracticeQuestionCard({
 
             <div className="topic-practice__actions">
                 {renderFeedback()}
-                {isTimedMode && timedAnswerSaved && (
-                    <div className="topic-practice__feedback topic-practice__feedback--neutral">
-                        Answer accepted!
-                    </div>
-                )}
                 <div className="topic-practice__buttons-row">
                     {!isTimedMode && (!answerFeedback || answerFeedback.type !== 'success') && (
                         <button
@@ -122,7 +135,18 @@ function PracticeQuestionCard({
                         </button>
                     )}
 
-                    {showTimedNextButton && (
+                    {showFinishButton && !isTimedMode && (
+                        <button
+                            type="button"
+                            className="topic-practice__secondary-btn"
+                            onClick={onContinue}
+                            disabled={practiceLoading}
+                        >
+                            Finish test
+                        </button>
+                    )}
+
+                    {showTimedNextButton && !showFinishButton && (
                         <button
                             type="button"
                             className="topic-practice__secondary-btn"
@@ -130,6 +154,17 @@ function PracticeQuestionCard({
                             disabled={practiceLoading}
                         >
                             Next question
+                        </button>
+                    )}
+
+                    {showFinishButton && isTimedMode && (
+                        <button
+                            type="button"
+                            className="topic-practice__secondary-btn"
+                            onClick={onContinue}
+                            disabled={practiceLoading}
+                        >
+                            Finish test
                         </button>
                     )}
                 </div>

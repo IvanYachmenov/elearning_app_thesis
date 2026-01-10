@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import (
     RegisterView,
     MeView,
@@ -6,6 +7,9 @@ from .views import (
     CourseDetailView,
     EnrollCourseView,
     MyCoursesListView,
+    TeacherCourseViewSet,
+    TeacherModuleViewSet,
+    TeacherTopicViewSet,
     LearningCourseDetailView,
     TopicTheoryView,
     TopicNextQuestionView,
@@ -13,6 +17,12 @@ from .views import (
     TopicPracticeHistoryView,
     TopicPracticeResetView,
 )
+
+# Router for teacher viewsets
+router = DefaultRouter()
+router.register(r'teacher/courses', TeacherCourseViewSet, basename='teacher-course')
+router.register(r'teacher/modules', TeacherModuleViewSet, basename='teacher-module')
+router.register(r'teacher/topics', TeacherTopicViewSet, basename='teacher-topic')
 
 urlpatterns = [
     # auth
@@ -24,6 +34,9 @@ urlpatterns = [
     path("courses/<int:pk>/", CourseDetailView.as_view(), name="course-detail"),
     path("courses/<int:pk>/enroll/", EnrollCourseView.as_view(), name="course-enroll"),
     path("my-courses/", MyCoursesListView.as_view(), name="my-courses"),
+
+    # teacher endpoints (using router)
+    path("", include(router.urls)),
 
     # learning
     path("learning/courses/<int:pk>/", LearningCourseDetailView.as_view(), name="learning-course-detail"),

@@ -1,4 +1,11 @@
 function PracticeHistorySection({historyQuestions, loading, error}) {
+    // Remove dots at the start of option text
+    const cleanOptionText = (text) => {
+        if (!text) return text;
+        // Remove leading dots, ellipsis, and whitespace
+        return text.replace(/^[.\s…]+/, '').trim();
+    };
+    
     return (
         <section className="topic-practice__history">
             {loading && (
@@ -55,7 +62,7 @@ function PracticeHistorySection({historyQuestions, loading, error}) {
                                                     (correct
                                                         ? ' topic-practice__option-button--success'
                                                         : selected
-                                                            ? ' topic-practice__option-button--fail'
+                                                            ? ' topic-practice__option-button--selected-history'
                                                             : '')
                                                 }
                                             >
@@ -63,7 +70,7 @@ function PracticeHistorySection({historyQuestions, loading, error}) {
                                                     {selected ? '●' : '○'}
                                                 </span>
                                                 <span className="topic-practice__option-text">
-                                                    {opt.text}
+                                                    {cleanOptionText(opt.text)}
                                                 </span>
                                                 {correct && (
                                                     <span className="topic-practice__option-correct-label">Correct</span>
@@ -85,8 +92,8 @@ function PracticeHistorySection({historyQuestions, loading, error}) {
                                     style={{marginTop: '8px'}}
                                 >
                                     {q.is_correct
-                                        ? 'You answered this question correctly.'
-                                        : 'You answered this question incorrectly.'}
+                                        ? 'Correct answer!'
+                                        : 'Incorrect answer.'}
                                 </div>
                             )}
                         </div>

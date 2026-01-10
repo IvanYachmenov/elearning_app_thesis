@@ -1,6 +1,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+def user_avatar_upload_path(instance, filename):
+    return f'users/{instance.username}/avatar/{filename}'
+
 class User(AbstractUser):
     class Roles(models.TextChoices):
         STUDENT = "student", "Student"
@@ -22,6 +25,20 @@ class User(AbstractUser):
     )
 
     two_factor_enabled = models.BooleanField(default=False)
+    
+    avatar = models.ImageField(
+        upload_to=user_avatar_upload_path,
+        null=True,
+        blank=True,
+        max_length=500
+    )
+    
+    profile_background_gradient = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        help_text="CSS gradient string for profile background"
+    )
 
     @property
     def is_teacher(self) -> bool:

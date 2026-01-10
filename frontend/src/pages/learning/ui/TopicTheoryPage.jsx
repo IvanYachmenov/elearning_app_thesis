@@ -89,6 +89,11 @@ function TopicTheoryPage() {
 
                 <div className="topic-meta">
                     {topic.course_title} · {topic.module_title}
+                    {topic.is_timed_test && (
+                        <span className="topic-meta__timed-badge" title={`Timed test${topic.time_limit_seconds ? ` (${Math.floor(topic.time_limit_seconds / 60)} min)` : ''}`}>
+                            ⏱ Timed test
+                        </span>
+                    )}
                 </div>
 
                 <h1 className="page__title">{topic.title}</h1>

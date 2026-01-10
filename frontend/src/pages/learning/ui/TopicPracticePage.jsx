@@ -315,6 +315,10 @@ function TopicPracticePage() {
             .then((resp) => {
                 const data = resp.data;
 
+                const newAnsweredCount = data.answered_questions ?? answeredCount;
+                const newTotalQuestions = data.total_questions ?? totalQuestions;
+                const isLastQuestionAnswer = newAnsweredCount >= newTotalQuestions && newTotalQuestions > 0;
+
                 applyPracticePayload(
                     {
                         ...data,
@@ -323,13 +327,35 @@ function TopicPracticePage() {
                     {preserveQuestion: !data.test_completed && !data.timed_out},
                 );
 
+                // For timed tests, only show "Answer accepted!" without correctness feedback
+                // Only complete automatically if test is already marked as completed by backend
+                // For the last question, show feedback and "Finish test" button instead
                 if (data.test_completed || data.timed_out) {
-                    setPracticeCompleted(true);
-                    setTimedOut(Boolean(data.timed_out));
-                    setPassed(Boolean(data.passed));
-                    setPracticeQuestion(null);
-                    setTimedAnswerSaved(false);
+                    if (isLastQuestionAnswer && !data.timed_out && data.is_correct) {
+                        // Last question with correct answer - show feedback and "Finish test" button
+                        setAnswerFeedback({
+                            type: 'neutral',
+                            message: 'Answer accepted!',
+                            score: data.score,
+                            isLastQuestion: true,
+                        });
+                        setTimedAnswerSaved(true);
+                    } else {
+                        // Test completed or timed out - go to results
+                        setPracticeCompleted(true);
+                        setTimedOut(Boolean(data.timed_out));
+                        setPassed(Boolean(data.passed));
+                        setPracticeQuestion(null);
+                        setTimedAnswerSaved(false);
+                    }
                 } else {
+                    // Regular question - show only "Answer accepted!"
+                    setAnswerFeedback({
+                        type: 'neutral',
+                        message: 'Answer accepted!',
+                        score: data.score,
+                        isLastQuestion: isLastQuestionAnswer,
+                    });
                     setTimedAnswerSaved(true);
                 }
             })
@@ -371,13 +397,19 @@ function TopicPracticePage() {
             .then((resp) => {
                 const data = resp.data;
 
+                const newAnsweredCount = data.answered_questions ?? answeredCount;
+                const newTotalQuestions = data.total_questions ?? totalQuestions;
+                const isLastQuestionAnswer = newAnsweredCount >= newTotalQuestions && newTotalQuestions > 0;
+
                 setAnswerFeedback({
                     type: data.is_correct ? 'success' : 'fail',
                     message: data.is_correct ? 'Correct answer!' : 'Incorrect answer.',
                     score: data.score,
+                    isLastQuestion: isLastQuestionAnswer,
                 });
 
-                setTotalQuestions(data.total_questions ?? totalQuestions);
+                setTotalQuestions(newTotalQuestions);
+                setAnsweredCount(newAnsweredCount);
 
                 const completed =
                     data.test_completed ||
@@ -387,7 +419,9 @@ function TopicPracticePage() {
                     setScorePercent(data.score_percent);
                 }
 
-                if (completed) {
+                // Only complete automatically if test is already marked as completed by backend
+                // For the last question with correct answer, show feedback and "Finish test" button instead
+                if (completed && data.test_completed && (!data.is_correct || !isLastQuestionAnswer)) {
                     setPracticeCompleted(true);
                     setPassed(Boolean(data.passed));
                     setPracticeQuestion(null);
@@ -396,8 +430,7 @@ function TopicPracticePage() {
                 }
 
                 if (data.is_correct) {
-                    setAnsweredCount(data.answered_questions ?? answeredCount);
-                    setCorrectAnswers(data.correct_answers ?? data.answered_questions ?? answeredCount);
+                    setCorrectAnswers(data.correct_answers ?? data.answered_questions ?? newAnsweredCount);
 
                     if (typeof data.topic_progress_percent === 'number') {
                         setTopicProgressPercent(data.topic_progress_percent);
@@ -418,11 +451,38 @@ function TopicPracticePage() {
     };
 
     const handleContinue = () => {
-        if (isTimedMode) {
-            fetchNextQuestion();
+        // If this was the last question (for both timed and non-timed), complete the test
+        const isLast = (answerFeedback?.isLastQuestion) || (answeredCount >= totalQuestions && totalQuestions > 0);
+        
+        if (isLast) {
+            // Complete the test
+            if (isTimedMode) {
+                // For timed tests, we need to trigger completion
+                // The backend should have already marked it as completed
+                setPracticeCompleted(true);
+                setTimedOut(false);
+                // Determine if passed - for timed tests need 100% correct
+                const passed = scorePercent !== null && scorePercent >= 100;
+                setPassed(passed);
+            } else {
+                // For non-timed tests
+                setPracticeCompleted(true);
+                const passed = scorePercent !== null && scorePercent >= 100;
+                setPassed(passed);
+            }
+            setPracticeQuestion(null);
+            setSelectedOptions([]);
+            setAnswerFeedback(null);
+            setTimedAnswerSaved(false);
             return;
         }
-        fetchNextQuestion();
+        
+        // Continue to next question
+        if (isTimedMode) {
+            fetchNextQuestion();
+        } else {
+            fetchNextQuestion();
+        }
     };
 
     const handleRetry = () => {
@@ -458,12 +518,17 @@ function TopicPracticePage() {
     const isAnswerLocked =
         (!!answerFeedback && answerFeedback.type === 'success' && !isTimedMode) ||
         (isTimedMode && timedAnswerSaved);
+    const isLastQuestion = answerFeedback?.isLastQuestion || (answeredCount >= totalQuestions && totalQuestions > 0);
     const showNextButton =
         !isTimedMode &&
         !!answerFeedback &&
         answerFeedback.type === 'success' &&
-        answeredCount <= totalQuestions;
-    const showTimedNextButton = isTimedMode && timedAnswerSaved;
+        !isLastQuestion;
+    const showFinishButton =
+        !!answerFeedback &&
+        ((!isTimedMode && answerFeedback.type === 'success' && isLastQuestion) ||
+         (isTimedMode && answerFeedback.type === 'neutral' && answerFeedback.isLastQuestion));
+    const showTimedNextButton = isTimedMode && timedAnswerSaved && !showFinishButton;
     if (loadingTopic && !topic) {
         return <div className="page page-enter"/>;
     }
@@ -595,6 +660,7 @@ function TopicPracticePage() {
                                 // important: in timed mode Continue must NOT be blocked by empty selection
                                 disableSubmit={!isTimedMode && selectedOptions.length === 0}
                                 showNextButton={showNextButton}
+                                showFinishButton={showFinishButton}
                                 showTimedNextButton={showTimedNextButton}
                             />
                         )}

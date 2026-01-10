@@ -192,6 +192,11 @@ function CourseLearningPage() {
                                                 >
                                                     <div className="learning-topic__title">
                                                         {topic.title}
+                                                        {topic.is_timed_test && (
+                                                            <span className="learning-topic__timed-badge" title="Timed test">
+                                                                ⏱
+                                                            </span>
+                                                        )}
                                                     </div>
 
                                                     <div className="learning-topic__status">

@@ -1,1 +1,1 @@
-export {api, setAuthToken} from './client';
+export {api, setAuthToken, API_URL} from './client';

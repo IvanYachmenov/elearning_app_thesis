@@ -11,14 +11,18 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = (permissions.AllowAny,)
 
-class MeView(generics.RetrieveAPIView):
+class MeView(generics.RetrieveUpdateAPIView):
     """
     GET -> /api/auth/me/ - return user profile
-
-    maybe -> PATCH -> /api/auth/me/ (reload data)
+    PATCH -> /api/auth/me/ - update user profile
     """
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
         return self.request.user
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
