@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.conf import settings
 from ..models import Course, Module, Topic
 
 
@@ -31,6 +32,7 @@ class ModuleSerializer(serializers.ModelSerializer):
 class CourseListSerializer(serializers.ModelSerializer):
     author_name = serializers.SerializerMethodField()
     is_enrolled = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
@@ -41,7 +43,16 @@ class CourseListSerializer(serializers.ModelSerializer):
             "description",
             "author_name",
             "is_enrolled",
+            "image_url",
         )
+
+    def get_image_url(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return f"{settings.MEDIA_URL}{obj.image.url}" if obj.image else None
+        return None
 
     def get_author_name(self, obj):
         author = obj.author
@@ -62,6 +73,7 @@ class CourseDetailSerializer(serializers.ModelSerializer):
     author_name = serializers.SerializerMethodField()
     modules = ModuleSerializer(many=True, read_only=True)
     is_enrolled = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
@@ -73,7 +85,16 @@ class CourseDetailSerializer(serializers.ModelSerializer):
             "author_name",
             "is_enrolled",
             "modules",
+            "image_url",
         )
+
+    def get_image_url(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return f"{settings.MEDIA_URL}{obj.image.url}" if obj.image else None
+        return None
 
     def get_author_name(self, obj):
         author = obj.author

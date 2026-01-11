@@ -16,11 +16,13 @@ import {CourseDetailPage, CoursesPage} from '../pages/courses';
 
 import {CourseLearningPage, LearningPage, TopicTheoryPage, TopicPracticePage} from '../pages/learning';
 
-import {TeacherCoursesPage} from '../pages/teacher';
+import {TeacherCoursesPage, TeacherCourseEditPage} from '../pages/teacher';
 
 import {MainLayout} from '../widgets/layout';
 
 import {api, setAuthToken} from '../shared/api';
+import {getCookie, deleteCookie} from '../shared/lib/cookies';
+import CookieConsent from '../shared/components/CookieConsent';
 
 import {NavigationLockProvider} from '../shared/lib/navigation-lock';
 import {ThemeProvider} from '../shared/lib/theme/ThemeContext';
@@ -31,7 +33,7 @@ function App() {
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem('access');
+        const token = getCookie('access');
         if (!token) {
             setIsCheckingAuth(false);
             return;
@@ -42,8 +44,8 @@ function App() {
             .get('/api/auth/me/')
             .then((resp) => setUser(resp.data))
             .catch(() => {
-                localStorage.removeItem('access');
-                localStorage.removeItem('refresh');
+                deleteCookie('access');
+                deleteCookie('refresh');
                 setAuthToken(null);
                 setUser(null);
             })
@@ -51,14 +53,14 @@ function App() {
     }, []);
 
     const handleAuthSuccess = (accessToken, profile) => {
-        localStorage.setItem('access', accessToken);
+        // Token is already saved in cookie by LoginPage/RegisterPage
         setAuthToken(accessToken);
         setUser(profile);
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('access');
-        localStorage.removeItem('refresh');
+        deleteCookie('access');
+        deleteCookie('refresh');
         setAuthToken(null);
         setUser(null);
     };
@@ -84,6 +86,7 @@ function App() {
             <ThemeProvider>
                 <LanguageProvider>
                     <NavigationLockProvider>
+                        <CookieConsent />
                         <Routes>
                 <Route
                     path="/"
@@ -125,11 +128,17 @@ function App() {
                     <Route path="/credits" element={<CreditsPage/>}/>
                     <Route path="/learning/courses/:courseId/topics/:topicId" element={<TopicTheoryPage/>}/>
                     <Route path="/learning/courses/:courseId/topics/:topicId/practice" element={<TopicPracticePage/>}/>
-                    
-                    {/* Teacher routes - only visible to teachers */}
                     <Route 
                         path="/teacher/courses" 
                         element={<TeacherCoursesPage user={user}/>}
+                    />
+                    <Route 
+                        path="/teacher/courses/new" 
+                        element={<TeacherCourseEditPage user={user}/>}
+                    />
+                    <Route 
+                        path="/teacher/courses/:id/edit" 
+                        element={<TeacherCourseEditPage user={user}/>}
                     />
                 </Route>
 

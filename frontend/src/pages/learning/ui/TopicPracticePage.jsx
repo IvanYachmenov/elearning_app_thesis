@@ -331,8 +331,8 @@ function TopicPracticePage() {
                 // Only complete automatically if test is already marked as completed by backend
                 // For the last question, show feedback and "Finish test" button instead
                 if (data.test_completed || data.timed_out) {
-                    if (isLastQuestionAnswer && !data.timed_out && data.is_correct) {
-                        // Last question with correct answer - show feedback and "Finish test" button
+                    if (isLastQuestionAnswer && !data.timed_out) {
+                        // Last question (correct or incorrect) - show feedback and "Finish test" button
                         setAnswerFeedback({
                             type: 'neutral',
                             message: 'Answer accepted!',
@@ -379,6 +379,13 @@ function TopicPracticePage() {
             return;
         }
 
+        // If "Try again" button was clicked (feedback type is 'fail'), reset everything
+        if (answerFeedback?.type === 'fail') {
+            setAnswerFeedback(null);
+            setSelectedOptions([]);
+            return; // Exit early to allow user to select new answers
+        }
+
         if (selectedOptions.length === 0) {
             setAnswerFeedback({
                 type: 'error',
@@ -420,8 +427,8 @@ function TopicPracticePage() {
                 }
 
                 // Only complete automatically if test is already marked as completed by backend
-                // For the last question with correct answer, show feedback and "Finish test" button instead
-                if (completed && data.test_completed && (!data.is_correct || !isLastQuestionAnswer)) {
+                // For the last question (correct or incorrect), show feedback and "Finish test" button instead
+                if (completed && data.test_completed && !isLastQuestionAnswer) {
                     setPracticeCompleted(true);
                     setPassed(Boolean(data.passed));
                     setPracticeQuestion(null);
@@ -526,8 +533,9 @@ function TopicPracticePage() {
         !isLastQuestion;
     const showFinishButton =
         !!answerFeedback &&
-        ((!isTimedMode && answerFeedback.type === 'success' && isLastQuestion) ||
-         (isTimedMode && answerFeedback.type === 'neutral' && answerFeedback.isLastQuestion));
+        isLastQuestion &&
+        ((!isTimedMode && (answerFeedback.type === 'success' || answerFeedback.type === 'fail')) ||
+         (isTimedMode && answerFeedback.type === 'neutral'));
     const showTimedNextButton = isTimedMode && timedAnswerSaved && !showFinishButton;
     if (loadingTopic && !topic) {
         return <div className="page page-enter"/>;

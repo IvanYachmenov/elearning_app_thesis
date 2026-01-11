@@ -1,0 +1,124 @@
+.cookie-consent__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 11, 13, 0.55);
+    backdrop-filter: blur(6px);
+    z-index: 999;
+    animation: cookieBackdropIn 0.3s ease-out both;
+}
+
+@keyframes cookieBackdropIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.cookie-consent {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 2px solid #0b0b0d;
+    padding: 20px;
+    z-index: 1000;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    animation: cookieConsentIn 0.3s ease-out both;
+}
+
+@keyframes cookieConsentIn {
+    from { 
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to { 
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.cookie-consent__content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.cookie-consent__icon {
+    font-size: 32px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.cookie-consent__text {
+    flex: 1;
+    min-width: 300px;
+}
+
+.cookie-consent__text strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #0b0b0d;
+}
+
+.cookie-consent__text p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #4b5563;
+}
+
+.cookie-consent__button {
+    padding: 12px 24px;
+    background: #f97316;
+    color: #0b0b0d;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+    position: relative;
+    outline: none;
+}
+
+.cookie-consent__button::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid #0b0b0d;
+    border-radius: 6px;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+}
+
+.cookie-consent__button:hover::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.cookie-consent__button:hover {
+    background: #fb923c;
+}
+
+.cookie-consent__button:active {
+    background: #ea580c;
+    transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+    .cookie-consent__content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cookie-consent__button {
+        width: 100%;
+    }
+}

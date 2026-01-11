@@ -17,8 +17,8 @@ function CourseCard({course}) {
     return (
         <article className="course-card">
             <div className="course-card__image">
-                {course.image ? (
-                    <img src={course.image} alt={course.title} />
+                {course.image_url ? (
+                    <img src={course.image_url} alt={course.title} />
                 ) : (
                     <div className="course-card__image-placeholder">
                         🐍

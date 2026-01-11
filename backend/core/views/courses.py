@@ -10,10 +10,8 @@ from ..serializers import (
 )
 
 
+# GET /api/courses/
 class CourseListView(generics.ListAPIView):
-    """
-    GET /api/courses -> public list of courses
-    """
     serializer_class = CourseListSerializer
     permission_classes = (permissions.AllowAny,)
 
@@ -24,10 +22,8 @@ class CourseListView(generics.ListAPIView):
 
     queryset = Course.objects.select_related("author")
 
+# GET /api/courses/<id>/
 class CourseDetailView(generics.RetrieveAPIView):
-    """
-    GET /api/courses/<id>/enroll/ -> detailed info about course
-    """
     serializer_class = CourseDetailSerializer
     permission_classes = (permissions.AllowAny,)
 
@@ -37,10 +33,8 @@ class CourseDetailView(generics.RetrieveAPIView):
         .prefetch_related("modules__topics")
     )
 
+# POST /api/courses/<id>/enroll/
 class EnrollCourseView(APIView):
-    """
-    POST /api/courses/<id>/enroll -> enroll user to course
-    """
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, pk):
@@ -61,10 +55,8 @@ class EnrollCourseView(APIView):
         )
         return Response(serializer.data, status=HTTP_200_OK)
 
+# GET /api/my-courses/
 class MyCoursesListView(generics.ListAPIView):
-    """
-    GET /api/my-courses/ -> list of user's courses
-    """
     serializer_class = CourseListSerializer
     permission_classes = (permissions.IsAuthenticated,)
 

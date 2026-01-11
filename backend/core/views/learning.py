@@ -70,10 +70,8 @@ def ensure_topic_progress(user, topic: Topic, is_timed: bool, time_limit_seconds
 
     return progress
 
+# GET /api/learning/courses/<id>/
 class LearningCourseDetailView(APIView):
-    """
-    GET /api/learning/courses/<id>/ -> course with modules, topics and progress of user
-    """
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk):
@@ -106,10 +104,8 @@ class LearningCourseDetailView(APIView):
         )
         return Response(serializer.data)
 
+# GET /api/learning/topics/<id>/
 class TopicTheoryView(APIView):
-    """
-    GET /api/learning/topics/<id>/
-    """
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk):
@@ -139,10 +135,8 @@ class TopicTheoryView(APIView):
         )
         return Response(serializer.data)
 
+# GET /api/learning/topics/<id>/next-question/
 class TopicNextQuestionView(APIView):
-    """
-    GET /api/learning/topics/<id>/next-question/
-    """
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk):
@@ -363,10 +357,8 @@ class TopicNextQuestionView(APIView):
         })
 
 
+# POST /api/learning/questions/<id>/answer/
 class TopicQuestionAnswerView(APIView):
-    """
-    POST /api/learning/questions/<id>/answer/
-    """
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, pk):
@@ -405,7 +397,7 @@ class TopicQuestionAnswerView(APIView):
                 {"detail": "Invalid options for this question."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        # validation
+
         if not is_timed:
             if (
                     question.question_type == TopicQuestion.QuestionType.SINGLE
@@ -507,7 +499,6 @@ class TopicQuestionAnswerView(APIView):
         answer.save()
         answer.selected_options.set(option_ids)
 
-        # Count progress on topic
         all_q_count = TopicQuestion.objects.filter(topic=topic).count()
         correct_answers_qs = TopicQuestionAnswer.objects.filter(
             user=request.user,
@@ -626,6 +617,7 @@ class TopicQuestionAnswerView(APIView):
             }
         )
 
+# POST /api/learning/topics/<id>/reset/
 class TopicPracticeResetView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -667,13 +659,8 @@ class TopicPracticeResetView(APIView):
         return Response({"detail": "Practice progress has been reset."})
 
 
+# GET /api/learning/topics/<id>/history/
 class TopicPracticeHistoryView(APIView):
-    """
-    GET /api/learning/topics/<id>/history/ -> returns all questions of the topic
-                                            and test options
-                                            and options which user chose
-    """
-
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk):

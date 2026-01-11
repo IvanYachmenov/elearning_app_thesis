@@ -5,9 +5,6 @@ from ..models import Topic, TopicProgress, TopicQuestionAnswer, TopicQuestionOpt
 
 
 class LearningTopicSerializer(TopicSerializer):
-    """
-    Topic + progress
-    """
     status = serializers.SerializerMethodField()
     score = serializers.SerializerMethodField()
 
@@ -30,9 +27,6 @@ class LearningTopicSerializer(TopicSerializer):
 
 
 class LearningModuleSerializer(ModuleSerializer):
-    """
-    Module
-    """
     topics = LearningTopicSerializer(many=True, read_only=True)
 
     class Meta(ModuleSerializer.Meta):
@@ -40,9 +34,6 @@ class LearningModuleSerializer(ModuleSerializer):
 
 
 class LearningCourseSerializer(CourseDetailSerializer):
-    """
-    Details for course for learning-page + progress
-    """
     modules = LearningModuleSerializer(many=True, read_only=True)
 
     total_topics = serializers.SerializerMethodField()

@@ -503,7 +503,7 @@
 .app-menu__link:hover {
     background: transparent;
     transform: translateX(4px);
-    box-shadow: -4px 0 0 0 var(--nav-black), 0 0 0 2px var(--nav-black);
+    box-shadow: -4px 0 0 0 var(--nav-black);
 }
 
 .app-menu__link:hover,
@@ -580,22 +580,28 @@
     gap: 10px;
 
     margin: 14px 16px;
-    padding: 10px 12px;
+    padding: 12px 16px;
 
-    background: rgba(255, 255, 255, 0.75);
-    color: #111827;
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+    color: #0b0b0d;
 
-    border: 1px solid rgba(11, 11, 13, 0.18);
-    border-radius: 12px;
-    backdrop-filter: blur(6px);
+    border: 2px solid var(--nav-black);
+    border-radius: 0;
+    box-shadow: var(--shadow-sm);
 }
 
 .app-navigation-lock__dot {
     width: 10px;
     height: 10px;
     border-radius: 999px;
-    background: #ef4444;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+    background: #0b0b0d;
+    box-shadow: 0 0 0 2px rgba(11, 11, 13, 0.2);
+}
+
+[data-theme="dark"] .app-navigation-lock {
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+    border-color: var(--border-color);
+    color: #0b0b0d;
 }
 
 /* === Mobile: hide top nav links (Courses/Learning go into burger) === */

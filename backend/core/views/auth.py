@@ -2,20 +2,14 @@ from rest_framework import generics, permissions
 from ..models import User
 from ..serializers import UserSerializer, RegisterSerializer
 
+# POST /api/auth/register/
 class RegisterView(generics.CreateAPIView):
-    """
-    POST -> /api/auth/register
-    new user registration
-    """
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = (permissions.AllowAny,)
 
+# GET/PATCH /api/auth/me/
 class MeView(generics.RetrieveUpdateAPIView):
-    """
-    GET -> /api/auth/me/ - return user profile
-    PATCH -> /api/auth/me/ - update user profile
-    """
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
 

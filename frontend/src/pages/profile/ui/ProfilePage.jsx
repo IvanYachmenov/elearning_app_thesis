@@ -36,7 +36,7 @@ function ProfilePage({user, onUserUpdate}) {
         { name: 'Multi Color', value: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #f97316 70%, #fb923c 100%)' },
     ];
     
-    const GRADIENTS_PER_PAGE = 5;
+    const GRADIENTS_PER_PAGE = 6;
     const totalGradientPages = Math.ceil((gradients.length + 1) / GRADIENTS_PER_PAGE); // +1 for "None" option
 
     useEffect(() => {

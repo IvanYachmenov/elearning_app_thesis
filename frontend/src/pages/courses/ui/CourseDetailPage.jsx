@@ -1,10 +1,11 @@
 import {useEffect, useState} from 'react';
-import {useParams, Link} from 'react-router-dom';
+import {useParams, Link, useNavigate} from 'react-router-dom';
 import {api} from '../../../shared/api';
 import '../styles/courses.css';
 
 function CourseDetailPage() {
     const {id} = useParams();
+    const navigate = useNavigate();
 
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -70,10 +71,19 @@ function CourseDetailPage() {
 
     return (
         <div className="page page-enter">
+            <div className="course-detail-back">
+                <button
+                    className="btn-primary"
+                    onClick={() => navigate('/courses')}
+                >
+                    ← Back to Courses
+                </button>
+            </div>
+            
             <div className="course-detail-header">
                 <div className="course-detail-header__image">
-                    {course.image ? (
-                        <img src={course.image} alt={course.title} />
+                    {course.image_url ? (
+                        <img src={course.image_url} alt={course.title} />
                     ) : (
                         <div className="course-detail-header__image-placeholder">
                             🐍

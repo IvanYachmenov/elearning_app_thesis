@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {api, setAuthToken} from '../../../shared/api';
 import {Link, useNavigate} from 'react-router-dom';
+import {setCookie} from '../../../shared/lib/cookies';
 import '../styles/auth.css';
 
 function LoginPage({onAuth}) {
@@ -23,8 +24,8 @@ function LoginPage({onAuth}) {
 
             const {access, refresh} = resp.data;
 
-            localStorage.setItem('access', access);
-            localStorage.setItem('refresh', refresh);
+            setCookie('access', access, 365);
+            setCookie('refresh', refresh, 365);
 
             setAuthToken(access);
 

@@ -126,7 +126,6 @@ function MainLayout({user, onLogout}) {
                             </NavLink>
                         </nav>
 
-                        {/* PROFILE: no dropdown, just a link */}
                         <NavLink
                             to="/profile"
                             className={({isActive}) =>
@@ -179,7 +178,6 @@ function MainLayout({user, onLogout}) {
                         </div>
 
                         <nav className="app-menu__nav" aria-label="Fullscreen navigation">
-                            {/* Main */}
                             <NavLink 
                                 to="/home" 
                                 className={({isActive}) => `app-menu__link${isActive ? ' active' : ''}`}
@@ -215,7 +213,6 @@ function MainLayout({user, onLogout}) {
 
                             <div className="app-menu__divider" />
 
-                            {/* Teacher section */}
                             {user?.role === 'teacher' && (
                                 <>
                                     <NavLink 
@@ -230,7 +227,6 @@ function MainLayout({user, onLogout}) {
                                 </>
                             )}
 
-                            {/* Account */}
                             <NavLink 
                                 to="/profile" 
                                 className={({isActive}) => `app-menu__link${isActive ? ' active' : ''}`}

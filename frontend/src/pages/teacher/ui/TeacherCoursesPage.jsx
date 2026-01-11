@@ -14,26 +14,17 @@ function TeacherCoursesPage({user}) {
         setError(null);
         try {
             const response = await api.get('/api/teacher/courses/');
-            console.log('Courses response:', response.data);
-            console.log('Courses response type:', typeof response.data);
-            console.log('Is array?', Array.isArray(response.data));
             
-            // Handle different response formats
             let coursesData = response.data;
             
-            // If response has 'results' key (pagination), use that
             if (coursesData && coursesData.results && Array.isArray(coursesData.results)) {
                 coursesData = coursesData.results;
-            }
-            // If it's not an array, ensure it becomes one
-            else if (!Array.isArray(coursesData)) {
+            } else if (!Array.isArray(coursesData)) {
                 coursesData = [];
             }
             
             setCourses(coursesData);
         } catch (err) {
-            console.error('Error fetching courses:', err);
-            console.error('Error details:', err.response?.data || err.message);
             setError(err.response?.data?.detail || err.response?.data?.message || 'Failed to load your courses. Please try again.');
         } finally {
             setLoading(false);
@@ -41,9 +32,7 @@ function TeacherCoursesPage({user}) {
     }, []);
 
     useEffect(() => {
-        // Check if user is a teacher
         if (!user || user.role !== 'teacher') {
-            console.warn('User is not a teacher:', user?.role);
             navigate('/home', {replace: true});
             return;
         }
@@ -67,14 +56,12 @@ function TeacherCoursesPage({user}) {
             await api.delete(`/api/teacher/courses/${courseId}/`);
             setCourses(courses.filter(c => c.id !== courseId));
         } catch (err) {
-            console.error('Error deleting course:', err);
             alert('Failed to delete course. Please try again.');
         }
     };
 
-    // Early return if not a teacher
     if (!user || user.role !== 'teacher') {
-        return null; // Will redirect in useEffect
+        return null;
     }
 
     if (loading) {
@@ -140,9 +127,6 @@ function TeacherCoursesPage({user}) {
                                     </button>
                                 </div>
                             </div>
-                            {course.description && (
-                                <p className="teacher-course-card__description">{course.description}</p>
-                            )}
                             <div className="teacher-course-card__meta">
                                 <span>Modules: {course.modules?.length || 0}</span>
                                 <span>•</span>

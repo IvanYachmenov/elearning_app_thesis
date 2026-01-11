@@ -16,14 +16,13 @@
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
-  transition: transform 0.14s ease, box-shadow 0.14s ease;
+  transition: box-shadow 0.14s ease;
   box-shadow: var(--shadow-sm);
 }
 
 .teacher-create-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, #0ea371 0%, #2ecf8a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .teacher-empty {
@@ -53,12 +52,11 @@
   border-radius: 0;
   border: 2px solid var(--nav-black);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.14s ease, box-shadow 0.14s ease;
+  transition: box-shadow 0.14s ease;
 }
 
 .teacher-course-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(11, 11, 13, 0.25);
+  box-shadow: 0 4px 12px rgba(11, 11, 13, 0.2);
 }
 
 .teacher-course-card__header {
@@ -86,11 +84,11 @@
 
 .teacher-course-card__edit,
 .teacher-course-card__delete {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border: 2px solid var(--nav-black);
   background: #fff;
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -100,12 +98,10 @@
 
 .teacher-course-card__edit:hover {
   background: rgba(11, 11, 13, 0.05);
-  transform: scale(1.1);
 }
 
 .teacher-course-card__delete:hover {
   background: #fee2e2;
-  transform: scale(1.1);
 }
 
 .teacher-course-card__description {
@@ -160,13 +156,786 @@
   background: rgba(239, 68, 68, 0.2);
 }
 
+.teacher-course-edit-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--nav-black);
+}
+
+.teacher-course-edit-back {
+  margin: 0;
+}
+
+.teacher-course-edit-title {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin: 0;
+}
+
+[data-theme="dark"] .teacher-course-edit-title {
+  color: var(--text-primary);
+}
+
+.teacher-course-edit-header {
+  display: none;
+}
+
+.teacher-course-edit-footer {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 2px solid var(--nav-black);
+}
+
+.teacher-course-edit-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.teacher-save-btn {
+  padding: 12px 24px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.teacher-save-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0ea371 0%, #2ecf8a 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.teacher-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.teacher-cancel-btn {
+  padding: 12px 24px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  background: #fff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+}
+
+.teacher-cancel-btn:hover:not(:disabled) {
+  background: rgba(11, 11, 13, 0.05);
+}
+
+.teacher-delete-btn {
+  padding: 12px 24px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+}
+
+.teacher-delete-btn:hover:not(:disabled) {
+  background: #fecaca;
+}
+
+.teacher-delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.teacher-course-edit-form {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 115, 22, 0.05) 100%);
+  padding: 32px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  box-shadow: var(--shadow-sm);
+}
+
+.teacher-form-group {
+  margin-bottom: 24px;
+}
+
+.teacher-form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.teacher-form-input,
+.teacher-form-textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  background: #fff;
+  color: #0f172a;
+  font-size: 14px;
+  font-family: inherit;
+  transition: box-shadow 0.14s ease;
+}
+
+.teacher-form-input:focus,
+.teacher-form-textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(11, 11, 13, 0.1);
+}
+
+.teacher-form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.teacher-form-textarea--large {
+  min-height: 200px;
+}
+
+/* Custom file input */
+.teacher-file-input-wrapper {
+  position: relative;
+}
+
+.teacher-file-input {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.teacher-file-input-label {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  background: #fff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.14s ease, box-shadow 0.14s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.teacher-file-input-label:hover {
+  background: rgba(11, 11, 13, 0.05);
+  box-shadow: 0 0 0 4px rgba(11, 11, 13, 0.1);
+}
+
+.teacher-file-input:focus + .teacher-file-input-label {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(11, 11, 13, 0.1);
+}
+
+[data-theme="dark"] .teacher-file-input-label {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-file-input-label:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.teacher-course-modules {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 2px solid var(--nav-black);
+}
+
+.teacher-modules-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.teacher-modules-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+}
+
+.teacher-add-module-btn {
+  padding: 8px 16px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: box-shadow 0.14s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.teacher-add-module-btn:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25);
+}
+
+.teacher-modules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.teacher-module-item {
+  padding: 20px;
+  border: 2px solid var(--nav-black);
+  background: linear-gradient(135deg, #ffffff 0%, rgba(249, 115, 22, 0.03) 100%);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.14s ease;
+}
+
+.teacher-module-item:hover {
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15);
+}
+
+.teacher-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.teacher-module-toggle {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--nav-black);
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.14s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.teacher-module-toggle:hover {
+  background: rgba(11, 11, 13, 0.05);
+}
+
+.teacher-module-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+}
+
+.teacher-module-delete-btn {
+  padding: 6px 12px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+}
+
+.teacher-module-delete-btn:hover {
+  background: #fecaca;
+}
+
+.teacher-topics-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.teacher-topics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.teacher-topics-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+}
+
+.teacher-add-topic-btn {
+  padding: 6px 12px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: box-shadow 0.14s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.teacher-add-topic-btn:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.2);
+}
+
+.teacher-topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.teacher-topic-item {
+  padding: 16px;
+  border: 1px solid var(--border-medium);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(249, 115, 22, 0.05) 100%);
+  border-left: 3px solid #f97316;
+  transition: box-shadow 0.14s ease;
+}
+
+.teacher-topic-item:hover {
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.15);
+}
+
+.teacher-topic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.teacher-topic-toggle {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--nav-black);
+  background: #fff;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.14s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.teacher-topic-toggle:hover {
+  background: rgba(11, 11, 13, 0.05);
+}
+
+[data-theme="dark"] .teacher-module-toggle,
+[data-theme="dark"] .teacher-topic-toggle {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-module-toggle:hover,
+[data-theme="dark"] .teacher-topic-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.teacher-topic-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+}
+
+.teacher-topic-delete-btn {
+  padding: 4px 8px;
+  border-radius: 0;
+  border: 1px solid var(--nav-black);
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+}
+
+.teacher-topic-delete-btn:hover {
+  background: #fecaca;
+}
+
+.teacher-form-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.teacher-form-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.teacher-questions-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.teacher-questions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.teacher-questions-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+}
+
+.teacher-add-question-btn {
+  padding: 6px 12px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: box-shadow 0.14s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.teacher-add-question-btn:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.2);
+}
+
+.teacher-questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.teacher-question-item {
+  padding: 16px;
+  border: 1px solid var(--border-medium);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(251, 146, 60, 0.05) 100%);
+  border-left: 3px solid #fb923c;
+}
+
+.teacher-question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.teacher-question-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+}
+
+.teacher-question-delete-btn {
+  padding: 4px 8px;
+  border-radius: 0;
+  border: 1px solid var(--nav-black);
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+}
+
+.teacher-question-delete-btn:hover {
+  background: #fecaca;
+}
+
+.teacher-options-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-medium);
+}
+
+.teacher-options-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.teacher-add-option-btn {
+  padding: 4px 10px;
+  border-radius: 0;
+  border: 1px solid var(--nav-black);
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  color: #0f172a;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.teacher-add-option-btn:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
+}
+
+.teacher-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.teacher-option-item {
+  padding: 8px;
+  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.teacher-option-content {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.teacher-option-content .teacher-form-input {
+  flex: 1;
+  margin: 0;
+}
+
+.teacher-option-delete-btn {
+  padding: 4px 8px;
+  border: 1px solid var(--nav-black);
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.14s ease;
+}
+
+.teacher-option-delete-btn:hover {
+  background: #fecaca;
+}
+
+.teacher-empty-text {
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
+  padding: 32px;
+}
+
+.teacher-empty-text-small {
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
+  padding: 16px;
+}
+
+.teacher-error {
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  background: #fee2e2;
+  border: 2px solid #ef4444;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+[data-theme="dark"] .teacher-course-edit-form {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .teacher-form-label {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-form-input,
+[data-theme="dark"] .teacher-form-textarea {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-form-input:focus,
+[data-theme="dark"] .teacher-form-textarea:focus {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .teacher-cancel-btn {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-cancel-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .teacher-add-module-btn {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-add-module-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .teacher-modules-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-course-modules {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .teacher-module-item {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .teacher-module-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-empty-text {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .teacher-error {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+[data-theme="dark"] .teacher-course-edit-footer {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .teacher-topics-section {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .teacher-topics-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-add-topic-btn {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-add-topic-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .teacher-topic-item {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .teacher-topic-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-form-checkbox-label {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-course-edit-top {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .teacher-course-edit-form {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(249, 115, 22, 0.05) 100%);
+}
+
+[data-theme="dark"] .teacher-module-item {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(249, 115, 22, 0.05) 100%);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .teacher-module-item:hover {
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+[data-theme="dark"] .teacher-topic-item {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(249, 115, 22, 0.08) 100%);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .teacher-question-item {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(251, 146, 60, 0.08) 100%);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .teacher-topics-title,
+[data-theme="dark"] .teacher-questions-title,
+[data-theme="dark"] .teacher-question-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-option-item {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: var(--border-color);
+}
+
 @media (max-width: 768px) {
-  .teacher-courses-header {
+  .teacher-courses-header,
+  .teacher-course-edit-header {
     flex-direction: column;
     align-items: stretch;
   }
 
+  .teacher-course-edit-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .teacher-save-btn,
+  .teacher-delete-btn {
+    width: 100%;
+  }
+
   .teacher-courses-grid {
     grid-template-columns: 1fr;
+  }
+
+  .teacher-course-edit-form {
+    padding: 20px;
   }
 }
