@@ -2,7 +2,7 @@
 
 A full-stack web application for online education that allows students to enroll in courses, study structured theory content, and practice with both timed and untimed quizzes. The platform includes a teacher's cabinet where instructors can create, edit, and manage their courses. Built with Django REST Framework on the backend and React with Vite on the frontend.
 
-![Courses list](screenshots/courses_page1.png)
+### For Students
 
 ## Overview
 
