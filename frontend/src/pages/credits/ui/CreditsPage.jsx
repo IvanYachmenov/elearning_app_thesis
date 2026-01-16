@@ -12,83 +12,19 @@ function CreditsPage() {
                     All icons used in this application are from Flaticon and are used in accordance with their free license terms.
                 </p>
                 <ul style={{fontSize: '14px', lineHeight: 1.8, listStyle: 'none', padding: 0, margin: 0}}>
+                    
                     <li style={{marginBottom: '8px'}}>
                         <a
-                            href="https://www.flaticon.com/free-icons/logout"
-                            title="logout icons"
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
-                        >
-                            Logout icons created by Kyoz - Flaticon
-                        </a>
-                    </li>
-                    <li style={{marginBottom: '8px'}}>
-                        <a
-                            href="https://www.flaticon.com/free-icons/user"
+                            href="https://www.flaticon.com/free-icons/study"
                             title="user icons"
                             target="_blank"
                             rel="noreferrer"
                             style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
                         >
-                            User icons created by Freepik - Flaticon
+                            Study icons created by Freepik - Flaticon
                         </a>
                     </li>
-                    <li style={{marginBottom: '8px'}}>
-                        <a
-                            href="https://www.flaticon.com/free-icons/home-accessories"
-                            title="home accessories icons"
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
-                        >
-                            Home icons created by alihmirza111 - Flaticon
-                        </a>
-                    </li>
-                    <li style={{marginBottom: '8px'}}>
-                        <a
-                            href="https://www.flaticon.com/free-icons/tasks"
-                            title="tasks icons"
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
-                        >
-                            Tasks / Courses icons created by Graphics Plazza - Flaticon
-                        </a>
-                    </li>
-                    <li style={{marginBottom: '8px'}}>
-                        <a
-                            href="https://www.flaticon.com/free-icons/course"
-                            title="course icons"
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
-                        >
-                            Learning / Course icons created by Tanah Basah - Flaticon
-                        </a>
-                    </li>
-                    <li style={{marginBottom: '8px'}}>
-                        <a
-                            href="https://www.flaticon.com/free-icons/setting-app"
-                            title="setting app icons"
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
-                        >
-                            Settings icons created by alihmirza111 - Flaticon
-                        </a>
-                    </li>
-                    <li style={{marginBottom: '8px'}}>
-                        <a
-                            href="https://www.flaticon.com/free-icons/shopping-bag"
-                            title="shopping bag icons"
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
-                        >
-                            Shopping bag icons created by vectaicon - Flaticon
-                        </a>
-                    </li>
+                    
                 </ul>
             </section>
 
