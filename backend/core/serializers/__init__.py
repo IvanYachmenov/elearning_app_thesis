@@ -9,6 +9,8 @@ from .teacher import (
     TeacherCourseSerializer,
     TeacherModuleSerializer,
     TeacherTopicSerializer,
+    TeacherQuestionSerializer,
+    TeacherQuestionOptionSerializer,
 )
 from .learning import (
     LearningTopicSerializer,

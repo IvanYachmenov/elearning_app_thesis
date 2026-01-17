@@ -3,137 +3,23 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import (
-    Course,
+from ...models import (
     Topic,
     TopicProgress,
     TopicQuestion,
     TopicQuestionOption,
     TopicQuestionAnswer,
 )
-
-from ..serializers import (
-    LearningCourseSerializer,
-    TopicTheorySerializer,
+from ...serializers import (
     TopicPracticeQuestionSerializer,
     TopicQuestionAnswerSubmitSerializer,
-
 )
-from ..serializers.learning import TopicPracticeHistoryQuestionSerializer
+from .utils import (
+    get_topic_time_limit_seconds,
+    calculate_score_percent,
+    ensure_topic_progress,
+)
 
-def get_topic_time_limit_seconds(topic: Topic):
-    if not topic.is_timed_test:
-        return None
-    if topic.time_limit_seconds and topic.time_limit_seconds >= 120:
-        return topic.time_limit_seconds
-    return 120
-
-
-def calculate_score_percent(correct_count: int, total_questions: int) -> int:
-    if not total_questions:
-        return 0
-    return round(correct_count * 100 / total_questions)
-
-
-def ensure_topic_progress(user, topic: Topic, is_timed: bool, time_limit_seconds: int | None):
-    progress, _ = TopicProgress.objects.get_or_create(
-        user=user,
-        topic=topic,
-        defaults={
-            "status": TopicProgress.Status.IN_PROGRESS,
-            "is_timed": is_timed,
-            "time_limit_seconds": time_limit_seconds if is_timed else None,
-            "started_at": timezone.now() if is_timed else None,
-        },
-    )
-
-    updates = []
-    if progress.status == TopicProgress.Status.NOT_STARTED:
-        progress.status = TopicProgress.Status.IN_PROGRESS
-        updates.append("status")
-
-    if progress.is_timed != is_timed:
-        progress.is_timed = is_timed
-        updates.append("is_timed")
-
-    if is_timed:
-        effective_limit = time_limit_seconds or 120
-        if progress.time_limit_seconds != effective_limit:
-            progress.time_limit_seconds = effective_limit
-            updates.append("time_limit_seconds")
-        if not progress.started_at:
-            progress.started_at = timezone.now()
-            updates.append("started_at")
-
-    if updates:
-        progress.save(update_fields=updates)
-
-    return progress
-
-# GET /api/learning/courses/<id>/
-class LearningCourseDetailView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request, pk):
-        try:
-            course = (
-                Course.objects
-                .select_related("author")
-                .prefetch_related("modules__topics")
-                .get(pk=pk)
-            )
-        except Course.DoesNotExist:
-            return Response(
-                {"detail": "Course not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        if not request.user.enrolled_courses.filter(pk=course.pk).exists():
-            return Response(
-                {"detail": "You are not enrolled in this course."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-        progress_qs = (TopicProgress.objects
-            .filter(user=request.user, topic__module__course=course)
-            .select_related("topic")
-        )
-        progress_map = {p.topic.id: p for p in progress_qs}
-        serializer = LearningCourseSerializer(
-            course,
-            context={"request": request, "progress_map": progress_map},
-        )
-        return Response(serializer.data)
-
-# GET /api/learning/topics/<id>/
-class TopicTheoryView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request, pk):
-        try:
-            topic = Topic.objects.select_related("module__course").get(pk=pk)
-        except Topic.DoesNotExist:
-            return Response(
-                {"detail": "Topic not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        course = topic.module.course
-        if not course.students.filter(pk=request.user.pk).exists():
-            return Response(
-                {"detail": "You are not enrolled in this course."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        progress = TopicProgress.objects.filter(
-            user=request.user,
-            topic=topic
-        ).first()
-
-        serializer = TopicTheorySerializer(
-            topic,
-            context={"request": request,"topic_progress": progress},
-        )
-        return Response(serializer.data)
 
 # GET /api/learning/topics/<id>/next-question/
 class TopicNextQuestionView(APIView):
@@ -616,104 +502,3 @@ class TopicQuestionAnswerView(APIView):
                 "remaining_seconds": None,
             }
         )
-
-# POST /api/learning/topics/<id>/reset/
-class TopicPracticeResetView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def post(self, request, pk):
-        try:
-            topic = Topic.objects.select_related("module__course").get(pk=pk)
-        except Topic.DoesNotExist:
-            return Response(
-                {"detail": "Topic not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        course = topic.module.course
-        if not course.students.filter(pk=request.user.pk).exists():
-            return Response(
-                {"detail": "You are not enrolled in this course."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        TopicQuestionAnswer.objects.filter(
-            user=request.user,
-            question__topic=topic,
-        ).delete()
-
-        TopicProgress.objects.update_or_create(
-            user=request.user,
-            topic=topic,
-            defaults={
-                "status": TopicProgress.Status.NOT_STARTED,
-                "score": None,
-                "completed_at": None,
-                "started_at": None,
-                "timed_out": False,
-                "is_timed": topic.is_timed_test,
-                "time_limit_seconds": get_topic_time_limit_seconds(topic),
-            },
-        )
-
-        return Response({"detail": "Practice progress has been reset."})
-
-
-# GET /api/learning/topics/<id>/history/
-class TopicPracticeHistoryView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request, pk):
-        try:
-            topic = Topic.objects.select_related("module__course").get(pk=pk)
-        except Topic.DoesNotExist:
-            return Response(
-                {"detail": "Topic not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        course = topic.module.course
-        if not course.students.filter(pk=request.user.pk).exists():
-            return Response(
-                {"detail": "You are not enrolled in this course."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        progress = (TopicProgress.objects.filter(
-            user=request.user,
-            topic=topic
-        ).first())
-        if not progress or progress.status not in (
-                TopicProgress.Status.COMPLETED,
-                TopicProgress.Status.FAILED,
-        ):
-            return Response(
-                {"detail": "History is available only for completed topics."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        questions_qs = (
-            TopicQuestion.objects
-                .filter(topic=topic)
-                .order_by("order", "id")
-        )
-
-        answers_qs = (
-            TopicQuestionAnswer.objects
-                .filter(user=request.user, question__topic=topic)
-                .select_related("question")
-                .prefetch_related("selected_options")
-        )
-        answers_map = {a.question_id: a for a in answers_qs}
-        serializer = TopicPracticeHistoryQuestionSerializer(
-            questions_qs,
-            many=True,
-            context={"user_answers_map": answers_map},
-        )
-
-        return Response({
-            "topic_id": topic.id,
-            "topic_title": topic.title,
-            "questions": serializer.data,
-        })
-

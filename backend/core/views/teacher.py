@@ -13,8 +13,8 @@ from ..serializers.teacher import (
 from ..permissions import IsTeacher
 
 
-# GET/POST /api/teacher/courses/ - список и создание курсов
-# GET/PUT/PATCH/DELETE /api/teacher/courses/<id>/ - детали, обновление, удаление курса
+# GET/POST /api/teacher/courses/
+# GET/PUT/PATCH/DELETE /api/teacher/courses/<id>/
 class TeacherCourseViewSet(viewsets.ModelViewSet):
     serializer_class = TeacherCourseSerializer
     permission_classes = [IsAuthenticated, IsTeacher]
@@ -33,8 +33,8 @@ class TeacherCourseViewSet(viewsets.ModelViewSet):
         return context
 
 
-# GET/POST /api/teacher/modules/ - список и создание модулей
-# GET/PUT/PATCH/DELETE /api/teacher/modules/<id>/ - детали, обновление, удаление модуля
+# GET/POST /api/teacher/modules/
+# GET/PUT/PATCH/DELETE /api/teacher/modules/<id>/
 class TeacherModuleViewSet(viewsets.ModelViewSet):
     serializer_class = TeacherModuleSerializer
     permission_classes = [IsAuthenticated, IsTeacher]
@@ -51,8 +51,8 @@ class TeacherModuleViewSet(viewsets.ModelViewSet):
         return context
 
 
-# GET/POST /api/teacher/topics/ - список и создание тем
-# GET/PUT/PATCH/DELETE /api/teacher/topics/<id>/ - детали, обновление, удаление темы
+# GET/POST /api/teacher/topics/ 
+# GET/PUT/PATCH/DELETE /api/teacher/topics/<id>/ 
 class TeacherTopicViewSet(viewsets.ModelViewSet):
     serializer_class = TeacherTopicSerializer
     permission_classes = [IsAuthenticated, IsTeacher]

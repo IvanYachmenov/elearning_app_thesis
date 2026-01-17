@@ -10,7 +10,14 @@ from .teacher import (
     TeacherModuleViewSet,
     TeacherTopicViewSet,
 )
-from .learning import LearningCourseDetailView, TopicTheoryView, TopicNextQuestionView, TopicQuestionAnswerView, TopicPracticeHistoryView, TopicPracticeResetView
+from .learning import (
+    LearningCourseDetailView,
+    TopicTheoryView,
+    TopicNextQuestionView,
+    TopicQuestionAnswerView,
+    TopicPracticeHistoryView,
+    TopicPracticeResetView,
+)
 
 __all__ = [
     "RegisterView",
