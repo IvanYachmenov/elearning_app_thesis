@@ -167,7 +167,8 @@ function RegisterPage({onAuth}) {
     };
 
     const handleGitHubRegister = () => {
-        window.location.href = `${API_URL}/accounts/github/login/`;
+        // Ask backend to force account chooser (if provider supports it)
+        window.location.href = `${API_URL}/accounts/github/login/?next=/home&select_account=1`;
     };
 
     useEffect(() => {
