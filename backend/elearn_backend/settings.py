@@ -13,9 +13,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from backend/.env (if present)
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,6 +34,9 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "127.0.0.1", "localhost"
 ]
+
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -56,6 +63,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
     
     # Local
     'core'
@@ -202,11 +210,26 @@ SOCIALACCOUNT_PROVIDERS = {
         },
         # Configuration via settings.py - alternative is Django admin
         'APP': {
-            'client_id': os.getenv('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID_HERE'),
-            'secret': os.getenv('GOOGLE_CLIENT_SECRET', 'YOUR_GOOGLE_CLIENT_SECRET_HERE'),
+            # Keep empty by default; set via environment variables in real deployments.
+            'client_id': os.getenv('GOOGLE_CLIENT_ID', ''),
+            'secret': os.getenv('GOOGLE_CLIENT_SECRET', ''),
             'key': ''
         }
-    }
+    },
+    'github': {
+        'SCOPE': [
+            # Minimal scopes for authentication + email.
+            'read:user',
+            'user:email',
+        ],
+        'APP': {
+            # Keep empty by default; set via environment variables in real deployments.
+            'client_id': os.getenv('GITHUB_CLIENT_ID', ''),
+            'secret': os.getenv('GITHUB_CLIENT_SECRET', ''),
+            'key': '',
+        },
+    },
+    
 }
 
 # Allauth Account Settings

@@ -28,11 +28,13 @@ class User(AbstractUser):
     
     # OAuth fields
     google_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    github_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
     auth_provider = models.CharField(
         max_length=20,
         choices=[
             ('email', 'Email'),
             ('google', 'Google'),
+            ('github', 'GitHub'),
         ],
         default='email'
     )

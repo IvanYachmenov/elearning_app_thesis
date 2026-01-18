@@ -4,6 +4,10 @@ from .views import (
     RegisterView,
     MeView,
     GoogleOAuthView,
+    GitHubOAuthLoginView,
+    GitHubOAuthCallbackView,
+    SocialConnectionsView,
+    SocialDisconnectView,
     CourseListView,
     CourseDetailView,
     EnrollCourseView,
@@ -30,6 +34,14 @@ urlpatterns = [
     path("auth/register/", RegisterView.as_view(), name="register"),
     path("auth/me/", MeView.as_view(), name="me"),
     path("auth/google/", GoogleOAuthView.as_view(), name="google-oauth"),
+    path("auth/github/login/", GitHubOAuthLoginView.as_view(), name="github-oauth-login"),
+    path("auth/github/callback/", GitHubOAuthCallbackView.as_view(), name="github-oauth-callback"),
+    path("auth/social-connections/", SocialConnectionsView.as_view(), name="social-connections"),
+    path(
+        "auth/social-connections/<str:provider>/disconnect/",
+        SocialDisconnectView.as_view(),
+        name="social-disconnect",
+    ),
 
     #courses
     path("courses/", CourseListView.as_view(), name="course-list"),

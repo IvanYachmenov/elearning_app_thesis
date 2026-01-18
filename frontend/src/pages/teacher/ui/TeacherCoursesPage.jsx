@@ -107,20 +107,29 @@ function TeacherCoursesPage({user}) {
             ) : (
                 <div className="teacher-courses-grid">
                     {courses.map((course) => (
-                        <div key={course.id} className="teacher-course-card">
+                        <div
+                            key={course.id}
+                            className="teacher-course-card teacher-course-card--clickable"
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => handleEditCourse(course.id)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handleEditCourse(course.id);
+                                }
+                            }}
+                        >
                             <div className="teacher-course-card__header">
                                 <h3 className="teacher-course-card__title">{course.title}</h3>
                                 <div className="teacher-course-card__actions">
                                     <button
-                                        className="teacher-course-card__edit"
-                                        onClick={() => handleEditCourse(course.id)}
-                                        title="Edit course"
-                                    >
-                                        ✏️
-                                    </button>
-                                    <button
                                         className="teacher-course-card__delete"
-                                        onClick={() => handleDeleteCourse(course.id)}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleDeleteCourse(course.id);
+                                        }}
                                         title="Delete course"
                                     >
                                         🗑️

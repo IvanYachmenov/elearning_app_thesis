@@ -126,15 +126,6 @@ function MainLayout({user, onLogout}) {
                             </NavLink>
                         </nav>
 
-                        <div className="nav-points-balance">
-                            <img 
-                                src="/assets/icons/brains.png" 
-                                alt="Cat Coins" 
-                                className="nav-points-balance__icon"
-                            />
-                            <span className="nav-points-balance__value">{user?.points || 0}</span>
-                        </div>
-
                         <NavLink
                             to="/profile"
                             className={({isActive}) =>

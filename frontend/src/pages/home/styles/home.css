@@ -54,7 +54,7 @@
 }
 
 .home-section__link:hover {
-  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  background: var(--nav-orange);
   transform: translateY(-1px);
 }
 
@@ -116,7 +116,7 @@
   margin-top: 20px;
   padding: 12px 24px;
   border: 2px solid var(--nav-black);
-  background: linear-gradient(135deg, #10b981, #34d399);
+  background: #10b981;
   color: #fff;
   font-size: 14px;
   font-weight: 900;
@@ -127,100 +127,9 @@
 }
 
 .home-courses-scroll__button:hover {
-  background: linear-gradient(135deg, #0ea371, #2ecf8a);
+  background: #0ea371;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.home-section--shop {
-  background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(251, 146, 60, 0.1) 100%);
-}
-
-.home-shop-showcase {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.home-shop-item {
-  background: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #f97316 100%);
-  border: 2px solid var(--nav-black);
-  padding: 16px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  transition: transform 0.14s ease, box-shadow 0.14s ease;
-}
-
-.home-shop-item:nth-child(2) {
-  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #14b8a6 100%);
-}
-
-.home-shop-item:nth-child(3) {
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #ec4899 100%);
-}
-
-.home-shop-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(11, 11, 13, 0.25);
-}
-
-.home-shop-item__icon {
-  font-size: 32px;
-  flex-shrink: 0;
-}
-
-.home-shop-item__content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.home-shop-item__name {
-  font-size: 14px;
-  font-weight: 900;
-  color: #0f172a;
-  margin: 0;
-}
-
-.home-shop-item__price {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.home-shop-item__price-old {
-  font-size: 12px;
-  color: rgba(15, 23, 42, 0.5);
-  text-decoration: line-through;
-}
-
-.home-shop-item__price-new {
-  font-size: 16px;
-  font-weight: 900;
-  color: #0f172a;
-}
-
-.home-shop-showcase__button {
-  margin-top: 20px;
-  padding: 12px 24px;
-  border: 2px solid var(--nav-black);
-  background: linear-gradient(135deg, #ec4899, #f472b6);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 900;
-  cursor: pointer;
-  transition: background-color 0.14s ease, transform 0.14s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.home-shop-showcase__button:hover {
-  background: linear-gradient(135deg, #db2777, #ec4899);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
 }
 
 .home-news-list {

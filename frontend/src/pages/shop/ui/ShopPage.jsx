@@ -11,9 +11,9 @@ function ShopPage() {
                     textAlign: 'center',
                 }}
             >
-                <h1 className="page__title">🛍️ Shop</h1>
+                <h1 className="page__title">Shop</h1>
                 <p className="page__subtitle">
-                    Spend your points on cosmetics and bonuses. Coming soon!
+                    Coming soon.
                 </p>
             </div>
         </div>

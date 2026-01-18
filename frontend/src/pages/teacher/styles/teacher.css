@@ -11,7 +11,7 @@
   padding: 12px 24px;
   border-radius: 0;
   border: 2px solid var(--nav-black);
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  background: #10b981;
   color: #fff;
   font-size: 14px;
   font-weight: 900;
@@ -21,7 +21,7 @@
 }
 
 .teacher-create-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0ea371 0%, #2ecf8a 100%);
+  background: #0ea371;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
@@ -55,6 +55,15 @@
   transition: box-shadow 0.14s ease;
 }
 
+.teacher-course-card--clickable {
+  cursor: pointer;
+}
+
+.teacher-course-card--clickable:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(11, 11, 13, 0.12);
+}
+
 .teacher-course-card:hover {
   box-shadow: 0 4px 12px rgba(11, 11, 13, 0.2);
 }
@@ -82,7 +91,6 @@
   flex-shrink: 0;
 }
 
-.teacher-course-card__edit,
 .teacher-course-card__delete {
   width: 40px;
   height: 40px;
@@ -94,10 +102,6 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.14s ease, transform 0.14s ease;
-}
-
-.teacher-course-card__edit:hover {
-  background: rgba(11, 11, 13, 0.05);
 }
 
 .teacher-course-card__delete:hover {
@@ -164,7 +168,7 @@
   flex-wrap: wrap;
   gap: 16px;
   padding-bottom: 20px;
-  border-bottom: 2px solid var(--nav-black);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .teacher-course-edit-back {
@@ -190,7 +194,7 @@
 .teacher-course-edit-footer {
   margin-top: 40px;
   padding-top: 32px;
-  border-top: 2px solid var(--nav-black);
+  border-top: 1px solid var(--border-light);
 }
 
 .teacher-course-edit-actions {
@@ -203,7 +207,7 @@
   padding: 12px 24px;
   border-radius: 0;
   border: 2px solid var(--nav-black);
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  background: #10b981;
   color: #fff;
   font-size: 14px;
   font-weight: 900;
@@ -213,7 +217,7 @@
 }
 
 .teacher-save-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0ea371 0%, #2ecf8a 100%);
+  background: #0ea371;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
@@ -260,10 +264,10 @@
 }
 
 .teacher-course-edit-form {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 115, 22, 0.05) 100%);
+  background: #ffffff;
   padding: 32px;
   border-radius: 0;
-  border: 2px solid var(--nav-black);
+  border: 1px solid var(--border-light);
   box-shadow: var(--shadow-sm);
 }
 
@@ -359,7 +363,7 @@
 .teacher-course-modules {
   margin-top: 32px;
   padding-top: 32px;
-  border-top: 2px solid var(--nav-black);
+  border-top: 1px solid var(--border-light);
 }
 
 .teacher-modules-header {
@@ -380,7 +384,7 @@
   padding: 8px 16px;
   border-radius: 0;
   border: 2px solid var(--nav-black);
-  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  background: var(--nav-orange);
   color: #0f172a;
   font-size: 13px;
   font-weight: 900;
@@ -390,26 +394,26 @@
 }
 
 .teacher-add-module-btn:hover {
-  background: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
+  background: #ea770e;
   box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25);
 }
 
 .teacher-modules-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .teacher-module-item {
-  padding: 20px;
-  border: 2px solid var(--nav-black);
-  background: linear-gradient(135deg, #ffffff 0%, rgba(249, 115, 22, 0.03) 100%);
-  box-shadow: var(--shadow-sm);
+  padding: 14px;
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+  box-shadow: none;
   transition: box-shadow 0.14s ease;
 }
 
 .teacher-module-item:hover {
-  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15);
+  box-shadow: 0 2px 8px rgba(11, 11, 13, 0.12);
 }
 
 .teacher-module-header {
@@ -486,7 +490,7 @@
   padding: 6px 12px;
   border-radius: 0;
   border: 2px solid var(--nav-black);
-  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  background: var(--nav-orange);
   color: #0f172a;
   font-size: 12px;
   font-weight: 900;
@@ -496,26 +500,26 @@
 }
 
 .teacher-add-topic-btn:hover {
-  background: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
+  background: #ea770e;
   box-shadow: 0 2px 6px rgba(249, 115, 22, 0.2);
 }
 
 .teacher-topics-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .teacher-topic-item {
-  padding: 16px;
+  padding: 12px;
   border: 1px solid var(--border-medium);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(249, 115, 22, 0.05) 100%);
-  border-left: 3px solid #f97316;
+  background: #ffffff;
   transition: box-shadow 0.14s ease;
+  margin-left: 20px; /* tree indentation */
 }
 
 .teacher-topic-item:hover {
-  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.15);
+  box-shadow: 0 2px 6px rgba(11, 11, 13, 0.12);
 }
 
 .teacher-topic-header {
@@ -620,7 +624,7 @@
   padding: 6px 12px;
   border-radius: 0;
   border: 2px solid var(--nav-black);
-  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  background: var(--nav-orange);
   color: #0f172a;
   font-size: 12px;
   font-weight: 900;
@@ -630,21 +634,21 @@
 }
 
 .teacher-add-question-btn:hover {
-  background: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
+  background: #ea770e;
   box-shadow: 0 2px 6px rgba(249, 115, 22, 0.2);
 }
 
 .teacher-questions-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .teacher-question-item {
-  padding: 16px;
+  padding: 12px;
   border: 1px solid var(--border-medium);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(251, 146, 60, 0.05) 100%);
-  border-left: 3px solid #fb923c;
+  background: #ffffff;
+  margin-left: 20px; /* deeper indentation (inside topic) */
 }
 
 .teacher-question-header {
@@ -694,7 +698,7 @@
   padding: 4px 10px;
   border-radius: 0;
   border: 1px solid var(--nav-black);
-  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  background: var(--nav-orange);
   color: #0f172a;
   font-size: 11px;
   font-weight: 900;
@@ -703,7 +707,7 @@
 }
 
 .teacher-add-option-btn:hover {
-  background: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
+  background: #ea770e;
 }
 
 .teacher-options-list {
@@ -881,25 +885,25 @@
 }
 
 [data-theme="dark"] .teacher-course-edit-form {
-  background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(249, 115, 22, 0.05) 100%);
+  background: var(--bg-primary);
 }
 
 [data-theme="dark"] .teacher-module-item {
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(249, 115, 22, 0.05) 100%);
+  background: var(--bg-secondary);
   border-color: var(--border-color);
 }
 
 [data-theme="dark"] .teacher-module-item:hover {
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 [data-theme="dark"] .teacher-topic-item {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(249, 115, 22, 0.08) 100%);
+  background: var(--bg-primary);
   border-color: var(--border-color);
 }
 
 [data-theme="dark"] .teacher-question-item {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(251, 146, 60, 0.08) 100%);
+  background: var(--bg-primary);
   border-color: var(--border-color);
 }
 

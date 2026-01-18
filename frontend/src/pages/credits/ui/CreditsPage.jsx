@@ -45,6 +45,28 @@ function CreditsPage() {
                             Google icons created by Freepik - Flaticon
                         </a>
                     </li>
+                    <li style={{marginBottom: '8px'}}>
+                        <a
+                            href="https://www.flaticon.com/free-icons/quit"
+                            title="quit icons"
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
+                        >
+                            Quit icons created by Pixel perfect - Flaticon
+                        </a>
+                    </li>
+                    <li style={{marginBottom: '8px'}}>
+                        <a
+                            href="https://www.flaticon.com/free-icons/correct"
+                            title="correct icons"
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
+                        >
+                            Correct icons created by Aldo Cervantes - Flaticon
+                        </a>
+                    </li>
                 </ul>
             </section>
 

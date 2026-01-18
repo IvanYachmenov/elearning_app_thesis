@@ -1,5 +1,5 @@
 import {useEffect, useState, useRef} from 'react';
-import {api, setAuthToken} from '../../../shared/api';
+import {api, setAuthToken, API_URL} from '../../../shared/api';
 import {Link, useNavigate} from 'react-router-dom';
 import {setCookie} from '../../../shared/lib/cookies';
 import {initializeGoogleSignIn} from '../../../shared/lib/google-auth';
@@ -155,12 +155,45 @@ function LoginPage({onAuth}) {
     };
 
     const handleGitHubLogin = () => {
-        // TODO: Implement GitHub OAuth
-        console.log('GitHub login clicked');
+        window.location.href = `${API_URL}/accounts/github/login/`;
     };
     useEffect(() => {
         document.body.classList.remove('theme-app');
         document.body.classList.add('theme-auth');
+
+        // Handle GitHub OAuth redirect back (tokens come via query params)
+        const params = new URLSearchParams(window.location.search);
+        const access = params.get('access');
+        const refresh = params.get('refresh');
+        const error = params.get('error');
+        const provider = params.get('provider');
+        const nextPath = params.get('next');
+
+        if (error && provider === 'github') {
+            setError(`GitHub authentication failed: ${error}`);
+        }
+
+        if (access && refresh && provider === 'github') {
+            (async () => {
+                try {
+                    setIsLoading(true);
+                    setCookie('access', access, 365);
+                    setCookie('refresh', refresh, 365);
+                    setAuthToken(access);
+
+                    const meResp = await api.get('/api/auth/me/');
+                    if (onAuth) {
+                        onAuth(access, meResp.data);
+                    }
+                    navigate(nextPath && nextPath.startsWith('/') ? nextPath : '/home', {replace: true});
+                } catch (err) {
+                    console.error('GitHub callback handling error:', err);
+                    setError('GitHub authentication failed. Please try again.');
+                } finally {
+                    setIsLoading(false);
+                }
+            })();
+        }
         
         // Initialize Google Sign-In when component mounts
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
@@ -211,7 +244,7 @@ function LoginPage({onAuth}) {
                                     type="button"
                                     className="auth-oauth-button auth-oauth-button--github"
                                     onClick={handleGitHubLogin}
-                                    disabled
+                                    disabled={isLoading}
                                 >
                                     <img 
                                         src="/assets/icons/github.png" 
@@ -219,7 +252,6 @@ function LoginPage({onAuth}) {
                                         className="auth-oauth-icon"
                                     />
                                     Continue with GitHub
-                                    <span className="auth-oauth-badge">Soon</span>
                                 </button>
                             </div>
 

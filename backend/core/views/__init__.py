@@ -1,4 +1,12 @@
-from .auth import RegisterView, MeView, GoogleOAuthView
+from .auth import (
+    RegisterView,
+    MeView,
+    GoogleOAuthView,
+    GitHubOAuthLoginView,
+    GitHubOAuthCallbackView,
+    SocialConnectionsView,
+    SocialDisconnectView,
+)
 from .courses import (
     CourseListView,
     CourseDetailView,
@@ -23,6 +31,10 @@ __all__ = [
     "RegisterView",
     "MeView",
     "GoogleOAuthView",
+    "GitHubOAuthLoginView",
+    "GitHubOAuthCallbackView",
+    "SocialConnectionsView",
+    "SocialDisconnectView",
     "CourseListView",
     "CourseDetailView",
     "EnrollCourseView",

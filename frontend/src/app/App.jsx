@@ -3,21 +3,24 @@ import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 
 import '../shared/styles/index.css';
 
-import {LoginPage, RegisterPage} from '../pages/auth';
-import {LandingPage} from '../pages/landing';
-
-import {HomePage} from '../pages/home';
-import {ProfilePage} from '../pages/profile';
-import {SettingsPage} from '../pages/settings';
-import {ShopPage} from '../pages/shop';
-
-import {CreditsPage} from '../pages/credits';
-
-import {CourseDetailPage, CoursesPage} from '../pages/courses';
-
-import {CourseLearningPage, LearningPage, TopicTheoryPage, TopicPracticePage} from '../pages/learning';
-
-import {TeacherCoursesPage, TeacherCourseEditPage} from '../pages/teacher';
+import {
+    LoginPage,
+    RegisterPage,
+    LandingPage,
+    HomePage,
+    ProfilePage,
+    SettingsPage,
+    ShopPage,
+    CreditsPage,
+    CourseDetailPage,
+    CoursesPage,
+    CourseLearningPage,
+    LearningPage,
+    TopicTheoryPage,
+    TopicPracticePage,
+    TeacherCoursesPage,
+    TeacherCourseEditPage,
+} from '../pages';
 
 import {MainLayout} from '../widgets/layout';
 
@@ -44,11 +47,16 @@ function App() {
         api
             .get('/api/auth/me/')
             .then((resp) => setUser(resp.data))
-            .catch(() => {
-                deleteCookie('access');
-                deleteCookie('refresh');
-                setAuthToken(null);
-                setUser(null);
+            .catch((err) => {
+                // Important: don't wipe tokens on transient errors (backend down, network issue).
+                // Only clear auth if the token is actually rejected.
+                const status = err?.response?.status;
+                if (status === 401 || status === 403) {
+                    deleteCookie('access');
+                    deleteCookie('refresh');
+                    setAuthToken(null);
+                    setUser(null);
+                }
             })
             .finally(() => setIsCheckingAuth(false));
     }, []);
@@ -125,7 +133,7 @@ function App() {
                     <Route path="/learning" element={<LearningPage/>}/>
                     <Route path="/learning/courses/:id" element={<CourseLearningPage/>}/>
                     <Route path="/shop" element={<ShopPage/>}/>
-                    <Route path="/settings" element={<SettingsPage/>}/>
+                    <Route path="/settings" element={<SettingsPage user={user} onUserUpdate={setUser}/>}/>
                     <Route path="/credits" element={<CreditsPage/>}/>
                     <Route path="/learning/courses/:courseId/topics/:topicId" element={<TopicTheoryPage/>}/>
                     <Route path="/learning/courses/:courseId/topics/:topicId/practice" element={<TopicPracticePage/>}/>

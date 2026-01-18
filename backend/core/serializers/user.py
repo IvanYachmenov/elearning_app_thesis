@@ -31,6 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "date_joined",
             "role",
             "points",
             "two_factor_enabled",
@@ -40,7 +41,16 @@ class UserSerializer(serializers.ModelSerializer):
             "avatar_url",
             "profile_background_gradient",
         )
-        read_only_fields = ("email", "role", "points", "two_factor_enabled", "auth_provider", "email_verified", "avatar_url")
+        read_only_fields = (
+            "email",
+            "date_joined",
+            "role",
+            "points",
+            "two_factor_enabled",
+            "auth_provider",
+            "email_verified",
+            "avatar_url",
+        )
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
 

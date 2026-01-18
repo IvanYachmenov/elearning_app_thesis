@@ -32,7 +32,7 @@ function HomePage({user}) {
             id: 2,
             title: "Gamification System Update",
             date: "2024-01-10",
-            excerpt: "Earn points for completing lessons and unlock exclusive rewards in the shop. Track your progress and compete with others!"
+            excerpt: "We’re iterating on motivation features. More details soon."
         },
         {
             id: 3,
@@ -45,7 +45,7 @@ function HomePage({user}) {
     return (
         <div className="page page-enter">
             <div className="home-welcome">
-                <h1 className="page__title">Hey {user.username}! 👋 Ready to level up today?</h1>
+                <h1 className="page__title">Welcome, {user.username}!</h1>
                 <p className="page__subtitle">
                     Your personal learning platform for mastering programming.
                 </p>
@@ -95,46 +95,16 @@ function HomePage({user}) {
                 </div>
             </section>
 
-            {/* Shop Showcase Section */}
-            <section className="home-section home-section--shop">
-                <h2 className="home-section__title">🔥 Special Offers</h2>
-                <div className="home-shop-showcase">
-                    <div className="home-shop-item">
-                        <div className="home-shop-item__icon">✨</div>
-                        <div className="home-shop-item__content">
-                            <h3 className="home-shop-item__name">Premium Theme Pack</h3>
-                            <div className="home-shop-item__price">
-                                <span className="home-shop-item__price-old">100</span>
-                                <span className="home-shop-item__price-new">50 brains</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="home-shop-item">
-                        <div className="home-shop-item__icon">🔥</div>
-                        <div className="home-shop-item__content">
-                            <h3 className="home-shop-item__name">7-Day Streak Bonus</h3>
-                            <div className="home-shop-item__price">
-                                <span className="home-shop-item__price-old">150</span>
-                                <span className="home-shop-item__price-new">100 brains</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="home-shop-item">
-                        <div className="home-shop-item__icon">🏆</div>
-                        <div className="home-shop-item__content">
-                            <h3 className="home-shop-item__name">Exclusive Badge</h3>
-                            <div className="home-shop-item__price">
-                                <span className="home-shop-item__price-old">250</span>
-                                <span className="home-shop-item__price-new">200 brains</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button 
-                    className="home-shop-showcase__button"
+            <section className="home-section">
+                <h2 className="home-section__title">Shop</h2>
+                <p className="home-section__text">
+                    The shop is being redesigned. We’ll add it back once the earning and spending logic is defined.
+                </p>
+                <button
+                    className="home-courses-scroll__button"
                     onClick={() => navigate('/shop')}
                 >
-                    Visit Shop →
+                    Open shop →
                 </button>
             </section>
 

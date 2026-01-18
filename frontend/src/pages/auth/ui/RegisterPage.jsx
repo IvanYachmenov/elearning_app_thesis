@@ -1,5 +1,5 @@
 import {useEffect, useState, useRef} from 'react';
-import {api, setAuthToken} from '../../../shared/api';
+import {api, setAuthToken, API_URL} from '../../../shared/api';
 import {Link, useNavigate} from 'react-router-dom';
 import {setCookie} from '../../../shared/lib/cookies';
 import {initializeGoogleSignIn} from '../../../shared/lib/google-auth';
@@ -167,8 +167,7 @@ function RegisterPage({onAuth}) {
     };
 
     const handleGitHubRegister = () => {
-        // TODO: Implement GitHub OAuth
-        console.log('GitHub register clicked');
+        window.location.href = `${API_URL}/accounts/github/login/`;
     };
 
     useEffect(() => {
@@ -224,7 +223,7 @@ function RegisterPage({onAuth}) {
                                     type="button"
                                     className="auth-oauth-button auth-oauth-button--github"
                                     onClick={handleGitHubRegister}
-                                    disabled
+                                    disabled={isLoading}
                                 >
                                     <img 
                                         src="/assets/icons/github.png" 
@@ -232,7 +231,6 @@ function RegisterPage({onAuth}) {
                                         className="auth-oauth-icon"
                                     />
                                     Continue with GitHub
-                                    <span className="auth-oauth-badge">Soon</span>
                                 </button>
                             </div>
 

@@ -274,29 +274,6 @@
     white-space: nowrap;
 }
 
-.nav-points-balance {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 18px;
-    background: #fff;
-    border-left: 2px solid var(--nav-black);
-    font-weight: 900;
-    font-size: 15.5px;
-    color: var(--nav-black);
-}
-
-.nav-points-balance__icon {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-}
-
-.nav-points-balance__value {
-    white-space: nowrap;
-}
-
 /* === Burger button === */
 .burger-button {
     height: 100%;
@@ -648,19 +625,5 @@
     }
     .profile-button {
         border-left: 0;
-    }
-
-    .nav-points-balance {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0 18px;
-        background: #fff;
-        border-left: none;
-        border-right: 2px solid var(--nav-black);
-        font-weight: 900;
-        font-size: 15.5px;
-        color: var(--nav-black);
     }
 }
