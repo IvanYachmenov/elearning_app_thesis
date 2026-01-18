@@ -1,0 +1,133 @@
+.landing-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #f97316 70%, #fb923c 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+}
+
+.landing-container::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background:
+        linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 44px 44px;
+    opacity: 0.18;
+    transform: rotate(10deg);
+}
+
+.landing-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    animation: landingFadeIn 0.6s ease-out both;
+}
+
+@keyframes landingFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.landing-header {
+    margin-bottom: 48px;
+}
+
+.landing-title {
+    font-size: 56px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: #fff;
+    margin: 0 0 16px;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.landing-subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.landing-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-decoration: none;
+}
+
+.landing-button {
+    display: block;
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 16px;
+    font-weight: 900;
+    text-align: center;
+    text-decoration: none;
+    border: 2px solid;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed), background-color var(--transition-speed);
+    border-radius: 0;
+    color: white ;
+}
+
+.landing-button--primary {
+    color: #fff !important;
+    background: var(--nav-black);
+    border-color: var(--nav-black);
+}
+
+.landing-button--primary:hover {
+    color: #fff;
+    background: #111114;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(11, 11, 13, 0.25);
+    text-decoration: none;
+}
+
+.landing-button--secondary {
+    color: var(--nav-black);
+    background: #fff;
+    border-color: #fff;
+}
+
+.landing-button--secondary:hover {
+    background: #fafafa;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(255, 255, 255, 0.3);
+    text-decoration: none;
+}
+
+.landing-button--tertiary {
+    color: #fff;
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.landing-button--tertiary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+@media (max-width: 640px) {
+    .landing-title {
+        font-size: 42px;
+    }
+
+    .landing-subtitle {
+        font-size: 16px;
+    }
+}

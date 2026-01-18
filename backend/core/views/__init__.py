@@ -1,4 +1,4 @@
-from .auth import RegisterView, MeView
+from .auth import RegisterView, MeView, GoogleOAuthView
 from .courses import (
     CourseListView,
     CourseDetailView,
@@ -22,6 +22,7 @@ from .learning import (
 __all__ = [
     "RegisterView",
     "MeView",
+    "GoogleOAuthView",
     "CourseListView",
     "CourseDetailView",
     "EnrollCourseView",

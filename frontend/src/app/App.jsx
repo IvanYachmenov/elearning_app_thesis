@@ -4,6 +4,7 @@ import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import '../shared/styles/index.css';
 
 import {LoginPage, RegisterPage} from '../pages/auth';
+import {LandingPage} from '../pages/landing';
 
 import {HomePage} from '../pages/home';
 import {ProfilePage} from '../pages/profile';
@@ -91,7 +92,7 @@ function App() {
                 <Route
                     path="/"
                     element={
-                        user ? <Navigate to="/home" replace/> : <Navigate to="/register" replace/>
+                        user ? <Navigate to="/home" replace/> : <LandingPage/>
                     }
                 />
 

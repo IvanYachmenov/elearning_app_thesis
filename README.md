@@ -48,6 +48,7 @@ The system features a responsive design that works on desktop and mobile devices
 - Django 5.2.8 - Web framework
 - Django REST Framework - API development
 - Django REST Framework Simple JWT - Authentication
+- django-allauth - OAuth authentication (Google)
 - django-cors-headers - CORS handling
 - django-filter - API filtering
 - PostgreSQL - Database
@@ -104,12 +105,13 @@ The system features a responsive design that works on desktop and mobile devices
    ```bash
    pip install -r requirements.txt
    ```
-   Or install manually:
-   ```bash
-   pip install "Django==5.2.8" djangorestframework djangorestframework-simplejwt django-cors-headers django-filter psycopg2-binary Pillow
-   ```
 
-5. Configure PostgreSQL database:
+5. Configure environment variables:
+   - Create `backend/.env` file
+   - Add: `DJANGO_SECRET_KEY`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+   - Generate SECRET_KEY: `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
+
+6. Configure PostgreSQL database:
    
    Open PostgreSQL command line as a superuser (e.g., `psql -U postgres`) and run:
    ```sql
@@ -121,27 +123,23 @@ The system features a responsive design that works on desktop and mobile devices
    \q
    ```
 
-   Alternatively, you can update the database settings in `backend/elearn_backend/settings.py` to match your existing PostgreSQL configuration.
-
-6. Run database migrations:
+7. Run database migrations:
    ```bash
    python manage.py makemigrations
    python manage.py migrate
    ```
 
-7. Create a superuser account:
+8. Create a superuser account:
    ```bash
    python manage.py createsuperuser
    ```
    Follow the prompts to create an admin account.
 
-8. Start the development server:
+9. Start the development server:
    ```bash
    python manage.py runserver
    ```
    The API will be available at http://127.0.0.1:8000/
-
-   Note: Make sure to configure `CORS_ALLOWED_ORIGINS` in `settings.py` to include your frontend URL (typically http://localhost:5173 for Vite development server).
 
 ### Frontend Setup
 
@@ -155,13 +153,15 @@ The system features a responsive design that works on desktop and mobile devices
    npm install
    ```
 
-3. Start the development server:
+3. Configure environment variables:
+   - Create `frontend/.env` file
+   - Add: `VITE_GOOGLE_CLIENT_ID=your-google-client-id`
+
+4. Start the development server:
    ```bash
    npm run dev
    ```
    The application will be available at http://localhost:5173/
-
-   If your backend runs on a different host or port, update the API base URL in `frontend/src/shared/api/client.js` or set the `VITE_API_BASE_URL` environment variable.
 
 ## Using the Application
 
@@ -260,6 +260,10 @@ All API endpoints are prefixed with `/api/`. Authenticated endpoints require a J
 - `POST /api/auth/token/refresh/` - Refresh the access token
   - Request body: `refresh` token
   - Returns: New `access` token
+
+- `POST /api/auth/google/` - Authenticate with Google OAuth
+  - Request body: `token` (Google ID token)
+  - Returns: `access`, `refresh` tokens and user data
 
 - `GET /api/auth/me/` - Get current user profile (authenticated)
   - Returns: User profile data including avatar URL and profile background
@@ -419,23 +423,23 @@ web_application_thesis/
 
 ## Configuration
 
-### Backend Configuration
+### Environment Variables
 
-Key settings in `backend/elearn_backend/settings.py`:
-- `DATABASES` - PostgreSQL connection settings
-- `CORS_ALLOWED_ORIGINS` - Allowed frontend origins for CORS
-- `MEDIA_URL` and `MEDIA_ROOT` - Configuration for serving uploaded files
-- `JWT_AUTH` settings for token expiration
+**Backend (`backend/.env`):**
+- `DJANGO_SECRET_KEY` - Django secret key (generate with: `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`)
+- `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` - PostgreSQL settings
+- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` - Google OAuth credentials
 
-### Frontend Configuration
+**Frontend (`frontend/.env`):**
+- `VITE_GOOGLE_CLIENT_ID` - Google OAuth Client ID (same as backend)
 
-- API base URL: Set in `frontend/src/shared/api/client.js` or via `VITE_API_BASE_URL` environment variable
-- Default backend URL: `http://127.0.0.1:8000`
+**Important:** Never commit `.env` files to Git. They are already in `.gitignore`.
 
 ## Development Notes
 
 - The application uses JWT tokens stored in cookies for authentication (with cookie consent banner)
 - Cookie consent is required on first visit - users must accept cookies to continue
+- Google OAuth authentication via `django-allauth` - accounts are automatically linked by email
 - Image uploads are handled via FormData and stored in `backend/media/users/` (for avatars) and `backend/media/courses/` (for course images)
 - Profile background gradients are stored as CSS gradient strings
 - Course slugs are automatically generated from titles and made unique
@@ -444,6 +448,17 @@ Key settings in `backend/elearn_backend/settings.py`:
 - All teacher operations are filtered to only show/modify courses created by the current user
 - Course editing interface includes collapsible modules and topics for better space management
 - Navigation is locked during timed tests with a visual notification banner
+
+## Next Steps After Setup
+
+1. Create `.env` files for backend and frontend (see Configuration section)
+2. Configure Google OAuth in Google Cloud Console
+3. Run migrations: `python manage.py migrate`
+4. Start backend: `python manage.py runserver`
+5. Start frontend: `npm run dev`
+6. Test authentication: Register, Login, Google OAuth
+
+See `explaining_account_linking.md` for detailed explanation of how account linking works (in Russian).
 
 ## Future Development Plans
 

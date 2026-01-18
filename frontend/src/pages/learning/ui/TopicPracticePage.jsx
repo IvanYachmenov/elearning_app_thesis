@@ -228,7 +228,6 @@ function TopicPracticePage() {
         hasTimer &&
         remainingSeconds > 0;
 
-    // После определения isTimedTestActive (около строки 165)
     useEffect(() => {
         if (isTimedTestActive) {
             lockNavigation(
@@ -524,6 +523,7 @@ function TopicPracticePage() {
     const isExitLocked = isTimedTestActive;
     const isAnswerLocked =
         (!!answerFeedback && answerFeedback.type === 'success' && !isTimedMode) ||
+        (!!answerFeedback && answerFeedback.type === 'fail' && !isTimedMode) || // Block when wrong answer shown
         (isTimedMode && timedAnswerSaved);
     const isLastQuestion = answerFeedback?.isLastQuestion || (answeredCount >= totalQuestions && totalQuestions > 0);
     const showNextButton =
@@ -593,11 +593,6 @@ function TopicPracticePage() {
             <section className="topic-practice">
                 <header className="topic-practice__header">
                     <div className="topic-practice__progress">
-                        <div className="topic-practice__progress-info">
-                            <span>
-                                {answeredCount}/{totalQuestions} questions
-                            </span>
-                        </div>
                         <div className="learning-progress-bar">
                             <div
                                 className="learning-progress-bar__fill"

@@ -14,6 +14,15 @@ class UserSerializer(serializers.ModelSerializer):
             return f"{settings.MEDIA_URL}{obj.avatar.url}" if obj.avatar else None
         return None
     
+    def validate_username(self, value):
+        """Validate username uniqueness, excluding current user"""
+        user = self.instance
+        if user and User.objects.filter(username=value).exclude(pk=user.pk).exists():
+            raise serializers.ValidationError("A user with this username already exists. Please choose another one.")
+        elif not user and User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("A user with this username already exists. Please choose another one.")
+        return value
+    
     class Meta:
         model = User
         fields = (
@@ -25,11 +34,13 @@ class UserSerializer(serializers.ModelSerializer):
             "role",
             "points",
             "two_factor_enabled",
+            "auth_provider",
+            "email_verified",
             "avatar",
             "avatar_url",
             "profile_background_gradient",
         )
-        read_only_fields = ("username", "email", "role", "points", "two_factor_enabled", "avatar_url")
+        read_only_fields = ("email", "role", "points", "two_factor_enabled", "auth_provider", "email_verified", "avatar_url")
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
 

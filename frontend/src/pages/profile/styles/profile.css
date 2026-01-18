@@ -331,7 +331,8 @@
   border: 2px solid var(--nav-black);
   border-radius: 0;
   z-index: 10;
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
   box-shadow: 0 8px 24px rgba(11, 11, 13, 0.2);
 }
 
@@ -379,9 +380,19 @@
 
 .profile-gradients-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(6, 48px);
+  gap: 4px;
+  width: auto;
 }
+
+/* На средних экранах - 2 ряда по 3 */
+@media (max-width: 640px) {
+  .profile-gradients-grid {
+    grid-template-columns: repeat(3, 48px);
+    gap: 6px;
+  }
+}
+
 
 .profile-gradient-option {
   width: 48px;
@@ -564,10 +575,5 @@
   .profile-gradients-container {
     flex-wrap: wrap;
     justify-content: center;
-  }
-
-  .profile-gradients-grid {
-    grid-template-columns: repeat(3, 1fr);
-    flex: 1;
   }
 }

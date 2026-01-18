@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@oqrhd)-jho3y-8u2!s481$_!2v4ns$dn2llg+af&c1iz&03gj'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-@oqrhd)-jho3y-8u2!s481$_!2v4ns$dn2llg+af&c1iz&03gj')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -45,11 +46,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Required for allauth
+    
+    # Third party
     'rest_framework',
     'corsheaders',
     'django_filters',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    
+    # Local
     'core'
 ]
+
+SITE_ID = 1  # Required for allauth
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -58,8 +70,14 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  # Required for allauth
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 REST_FRAMEWORK = {
@@ -103,12 +121,12 @@ WSGI_APPLICATION = 'elearn_backend.wsgi.application'
 
 DATABASES = {
     "default": {
-    "ENGINE": "django.db.backends.postgresql",
-    "NAME": "elearning",
-    "USER": "elearn_user",
-    "PASSWORD": "strong_password",
-    "HOST": "localhost",
-    "PORT": "5432",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "elearning"),
+        "USER": os.getenv("DB_USER", "elearn_user"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "strong_password"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
@@ -165,4 +183,37 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,  # Generate new refresh token on each refresh
     'BLACKLIST_AFTER_ROTATION': False,
 }
+
+# Django Allauth Settings
+# Get these from Google Cloud Console: https://console.cloud.google.com/
+# Create OAuth 2.0 Client ID for Web application
+
+# Google OAuth Provider Settings
+# Note: Can be configured either via settings.py (APP section) or via Django admin (SocialApplication)
+# If using Django admin, remove the 'APP' section below
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        # Configuration via settings.py - alternative is Django admin
+        'APP': {
+            'client_id': os.getenv('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID_HERE'),
+            'secret': os.getenv('GOOGLE_CLIENT_SECRET', 'YOUR_GOOGLE_CLIENT_SECRET_HERE'),
+            'key': ''
+        }
+    }
+}
+
+# Allauth Account Settings
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # We'll handle email verification separately
+ACCOUNT_ADAPTER = 'core.adapters.CustomAccountAdapter'  # Custom adapter for user creation
+SOCIALACCOUNT_ADAPTER = 'core.adapters.CustomSocialAccountAdapter'  # Custom adapter for social accounts
 

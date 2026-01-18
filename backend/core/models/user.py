@@ -26,6 +26,18 @@ class User(AbstractUser):
 
     two_factor_enabled = models.BooleanField(default=False)
     
+    # OAuth fields
+    google_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    auth_provider = models.CharField(
+        max_length=20,
+        choices=[
+            ('email', 'Email'),
+            ('google', 'Google'),
+        ],
+        default='email'
+    )
+    email_verified = models.BooleanField(default=False)
+    
     avatar = models.ImageField(
         upload_to=user_avatar_upload_path,
         null=True,
@@ -34,7 +46,7 @@ class User(AbstractUser):
     )
     
     profile_background_gradient = models.CharField(
-        max_length=200,
+        max_length=500,
         null=True,
         blank=True,
         help_text="CSS gradient string for profile background"

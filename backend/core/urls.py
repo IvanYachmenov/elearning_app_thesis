@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     RegisterView,
     MeView,
+    GoogleOAuthView,
     CourseListView,
     CourseDetailView,
     EnrollCourseView,
@@ -28,6 +29,7 @@ urlpatterns = [
     # auth
     path("auth/register/", RegisterView.as_view(), name="register"),
     path("auth/me/", MeView.as_view(), name="me"),
+    path("auth/google/", GoogleOAuthView.as_view(), name="google-oauth"),
 
     #courses
     path("courses/", CourseListView.as_view(), name="course-list"),

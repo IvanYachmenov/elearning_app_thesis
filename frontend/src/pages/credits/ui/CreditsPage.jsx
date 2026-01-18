@@ -12,11 +12,10 @@ function CreditsPage() {
                     All icons used in this application are from Flaticon and are used in accordance with their free license terms.
                 </p>
                 <ul style={{fontSize: '14px', lineHeight: 1.8, listStyle: 'none', padding: 0, margin: 0}}>
-                    
                     <li style={{marginBottom: '8px'}}>
                         <a
                             href="https://www.flaticon.com/free-icons/study"
-                            title="user icons"
+                            title="study icons"
                             target="_blank"
                             rel="noreferrer"
                             style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
@@ -24,7 +23,28 @@ function CreditsPage() {
                             Study icons created by Freepik - Flaticon
                         </a>
                     </li>
-                    
+                    <li style={{marginBottom: '8px'}}>
+                        <a
+                            href="https://www.flaticon.com/free-icons/github"
+                            title="github icons"
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
+                        >
+                            Github icons created by Pixel perfect - Flaticon
+                        </a>
+                    </li>
+                    <li style={{marginBottom: '8px'}}>
+                        <a
+                            href="https://www.flaticon.com/free-icons/google"
+                            title="google icons"
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{color: 'var(--text-primary)', textDecoration: 'underline'}}
+                        >
+                            Google icons created by Freepik - Flaticon
+                        </a>
+                    </li>
                 </ul>
             </section>
 

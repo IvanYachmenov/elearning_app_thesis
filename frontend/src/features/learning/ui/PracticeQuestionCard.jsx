@@ -52,8 +52,7 @@ function PracticeQuestionCard({
 
     return (
         <div className="topic-practice__question-card">
-            <div className="topic-practice__question-meta">
-                <span/>
+            <div className="topic-practice__question-header">
                 <span className="topic-practice__type">
                     {question.question_type === 'single_choice'
                         ? 'Single choice'
@@ -61,10 +60,9 @@ function PracticeQuestionCard({
                             ? 'Multiple choice'
                             : 'Code'}
                 </span>
-            </div>
-
-            <div className="topic-practice__question-text">
-                {question.text}
+                <div className="topic-practice__question-text">
+                    {question.text}
+                </div>
             </div>
 
             <ul className="topic-practice__options">

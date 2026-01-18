@@ -24,6 +24,7 @@ function ProfilePage({user, onUserUpdate}) {
     const avatarInputRef = useRef(null);
     
     const gradients = [
+        // Basic gradients
         { name: 'Purple Blue', value: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' },
         { name: 'Orange Red', value: 'linear-gradient(135deg, #f97316 0%, #fb923c 100%)' },
         { name: 'Green Emerald', value: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)' },
@@ -34,6 +35,25 @@ function ProfilePage({user, onUserUpdate}) {
         { name: 'Teal Cyan', value: 'linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)' },
         { name: 'Red Pink', value: 'linear-gradient(135deg, #ef4444 0%, #ec4899 100%)' },
         { name: 'Multi Color', value: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #f97316 70%, #fb923c 100%)' },
+        
+        // Patterns with dots (using background-size to create pattern effect)
+        { name: 'Dotted Purple', value: 'radial-gradient(circle, #8b5cf6 1px, transparent 1px), linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' },
+        { name: 'Dotted Orange', value: 'radial-gradient(circle, #fb923c 1.5px, transparent 1.5px), linear-gradient(135deg, #f97316 0%, #fb923c 100%)' },
+        { name: 'Dotted Green', value: 'radial-gradient(circle, #34d399 1px, transparent 1px), linear-gradient(135deg, #10b981 0%, #34d399 100%)' },
+        
+        // Geometric patterns
+        { name: 'Diagonal Stripes', value: 'repeating-linear-gradient(45deg, #6366f1 0px, #6366f1 10px, #8b5cf6 10px, #8b5cf6 20px)' },
+        { name: 'Chevron Pattern', value: 'repeating-linear-gradient(45deg, #f97316 0px, #f97316 8px, #fb923c 8px, #fb923c 16px)' },
+        { name: 'Zigzag Pattern', value: 'repeating-linear-gradient(90deg, #10b981 0px, #10b981 12px, #34d399 12px, #34d399 24px)' },
+        
+        // Radial patterns
+        { name: 'Radial Burst', value: 'radial-gradient(circle at center, #ec4899 0%, #f472b6 50%, #ec4899 100%)' },
+        { name: 'Radial Sunset', value: 'radial-gradient(circle at 30% 70%, #f59e0b 0%, #fbbf24 50%, #fb923c 100%)' },
+        { name: 'Radial Ocean', value: 'radial-gradient(circle at top right, #3b82f6 0%, #06b6d4 50%, #14b8a6 100%)' },
+        
+    
+        // Special effects
+        { name: 'Wave Pattern', value: 'repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(99, 102, 241, 0.15) 2px, rgba(99, 102, 241, 0.15) 4px), linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' },
     ];
     
     const GRADIENTS_PER_PAGE = 6;
@@ -123,6 +143,10 @@ function ProfilePage({user, onUserUpdate}) {
             const formDataToSend = new FormData();
             
             // Add only text fields if changed
+            if (formData.username !== (user?.username || '')) {
+                formDataToSend.append('username', formData.username);
+            }
+            
             if (formData.first_name !== (user?.first_name || '')) {
                 formDataToSend.append('first_name', formData.first_name);
             }
@@ -147,7 +171,15 @@ function ProfilePage({user, onUserUpdate}) {
             setTimeout(() => setSuccess(null), 3000);
         } catch (err) {
             console.error('Error updating profile:', err);
-            setError(err.response?.data?.detail || err.response?.data?.message || err.response?.data || 'Failed to update profile. Please try again.');
+            // Handle username validation error specifically
+            const errorData = err.response?.data;
+            if (errorData?.username && Array.isArray(errorData.username)) {
+                setError(errorData.username[0] || 'This username is already taken. Please choose another one.');
+            } else if (errorData?.username) {
+                setError(errorData.username);
+            } else {
+                setError(errorData?.detail || errorData?.message || errorData || 'Failed to update profile. Please try again.');
+            }
         } finally {
             setIsSaving(false);
         }
@@ -178,7 +210,12 @@ function ProfilePage({user, onUserUpdate}) {
             });
 
             if (onUserUpdate) {
-                onUserUpdate(response.data);
+                // Ensure profile_background_gradient is a string, not an object
+                const userData = { ...response.data };
+                if (userData.profile_background_gradient && typeof userData.profile_background_gradient !== 'string') {
+                    userData.profile_background_gradient = String(userData.profile_background_gradient);
+                }
+                onUserUpdate(userData);
             }
 
             setSuccess('Profile appearance updated successfully!');
@@ -187,7 +224,22 @@ function ProfilePage({user, onUserUpdate}) {
             setTimeout(() => setSuccess(null), 3000);
         } catch (err) {
             console.error('Error updating profile:', err);
-            setError(err.response?.data?.detail || err.response?.data?.message || err.response?.data || 'Failed to update profile. Please try again.');
+            const errorData = err.response?.data;
+            let errorMessage = 'Failed to update profile. Please try again.';
+            
+            if (errorData?.profile_background_gradient) {
+                errorMessage = Array.isArray(errorData.profile_background_gradient) 
+                    ? errorData.profile_background_gradient[0]
+                    : String(errorData.profile_background_gradient);
+            } else if (errorData?.detail) {
+                errorMessage = String(errorData.detail);
+            } else if (errorData?.message) {
+                errorMessage = String(errorData.message);
+            } else if (typeof errorData === 'string') {
+                errorMessage = errorData;
+            }
+            
+            setError(errorMessage);
         } finally {
             setIsSavingProfile(false);
         }
@@ -362,6 +414,7 @@ function ProfilePage({user, onUserUpdate}) {
                                             onClick={() => setSelectedGradient(option.value)}
                                             style={{ 
                                                 background: option.value || '#fff',
+                                                backgroundSize: option.value?.includes('radial-gradient') && option.value?.includes('linear-gradient') ? '20px 20px, 100% 100%' : '100% 100%',
                                                 border: option.value ? '2px solid var(--nav-black)' : '2px solid var(--nav-black)'
                                             }}
                                             title={option.name}
@@ -431,12 +484,21 @@ function ProfilePage({user, onUserUpdate}) {
                             <label htmlFor="username">Username</label>
                             <input
                                 id="username"
+                                name="username"
                                 type="text"
                                 value={formData.username}
-                                disabled
-                                className="profile-input profile-input--disabled"
+                                onChange={handleInputChange}
+                                disabled={!isEditing}
+                                className={isEditing ? "profile-input" : "profile-input profile-input--disabled"}
+                                placeholder="Enter username"
+                                required
                             />
-                            <p className="profile-field-hint">Username cannot be changed</p>
+                            {!isEditing && (
+                                <p className="profile-field-hint">Click "Edit Profile" above to change username</p>
+                            )}
+                            {isEditing && (
+                                <p className="profile-field-hint">Username must be unique. If it's already taken, you'll see an error message.</p>
+                            )}
                         </div>
 
                         <div className="profile-field">

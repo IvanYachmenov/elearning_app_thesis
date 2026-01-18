@@ -47,6 +47,7 @@
 .app-header__left {
     display: flex;
     align-items: stretch;
+    flex: 1;
 }
 
 .app-header__right {
@@ -72,7 +73,6 @@
     background: #fff;
 
     box-sizing: border-box;
-    border-right: 2px solid var(--nav-black);
 }
 
 /* === Main nav === */
@@ -271,6 +271,29 @@
 }
 
 .profile-name {
+    white-space: nowrap;
+}
+
+.nav-points-balance {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 18px;
+    background: #fff;
+    border-left: 2px solid var(--nav-black);
+    font-weight: 900;
+    font-size: 15.5px;
+    color: var(--nav-black);
+}
+
+.nav-points-balance__icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.nav-points-balance__value {
     white-space: nowrap;
 }
 
@@ -616,13 +639,28 @@
         padding: 0 14px;
     }
     .app-menu__panel {
-        width: calc(100vw - 20px);
-        top: 10px;
+        left: 10px;
         right: 10px;
+        top: 10px;
         bottom: 10px;
+        width: auto;
         border-radius: 0;
     }
     .profile-button {
         border-left: 0;
+    }
+
+    .nav-points-balance {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 18px;
+        background: #fff;
+        border-left: none;
+        border-right: 2px solid var(--nav-black);
+        font-weight: 900;
+        font-size: 15.5px;
+        color: var(--nav-black);
     }
 }

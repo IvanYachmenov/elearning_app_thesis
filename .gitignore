@@ -10,9 +10,19 @@ __pycache__/
 *.sqlite3
 db.sqlite3
 
+# Environment variables
 *.env
 .env
 backend/.env
+frontend/.env
+
+# But keep .env.example files (they are safe to commit)
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# Explanation files (detailed documentation)
+explaining_*.md
 
 # Django static build artifacts
 staticfiles/

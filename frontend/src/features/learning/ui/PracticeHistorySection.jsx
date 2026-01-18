@@ -33,10 +33,7 @@ function PracticeHistorySection({historyQuestions, loading, error}) {
                             key={q.id}
                             className="topic-practice__question-card topic-practice__question-card--readonly"
                         >
-                            <div className="topic-practice__question-meta">
-                                <span className="topic-practice__question-index">
-                                    Question {index + 1}
-                                </span>
+                            <div className="topic-practice__question-header">
                                 <span className="topic-practice__type">
                                     {q.question_type === 'single_choice'
                                         ? 'Single choice'
@@ -44,10 +41,9 @@ function PracticeHistorySection({historyQuestions, loading, error}) {
                                             ? 'Multiple choice'
                                             : 'Code'}
                                 </span>
-                            </div>
-
-                            <div className="topic-practice__question-text">
-                                {q.text}
+                                <div className="topic-practice__question-text">
+                                    {q.text}
+                                </div>
                             </div>
 
                             <ul className="topic-practice__options">
