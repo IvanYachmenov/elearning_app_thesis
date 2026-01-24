@@ -10,11 +10,13 @@ import {
     PracticeTimer,
 } from '../../../features/learning';
 import {useNavigationLock} from '../../../shared/lib/navigation-lock';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
 
 function TopicPracticePage() {
     const {courseId, topicId} = useParams();
     const navigate = useNavigate();
     const {lockNavigation, unlockNavigation, isLocked} = useNavigationLock();
+    const {t} = useLanguage();
 
     const [topic, setTopic] = useState(null);
     const [loadingTopic, setLoadingTopic] = useState(true);
@@ -83,11 +85,11 @@ function TopicPracticePage() {
             .catch((err) => {
                 console.error(err);
                 if (err.response && err.response.status === 404) {
-                    setError('Topic not found or you are not enrolled.');
+                    setError(t('pages.learning.topicNotFound'));
                 } else if (err.response && err.response.status === 403) {
-                    setError('You are not enrolled in this course.');
+                    setError(t('pages.learning.notEnrolled'));
                 } else {
-                    setError('Failed to load topic.');
+                    setError(t('pages.learning.failedToLoadTopic'));
                 }
             })
             .finally(() => setLoadingTopic(false));
@@ -145,7 +147,7 @@ function TopicPracticePage() {
             setSelectedOptions(data.last_answer.selected_option_ids || []);
             setAnswerFeedback({
                 type: data.last_answer.is_correct ? 'success' : 'fail',
-                message: data.last_answer.is_correct ? 'Correct answer!' : 'Incorrect answer.',
+                message: data.last_answer.is_correct ? t('pages.learning.correctAnswer') : t('pages.learning.incorrectAnswer'),
                 score: data.last_answer.score,
             });
         } else {
@@ -169,7 +171,7 @@ function TopicPracticePage() {
                 setSelectedOptions([]);
                 setAnswerFeedback({
                     type: 'error',
-                    message: 'Failed to load next question.',
+                    message: t('pages.learning.failedToLoadNextQuestion'),
                 });
             })
             .finally(() => setPracticeLoading(false));
@@ -209,9 +211,9 @@ function TopicPracticePage() {
             .catch((err) => {
                 console.error(err);
                 if (err.response && err.response.status === 400) {
-                    setHistoryError('History is available only after you finish this topic.');
+                    setHistoryError(t('pages.learning.historyAvailableAfterFinish'));
                 } else {
-                    setHistoryError('Failed to load test history.');
+                    setHistoryError(t('pages.learning.failedToLoadTestHistory'));
                 }
             })
             .finally(() => setHistoryLoading(false));
@@ -231,7 +233,7 @@ function TopicPracticePage() {
     useEffect(() => {
         if (isTimedTestActive) {
             lockNavigation(
-                'Timed test in progress. Navigation is locked until you finish or exit the test.',
+                t('pages.learning.timedTestInProgress'),
                 [`/learning/courses/${courseId}/topics/${topicId}/practice`],
             );
         } else {
@@ -351,7 +353,7 @@ function TopicPracticePage() {
                     // Regular question - show only "Answer accepted!"
                     setAnswerFeedback({
                         type: 'neutral',
-                        message: 'Answer accepted!',
+                        message: t('pages.learning.answerAccepted'),
                         score: data.score,
                         isLastQuestion: isLastQuestionAnswer,
                     });
@@ -362,7 +364,7 @@ function TopicPracticePage() {
                 console.error(err);
                 setAnswerFeedback({
                     type: 'error',
-                    message: 'Failed to submit answer. Please try again.',
+                    message: t('pages.learning.failedToSubmitAnswer'),
                 });
             })
             .finally(() => {
@@ -409,7 +411,7 @@ function TopicPracticePage() {
 
                 setAnswerFeedback({
                     type: data.is_correct ? 'success' : 'fail',
-                    message: data.is_correct ? 'Correct answer!' : 'Incorrect answer.',
+                    message: data.is_correct ? t('pages.learning.correctAnswer') : t('pages.learning.incorrectAnswer'),
                     score: data.score,
                     isLastQuestion: isLastQuestionAnswer,
                 });
@@ -450,7 +452,7 @@ function TopicPracticePage() {
                 console.error(err);
                 setAnswerFeedback({
                     type: 'error',
-                    message: 'Failed to submit answer. Please try again.',
+                    message: t('pages.learning.failedToSubmitAnswer'),
                 });
             })
             .finally(() => setSubmitLoading(false));
@@ -513,7 +515,7 @@ function TopicPracticePage() {
                 console.error(err);
                 setAnswerFeedback({
                     type: 'error',
-                    message: 'Failed to restart the test. Please try again.',
+                    message: t('pages.learning.failedToRestartTest'),
                 });
             })
             .finally(() => setPracticeLoading(false));
@@ -544,7 +546,7 @@ function TopicPracticePage() {
     if (error || !topic) {
         return (
             <div className="page page-enter">
-                <p style={{color: '#dc2626'}}>{error || 'Topic not found.'}</p>
+                <p style={{color: '#dc2626'}}>{error || t('pages.learning.topicNotFound')}</p>
                 <button
                     type="button"
                     className="learning-back-link"
@@ -552,7 +554,7 @@ function TopicPracticePage() {
                     style={{marginTop: '16px'}}
 
                 >
-                    ← Back to My Learning
+                    {t('pages.learning.backToMyLearning')}
                 </button>
             </div>
         );
@@ -569,7 +571,7 @@ function TopicPracticePage() {
                         disabled={isExitLocked}
                         aria-disabled={isExitLocked}
                     >
-                        ← Back to theory
+                        {t('pages.learning.backToTheory')}
                     </button>
 
                     {practiceCompleted && isReviewMode && (
@@ -578,7 +580,7 @@ function TopicPracticePage() {
                             className="learning-back-link topic-page-header__back-results"
                             onClick={() => setIsReviewMode(false)}
                         >
-                            Back to results →
+                            {t('pages.learning.backToResults')}
                         </button>
                     )}
                 </div>
@@ -620,7 +622,7 @@ function TopicPracticePage() {
                 {canPractice && (
                     <>
                         {practiceLoading && !practiceQuestion && (
-                            <p className="topic-practice__empty">Loading question...</p>
+                            <p className="topic-practice__empty">{t('pages.learning.loadingQuestion')}</p>
                         )}
 
                         {practiceCompleted && !practiceQuestion && !practiceLoading && !isReviewMode && (

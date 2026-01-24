@@ -1,4 +1,7 @@
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
+
 function PracticeHistorySection({historyQuestions, loading, error}) {
+    const {t} = useLanguage();
     // Remove dots at the start of option text
     const cleanOptionText = (text) => {
         if (!text) return text;
@@ -10,7 +13,7 @@ function PracticeHistorySection({historyQuestions, loading, error}) {
         <section className="topic-practice__history">
             {loading && (
                 <p className="topic-practice__empty">
-                    Loading test history...
+                    {t('pages.learning.loadingTestHistory')}
                 </p>
             )}
 
@@ -22,7 +25,7 @@ function PracticeHistorySection({historyQuestions, loading, error}) {
 
             {!loading && !error && historyQuestions.length === 0 && (
                 <p className="topic-practice__empty">
-                    No answered questions to display.
+                    {t('pages.learning.noAnsweredQuestions')}
                 </p>
             )}
 
@@ -36,10 +39,10 @@ function PracticeHistorySection({historyQuestions, loading, error}) {
                             <div className="topic-practice__question-header">
                                 <span className="topic-practice__type">
                                     {q.question_type === 'single_choice'
-                                        ? 'Single choice'
+                                        ? t('pages.learning.singleChoice')
                                         : q.question_type === 'multiple_choice'
-                                            ? 'Multiple choice'
-                                            : 'Code'}
+                                            ? t('pages.learning.multipleChoice')
+                                            : t('pages.learning.code')}
                                 </span>
                                 <div className="topic-practice__question-text">
                                     {q.text}
@@ -69,7 +72,7 @@ function PracticeHistorySection({historyQuestions, loading, error}) {
                                                     {cleanOptionText(opt.text)}
                                                 </span>
                                                 {correct && (
-                                                    <span className="topic-practice__option-correct-label">Correct</span>
+                                                    <span className="topic-practice__option-correct-label">{t('pages.learning.correct')}</span>
                                                 )}
                                             </div>
                                         </li>
@@ -88,8 +91,8 @@ function PracticeHistorySection({historyQuestions, loading, error}) {
                                     style={{marginTop: '8px'}}
                                 >
                                     {q.is_correct
-                                        ? 'Correct answer!'
-                                        : 'Incorrect answer.'}
+                                        ? t('pages.learning.correctAnswer')
+                                        : t('pages.learning.incorrectAnswer')}
                                 </div>
                             )}
                         </div>

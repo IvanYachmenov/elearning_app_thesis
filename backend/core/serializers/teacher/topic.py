@@ -6,6 +6,7 @@ from .question import TeacherQuestionSerializer
 
 class TeacherTopicSerializer(serializers.ModelSerializer):
     questions = TeacherQuestionSerializer(many=True, required=False)
+    title = serializers.CharField(required=True, allow_blank=False)
 
     class Meta:
         model = Topic

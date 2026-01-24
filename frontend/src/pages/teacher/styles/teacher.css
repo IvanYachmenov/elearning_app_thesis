@@ -450,6 +450,28 @@
   margin: 0;
 }
 
+.teacher-module-edit-btn {
+  padding: 6px 12px;
+  border-radius: 0;
+  border: 2px solid var(--nav-black);
+  background: #fff;
+  color: var(--nav-black);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.14s ease, transform 0.14s ease;
+}
+
+.teacher-module-edit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  transform: translateY(-1px);
+}
+
+.teacher-module-edit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .teacher-module-delete-btn {
   padding: 6px 12px;
   border-radius: 0;
@@ -566,6 +588,28 @@
   font-weight: 900;
   color: #0f172a;
   margin: 0;
+}
+
+.teacher-topic-edit-btn {
+  padding: 4px 8px;
+  border-radius: 0;
+  border: 1px solid var(--nav-black);
+  background: #fff;
+  color: var(--nav-black);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.14s ease, transform 0.14s ease;
+}
+
+.teacher-topic-edit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  transform: translateY(-1px);
+}
+
+.teacher-topic-edit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .teacher-topic-delete-btn {
@@ -874,6 +918,28 @@
 
 [data-theme="dark"] .teacher-topic-title {
   color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-module-edit-btn {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-module-edit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  color: #0f172a;
+}
+
+[data-theme="dark"] .teacher-topic-edit-btn {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .teacher-topic-edit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  color: #0f172a;
 }
 
 [data-theme="dark"] .teacher-form-checkbox-label {

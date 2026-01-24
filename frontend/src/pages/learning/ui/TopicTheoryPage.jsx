@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../../shared/api';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
 import '../styles/learning.css';
 
 function TopicTheoryPage() {
     const { courseId, topicId } = useParams();
     const navigate = useNavigate();
+    const {t} = useLanguage();
 
     const [topic, setTopic] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -23,11 +25,11 @@ function TopicTheoryPage() {
             .catch((err) => {
                 console.error(err);
                 if (err.response && err.response.status === 404) {
-                    setError('Topic not found or you are not enrolled.');
+                    setError(t('pages.learning.topicNotFound'));
                 } else if (err.response && err.response.status === 403) {
-                    setError('You are not enrolled in this course.');
+                    setError(t('pages.learning.notEnrolled'));
                 } else {
-                    setError('Failed to load topic.');
+                    setError(t('pages.learning.failedToLoadTopic'));
                 }
             })
             .finally(() => setLoading(false));
@@ -53,7 +55,7 @@ function TopicTheoryPage() {
     if (loading) {
         return (
             <div className="page page-enter">
-                <p>Loading topic...</p>
+                <p>{t('pages.learning.loadingTopic')}</p>
             </div>
         );
     }
@@ -61,14 +63,14 @@ function TopicTheoryPage() {
     if (error || !topic) {
         return (
             <div className="page page-enter">
-                <p style={{ color: '#dc2626' }}>{error || 'Topic not found.'}</p>
+                <p style={{ color: '#dc2626' }}>{error || t('pages.learning.topicNotFound')}</p>
                 <button
                     type="button"
                     className="learning-back-link"
                     onClick={() => navigate('/learning')}
                     style={{ marginTop: '16px' }}
                 >
-                    ← Back to My Learning
+                    {t('pages.learning.backToMyLearning')}
                 </button>
             </div>
         );
@@ -84,14 +86,14 @@ function TopicTheoryPage() {
                     className="learning-back-link"
                     onClick={handleBackToCourse}
                 >
-                    ← Back to course
+                    {t('pages.learning.backToCourse')}
                 </button>
 
                 <div className="topic-meta">
                     {topic.course_title} · {topic.module_title}
                     {topic.is_timed_test && (
-                        <span className="topic-meta__timed-badge" title={`Timed test${topic.time_limit_seconds ? ` (${Math.floor(topic.time_limit_seconds / 60)} min)` : ''}`}>
-                            ⏱ Timed test
+                        <span className="topic-meta__timed-badge" title={`${t('pages.learning.timedTest')}${topic.time_limit_seconds ? ` (${Math.floor(topic.time_limit_seconds / 60)} min)` : ''}`}>
+                            {t('pages.learning.timedTest')}
                         </span>
                     )}
                 </div>
@@ -110,7 +112,7 @@ function TopicTheoryPage() {
             </div>
 
             <section className="topic-theory">
-                <h2 className="topic-section-title">Theory</h2>
+                <h2 className="topic-section-title">{t('pages.learning.theory')}</h2>
                 <div className="topic-theory__content">
                     {topic.content}
                 </div>
@@ -122,7 +124,7 @@ function TopicTheoryPage() {
                     className="topic-theory__practice-btn"
                     onClick={handleGoToPractice}
                 >
-                    Go to practice →
+                    {t('pages.learning.goToPractice')}
                 </button>
             </div>
         </div>

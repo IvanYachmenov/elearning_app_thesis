@@ -1,5 +1,5 @@
 export { LoginPage, RegisterPage } from './auth';
-export { LandingPage } from './landing';
+export { StartPage } from './landing';
 export { HomePage } from './home';
 export { ProfilePage } from './profile';
 export { SettingsPage } from './settings';
@@ -12,4 +12,9 @@ export {
   TopicPracticePage,
   TopicTheoryPage,
 } from './learning';
-export { TeacherCourseEditPage, TeacherCoursesPage } from './teacher';
+export { 
+  TeacherCourseEditPage, 
+  TeacherCoursesPage,
+  TeacherModuleEditPage,
+  TeacherTopicEditPage
+} from './teacher';

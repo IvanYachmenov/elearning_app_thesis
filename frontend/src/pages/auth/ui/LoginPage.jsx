@@ -1,8 +1,11 @@
 import {useEffect, useState, useRef} from 'react';
-import {api, setAuthToken, API_URL} from '../../../shared/api';
+import {api, setAuthToken} from '../../../shared/api';
 import {Link, useNavigate} from 'react-router-dom';
 import {setCookie} from '../../../shared/lib/cookies';
 import {initializeGoogleSignIn} from '../../../shared/lib/google-auth';
+import {initiateGitHubLogin, handleGitHubCallback} from '../../../shared/lib/github-auth';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
+import {useTheme} from '../../../shared/lib/theme/ThemeContext';
 import '../styles/auth.css';
 
 function LoginPage({onAuth}) {
@@ -12,6 +15,8 @@ function LoginPage({onAuth}) {
     const [isLoading, setIsLoading] = useState(false);
     const [showEmailForm, setShowEmailForm] = useState(false);
     const navigate = useNavigate();
+    const {t, language, setLanguage} = useLanguage();
+    const {theme, toggleTheme} = useTheme();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -40,7 +45,7 @@ function LoginPage({onAuth}) {
             navigate('/home');
         } catch (err) {
             console.error(err);
-            setError('Login failed. Invalid username or password.');
+            setError(t('pages.auth.loginFailed'));
         } finally {
             setIsLoading(false);
         }
@@ -55,7 +60,7 @@ function LoginPage({onAuth}) {
         } else if (response.error) {
             // Only show error if it's not a user dismissal
             if (response.error !== 'popup_closed_by_user' && response.error !== 'popup_blocked') {
-                setError('Google authentication failed. Please try again.');
+                setError(t('pages.auth.googleAuthFailed'));
             }
         }
     };
@@ -111,11 +116,11 @@ function LoginPage({onAuth}) {
                         googleButton.click();
                     } else {
                         console.error('Google button not rendered');
-                        setError('Failed to initialize Google Sign-In. Please try again.');
+                        setError(t('pages.auth.googleSignInFailed'));
                     }
                 }, 100);
             } else {
-                setError('Google Sign-In failed to load. Please refresh the page.');
+                setError(t('pages.auth.googleSignInLoadFailed'));
             }
         } catch (err) {
             console.error('Google login error:', err);
@@ -155,41 +160,35 @@ function LoginPage({onAuth}) {
     };
 
     const handleGitHubLogin = () => {
-        // Ask backend to force account chooser (if provider supports it)
-        window.location.href = `${API_URL}/accounts/github/login/?next=/home&select_account=1`;
+        initiateGitHubLogin('/home');
     };
     useEffect(() => {
         document.body.classList.remove('theme-app');
         document.body.classList.add('theme-auth');
 
         // Handle GitHub OAuth redirect back (tokens come via query params)
-        const params = new URLSearchParams(window.location.search);
-        const access = params.get('access');
-        const refresh = params.get('refresh');
-        const error = params.get('error');
-        const provider = params.get('provider');
-        const nextPath = params.get('next');
+        const callback = handleGitHubCallback();
 
-        if (error && provider === 'github') {
-            setError(`GitHub authentication failed: ${error}`);
+        if (callback.error && callback.isGitHubCallback) {
+            setError(`GitHub authentication failed: ${callback.error}`);
         }
 
-        if (access && refresh && provider === 'github') {
+        if (callback.access && callback.refresh && callback.isGitHubCallback) {
             (async () => {
                 try {
                     setIsLoading(true);
-                    setCookie('access', access, 365);
-                    setCookie('refresh', refresh, 365);
-                    setAuthToken(access);
+                    setCookie('access', callback.access, 365);
+                    setCookie('refresh', callback.refresh, 365);
+                    setAuthToken(callback.access);
 
                     const meResp = await api.get('/api/auth/me/');
                     if (onAuth) {
-                        onAuth(access, meResp.data);
+                        onAuth(callback.access, meResp.data);
                     }
-                    navigate(nextPath && nextPath.startsWith('/') ? nextPath : '/home', {replace: true});
+                    navigate(callback.nextPath, {replace: true});
                 } catch (err) {
                     console.error('GitHub callback handling error:', err);
-                    setError('GitHub authentication failed. Please try again.');
+                    setError(t('pages.auth.githubAuthFailed'));
                 } finally {
                     setIsLoading(false);
                 }
@@ -206,23 +205,50 @@ function LoginPage({onAuth}) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showEmailForm]);
 
-    //TODO <div className="auth-left__logo"></div>
     return (
         <div className="auth-container">
+            <div className="auth-controls">
+                <div className="auth-theme-selector">
+                    <button
+                        className="auth-theme-btn"
+                        onClick={toggleTheme}
+                        title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+                    >
+                        <img 
+                            src={theme === 'dark' ? '/assets/icons/sun.png' : '/assets/icons/moon.png'} 
+                            alt={theme === 'dark' ? 'Light theme' : 'Dark theme'}
+                        />
+                    </button>
+                </div>
+                <div className="auth-language-selector">
+                    <button
+                        className={`auth-language-btn ${language === 'en' ? 'active' : ''}`}
+                        onClick={() => setLanguage('en')}
+                    >
+                        EN
+                    </button>
+                    <button
+                        className={`auth-language-btn ${language === 'sk' ? 'active' : ''}`}
+                        onClick={() => setLanguage('sk')}
+                    >
+                        SK
+                    </button>
+                </div>
+            </div>
             <div className="auth-left">
                 <div className="auth-left__content">
                     <div className="auth-left__logo"></div>
-                    <h1 className="auth-left__title">Welcome Back!</h1>
+                    <h1 className="auth-left__title">{t('pages.auth.welcomeBack')}</h1>
                     <p className="auth-left__subtitle">
-                        Continue your learning journey and explore new courses to expand your knowledge.
+                        {t('pages.auth.continueLearning')}
                     </p>
                 </div>
             </div>
 
             <div className="auth-right">
                 <div className="auth-form-wrapper">
-                    <h1 className="auth-title">Log in</h1>
-                    <p className="auth-subtitle">Choose your preferred login method</p>
+                    <h1 className="auth-title">{t('pages.auth.login')}</h1>
+                    <p className="auth-subtitle">{t('pages.auth.chooseLoginMethod')}</p>
 
                     {!showEmailForm ? (
                         <>
@@ -252,12 +278,12 @@ function LoginPage({onAuth}) {
                                         alt="GitHub" 
                                         className="auth-oauth-icon"
                                     />
-                                    Continue with GitHub
+                                    {t('pages.auth.continueGitHub')}
                                 </button>
                             </div>
 
                             <div className="auth-divider">
-                                <span>or</span>
+                                <span>{t('pages.auth.or')}</span>
                             </div>
 
                             <button
@@ -265,18 +291,18 @@ function LoginPage({onAuth}) {
                                 className="auth-button auth-button--outline"
                                 onClick={() => setShowEmailForm(true)}
                             >
-                                Use email / password
+                                {t('pages.auth.useEmailPassword')}
                             </button>
                         </>
                     ) : (
                         <>
                             <form className="auth-form" onSubmit={handleLogin}>
                                 <div className="auth-field">
-                                    <label className="auth-label">Username or Email</label>
+                                    <label className="auth-label">{t('pages.auth.usernameOrEmail')}</label>
                                     <input
                                         className="auth-input"
                                         type="text"
-                                        placeholder="Enter your username or email"
+                                        placeholder={t('pages.auth.enterUsernameOrEmail')}
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         required
@@ -284,11 +310,11 @@ function LoginPage({onAuth}) {
                                 </div>
 
                                 <div className="auth-field">
-                                    <label className="auth-label">Password</label>
+                                    <label className="auth-label">{t('pages.auth.password')}</label>
                                     <input
                                         className="auth-input"
                                         type="password"
-                                        placeholder="Enter your password"
+                                        placeholder={t('pages.auth.enterPassword')}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
@@ -296,7 +322,7 @@ function LoginPage({onAuth}) {
                                 </div>
 
                                 <button type="submit" className="auth-button" disabled={isLoading}>
-                                    {isLoading ? 'Logging in...' : 'Log in'}
+                                    {isLoading ? t('pages.auth.loggingIn') : t('pages.auth.login')}
                                 </button>
                             </form>
 
@@ -314,9 +340,9 @@ function LoginPage({onAuth}) {
 
                     {!showEmailForm && (
                         <p className="auth-footer">
-                            Don&apos;t have an account?{' '}
+                            {t('pages.auth.dontHaveAccount')}{' '}
                             <Link to="/register" className="auth-link">
-                                Sign up
+                                {t('pages.auth.register')}
                             </Link>
                         </p>
                     )}

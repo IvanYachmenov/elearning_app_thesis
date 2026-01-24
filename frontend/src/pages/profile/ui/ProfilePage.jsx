@@ -1,11 +1,13 @@
 import {useState, useEffect, useRef} from 'react';
 import {api, API_URL} from '../../../shared/api';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
 import '../styles/profile.css';
 import {gradients, GRADIENTS_PER_PAGE} from './profileBackgrounds';
 import ProfileInfo from './components/ProfileInfo';
 import ProfileCustomization from './components/ProfileCustomization';
 
 function ProfilePage({user, onUserUpdate}) {
+    const {t} = useLanguage();
     const [isEditing, setIsEditing] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(false); // For avatar/background editing
     const [isSaving, setIsSaving] = useState(false);
@@ -81,12 +83,12 @@ function ProfilePage({user, onUserUpdate}) {
         if (!file) return;
 
         if (file.size > 5 * 1024 * 1024) {
-            setError('Avatar image must be less than 5MB');
+            setError(t('pages.profile.avatarSizeError'));
             return;
         }
 
         if (!file.type.startsWith('image/')) {
-            setError('Please select an image file');
+            setError(t('pages.profile.avatarFileTypeError'));
             return;
         }
 
@@ -97,7 +99,7 @@ function ProfilePage({user, onUserUpdate}) {
             setError(null);
         };
         reader.onerror = () => {
-            setError('Failed to read image file');
+            setError(t('pages.profile.avatarReadError'));
         };
         reader.readAsDataURL(file);
     };
@@ -134,7 +136,7 @@ function ProfilePage({user, onUserUpdate}) {
                 onUserUpdate(response.data);
             }
 
-            setSuccess('Profile information updated successfully!');
+            setSuccess(t('pages.profile.profileInfoUpdated'));
             setIsEditing(false);
             
             setTimeout(() => setSuccess(null), 3000);
@@ -143,11 +145,11 @@ function ProfilePage({user, onUserUpdate}) {
             // Handle username validation error specifically
             const errorData = err.response?.data;
             if (errorData?.username && Array.isArray(errorData.username)) {
-                setError(errorData.username[0] || 'This username is already taken. Please choose another one.');
+                setError(errorData.username[0] || t('pages.profile.usernameTaken'));
             } else if (errorData?.username) {
                 setError(errorData.username);
             } else {
-                setError(errorData?.detail || errorData?.message || errorData || 'Failed to update profile. Please try again.');
+                setError(errorData?.detail || errorData?.message || errorData || t('pages.profile.failedToUpdate'));
             }
         } finally {
             setIsSaving(false);
@@ -187,14 +189,14 @@ function ProfilePage({user, onUserUpdate}) {
                 onUserUpdate(userData);
             }
 
-            setSuccess('Profile appearance updated successfully!');
+            setSuccess(t('pages.profile.profileAppearanceUpdated'));
             setIsEditingProfile(false);
             
             setTimeout(() => setSuccess(null), 3000);
         } catch (err) {
             console.error('Error updating profile:', err);
             const errorData = err.response?.data;
-            let errorMessage = 'Failed to update profile. Please try again.';
+            let errorMessage = t('pages.profile.failedToUpdate');
             
             if (errorData?.profile_background_gradient) {
                 errorMessage = Array.isArray(errorData.profile_background_gradient) 
@@ -249,7 +251,7 @@ function ProfilePage({user, onUserUpdate}) {
     const getVisibleGradients = () => {
         const allOptions = [
             ...gradients.map(g => ({ type: 'gradient', ...g })),
-            { type: 'none', name: 'None', value: null }
+            { type: 'none', name: t('pages.profile.none'), value: null }
         ];
         const start = gradientPage * GRADIENTS_PER_PAGE;
         const end = start + GRADIENTS_PER_PAGE;
@@ -271,7 +273,7 @@ function ProfilePage({user, onUserUpdate}) {
     };
 
     const handleGradientPrev = () => {
-        const allOptions = [...gradients, { name: 'None', value: null }];
+        const allOptions = [...gradients, { name: t('pages.profile.none'), value: null }];
         const totalOptions = allOptions.length;
         const maxPage = Math.ceil(totalOptions / GRADIENTS_PER_PAGE);
         
@@ -284,7 +286,7 @@ function ProfilePage({user, onUserUpdate}) {
     };
 
     const handleGradientNext = () => {
-        const allOptions = [...gradients, { name: 'None', value: null }];
+        const allOptions = [...gradients, { name: t('pages.profile.none'), value: null }];
         const totalOptions = allOptions.length;
         const maxPage = Math.ceil(totalOptions / GRADIENTS_PER_PAGE);
         

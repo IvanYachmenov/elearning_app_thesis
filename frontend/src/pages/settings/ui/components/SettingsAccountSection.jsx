@@ -4,9 +4,11 @@ import {useNavigate} from 'react-router-dom';
 import {api, API_URL, setAuthToken} from '../../../../shared/api';
 import {setCookie} from '../../../../shared/lib/cookies';
 import {initializeGoogleSignIn} from '../../../../shared/lib/google-auth';
+import {useLanguage} from '../../../../shared/lib/i18n/LanguageContext';
 
 function SettingsAccountSection({user, onUserUpdate}) {
     const navigate = useNavigate();
+    const {t} = useLanguage();
 
     const [connections, setConnections] = useState({google: false, github: false});
     const [isLoading, setIsLoading] = useState(false);
@@ -25,11 +27,11 @@ function SettingsAccountSection({user, onUserUpdate}) {
 
     const roleLabel = useMemo(() => {
         const role = user?.role;
-        if (role === 'student') return 'Student';
-        if (role === 'teacher') return 'Teacher';
-        if (role === 'admin') return 'Admin';
+        if (role === 'student') return t('pages.settings.roleStudent');
+        if (role === 'teacher') return t('pages.settings.roleTeacher');
+        if (role === 'admin') return t('pages.settings.roleAdmin');
         return role ? String(role) : '—';
-    }, [user?.role]);
+    }, [user?.role, t]);
 
     const loadConnections = async () => {
         try {
@@ -59,7 +61,7 @@ function SettingsAccountSection({user, onUserUpdate}) {
             await refreshMe();
         } catch (err) {
             console.error('Disconnect failed:', err);
-            setError('Failed to disconnect. Please try again.');
+            setError(t('pages.settings.failedToDisconnect'));
         } finally {
             setIsLoading(false);
         }
@@ -75,7 +77,7 @@ function SettingsAccountSection({user, onUserUpdate}) {
             await sendGoogleTokenToBackend(response.credential);
         } else if (response.error) {
             if (response.error !== 'popup_closed_by_user' && response.error !== 'popup_blocked') {
-                setError('Google authentication failed. Please try again.');
+                setError(t('pages.auth.googleAuthFailed'));
             }
         }
     };
@@ -85,7 +87,7 @@ function SettingsAccountSection({user, onUserUpdate}) {
 
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
         if (!clientId) {
-            setError('Google OAuth is not configured.');
+            setError(t('pages.settings.googleOAuthNotConfigured'));
             return;
         }
 
@@ -158,7 +160,7 @@ function SettingsAccountSection({user, onUserUpdate}) {
             navigate('/settings', {replace: true});
         } catch (err) {
             console.error('Google auth error:', err);
-            setError(err.response?.data?.detail || 'Google authentication failed. Please try again.');
+            setError(err.response?.data?.detail || t('pages.auth.googleAuthFailed'));
         } finally {
             setIsLoading(false);
         }
@@ -166,37 +168,37 @@ function SettingsAccountSection({user, onUserUpdate}) {
 
     return (
         <div className="settings-section">
-            <h2 className="settings-section__title">Account</h2>
+            <h2 className="settings-section__title">{t('pages.settings.account')}</h2>
 
             {error && <div className="settings-account__error">{error}</div>}
 
             <div className="settings-account__grid">
                 <div className="settings-account__card">
-                    <div className="settings-account__card-title">Overview</div>
+                    <div className="settings-account__card-title">{t('pages.settings.overview')}</div>
                     <div className="settings-account__row">
-                        <span className="settings-account__label">Status</span>
-                        <span className="settings-account__value">Active</span>
+                        <span className="settings-account__label">{t('pages.settings.status')}</span>
+                        <span className="settings-account__value">{t('pages.settings.active')}</span>
                     </div>
                     <div className="settings-account__row">
-                        <span className="settings-account__label">Created</span>
+                        <span className="settings-account__label">{t('pages.settings.created')}</span>
                         <span className="settings-account__value">{createdAtLabel}</span>
                     </div>
                     <div className="settings-account__row">
-                        <span className="settings-account__label">Role</span>
+                        <span className="settings-account__label">{t('pages.settings.role')}</span>
                         <span className="settings-account__value">{roleLabel}</span>
                     </div>
                     <div className="settings-account__row">
-                        <span className="settings-account__label">Username</span>
+                        <span className="settings-account__label">{t('pages.auth.username')}</span>
                         <span className="settings-account__value">{user?.username || '—'}</span>
                     </div>
                     <div className="settings-account__row">
-                        <span className="settings-account__label">Email</span>
+                        <span className="settings-account__label">{t('pages.auth.email')}</span>
                         <span className="settings-account__value">{user?.email || '—'}</span>
                     </div>
                 </div>
 
                 <div className="settings-account__card">
-                    <div className="settings-account__card-title">Connections</div>
+                    <div className="settings-account__card-title">{t('pages.settings.connections')}</div>
 
                     <div className="settings-account__connection">
                         <div className="settings-account__connection-left">
@@ -215,9 +217,9 @@ function SettingsAccountSection({user, onUserUpdate}) {
                                                 ? '/assets/icons/connected.png'
                                                 : '/assets/icons/disconnected.png'
                                         }
-                                        alt={connections.github ? 'Connected' : 'Not connected'}
+                                        alt={connections.github ? t('pages.settings.connected') : t('pages.settings.notConnected')}
                                     />
-                                    <span>{connections.github ? 'Connected' : 'Not connected'}</span>
+                                    <span>{connections.github ? t('pages.settings.connected') : t('pages.settings.notConnected')}</span>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +231,7 @@ function SettingsAccountSection({user, onUserUpdate}) {
                                     onClick={() => handleDisconnect('github')}
                                     disabled={isLoading}
                                 >
-                                    Disconnect
+                                    {t('pages.settings.disconnect')}
                                 </button>
                             ) : (
                                 <button
@@ -238,7 +240,7 @@ function SettingsAccountSection({user, onUserUpdate}) {
                                     onClick={handleConnectGitHub}
                                     disabled={isLoading}
                                 >
-                                    Connect
+                                    {t('pages.settings.connect')}
                                 </button>
                             )}
                         </div>
@@ -261,9 +263,9 @@ function SettingsAccountSection({user, onUserUpdate}) {
                                                 ? '/assets/icons/connected.png'
                                                 : '/assets/icons/disconnected.png'
                                         }
-                                        alt={connections.google ? 'Connected' : 'Not connected'}
+                                        alt={connections.google ? t('pages.settings.connected') : t('pages.settings.notConnected')}
                                     />
-                                    <span>{connections.google ? 'Connected' : 'Not connected'}</span>
+                                    <span>{connections.google ? t('pages.settings.connected') : t('pages.settings.notConnected')}</span>
                                 </div>
                             </div>
                         </div>
@@ -275,7 +277,7 @@ function SettingsAccountSection({user, onUserUpdate}) {
                                     onClick={() => handleDisconnect('google')}
                                     disabled={isLoading}
                                 >
-                                    Disconnect
+                                    {t('pages.settings.disconnect')}
                                 </button>
                             ) : (
                                 <button
@@ -284,14 +286,14 @@ function SettingsAccountSection({user, onUserUpdate}) {
                                     onClick={handleConnectGoogle}
                                     disabled={isLoading}
                                 >
-                                    Connect
+                                    {t('pages.settings.connect')}
                                 </button>
                             )}
                         </div>
                     </div>
 
                     <div className="settings-account__note">
-                        Account deletion will be added later.
+                        {t('pages.settings.accountDeletionNote')}
                     </div>
                 </div>
             </div>

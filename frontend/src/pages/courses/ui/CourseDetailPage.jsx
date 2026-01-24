@@ -1,11 +1,13 @@
 import {useEffect, useState} from 'react';
 import {useParams, Link, useNavigate} from 'react-router-dom';
 import {api} from '../../../shared/api';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
 import '../styles/courses.css';
 
 function CourseDetailPage() {
     const {id} = useParams();
     const navigate = useNavigate();
+    const {t} = useLanguage();
 
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -25,7 +27,7 @@ function CourseDetailPage() {
             })
             .catch((err) => {
                 console.error(err);
-                setError('Course not found or failed to load.');
+                setError(t('pages.courses.courseNotFound'));
             })
             .finally(() => setLoading(false));
     }, [id]);
@@ -39,7 +41,7 @@ function CourseDetailPage() {
             setEnrolled(true);
         } catch (err) {
             console.error(err);
-            setError('Failed to enroll. Please try again.');
+            setError(t('pages.courses.failedToEnroll'));
         } finally {
             setEnrolling(false);
         }
@@ -48,7 +50,7 @@ function CourseDetailPage() {
     if (loading) {
         return (
             <div className="page page-enter">
-                <p>Loading course...</p>
+                <p>{t('pages.courses.loadingCourse')}</p>
             </div>
         );
     }
@@ -56,9 +58,9 @@ function CourseDetailPage() {
     if (error || !course) {
         return (
             <div className="page page-enter">
-                <p style={{color: '#dc2626'}}>{error || 'Course not found.'}</p>
+                <p style={{color: '#dc2626'}}>{error || t('pages.courses.courseNotFoundShort')}</p>
                 <Link to="/courses" className="btn-primary" style={{marginTop: '16px'}}>
-                    ← Back to courses
+                    {t('pages.courses.backToCourses')}
                 </Link>
             </div>
         );
@@ -76,7 +78,7 @@ function CourseDetailPage() {
                     className="btn-primary"
                     onClick={() => navigate('/courses')}
                 >
-                    ← Back to Courses
+                    {t('pages.courses.backToCoursesTitle')}
                 </button>
             </div>
             
@@ -108,7 +110,7 @@ function CourseDetailPage() {
                 <div className="course-detail-actions">
                     {enrolled ? (
                         <Link to="/learning" className="btn-primary">
-                            Go to learning →
+                            {t('pages.courses.goToLearning')}
                         </Link>
                     ) : (
                         <button
@@ -116,7 +118,7 @@ function CourseDetailPage() {
                             onClick={handleEnroll}
                             disabled={enrolling}
                         >
-                            {enrolling ? 'Enrolling...' : 'Enroll in this course'}
+                            {enrolling ? t('pages.courses.enrolling') : t('pages.courses.enrollInCourse')}
                         </button>
                     )}
                 </div>
@@ -128,7 +130,7 @@ function CourseDetailPage() {
 
             {course.modules && course.modules.length > 0 && (
                 <section className="course-content">
-                    <h2 className="section-title">Course Content</h2>
+                    <h2 className="section-title">{t('pages.learning.courseContent')}</h2>
                     <div className="module-list">
                         {course.modules.map((mod) => (
                             <div key={mod.id} className="module-item">
@@ -139,7 +141,7 @@ function CourseDetailPage() {
                                             <li key={topic.id} className="topic-item">
                                                 {topic.title}
                                                 {topic.is_timed_test && (
-                                                    <span className="topic-item__timed-badge" title="Timed test">
+                                                    <span className="topic-item__timed-badge" title={t('pages.learning.timedTest')}>
                                                         ⏱
                                                     </span>
                                                 )}

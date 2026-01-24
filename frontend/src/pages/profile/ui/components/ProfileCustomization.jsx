@@ -1,3 +1,5 @@
+import {useLanguage} from '../../../../shared/lib/i18n/LanguageContext';
+
 function ProfileCustomization({
     selectedGradient,
     isEditingProfile,
@@ -18,6 +20,7 @@ function ProfileCustomization({
     handleGradientPrev,
     handleGradientNext,
 }) {
+    const {t} = useLanguage();
     return (
         <div
             className="profile-header"
@@ -34,13 +37,13 @@ function ProfileCustomization({
                         style={{cursor: isEditingProfile ? 'pointer' : 'default'}}
                     >
                         {avatarPreview ? (
-                            <img src={avatarPreview} alt="Avatar" className="profile-avatar-img" />
+                            <img src={avatarPreview} alt={t('pages.profile.avatar')} className="profile-avatar-img" />
                         ) : (
                             <span>{getInitials()}</span>
                         )}
                         {isEditingProfile && (
                             <div className="profile-avatar-overlay">
-                                <span>Change</span>
+                                <span>{t('pages.profile.change')}</span>
                             </div>
                         )}
                     </div>
@@ -52,15 +55,15 @@ function ProfileCustomization({
                         style={{display: 'none'}}
                     />
                     <div className="profile-info">
-                        <h2>{formData.username || user?.username || 'User'}</h2>
-                        <p>{formData.email || user?.email || 'No email provided'}</p>
+                        <h2>{formData.username || user?.username || t('pages.profile.user')}</h2>
+                        <p>{formData.email || user?.email || t('pages.profile.noEmailProvided')}</p>
                     </div>
                 </div>
                 {!isEditingProfile && (
                     <button
                         className="profile-edit-appearance-btn"
                         onClick={() => setIsEditingProfile(true)}
-                        title="Edit profile appearance"
+                        title={t('pages.profile.editProfileAppearance')}
                     >
                         ✏️
                     </button>
@@ -72,26 +75,26 @@ function ProfileCustomization({
                             onClick={handleSaveProfile}
                             disabled={isSavingProfile}
                         >
-                            {isSavingProfile ? 'Saving...' : 'Save'}
+                            {isSavingProfile ? t('pages.auth.saving') : t('pages.profile.save')}
                         </button>
                         <button
                             className="profile-cancel-appearance-btn"
                             onClick={handleCancelProfile}
                             disabled={isSavingProfile}
                         >
-                            Cancel
+                            {t('pages.profile.cancel')}
                         </button>
                     </div>
                 )}
             </div>
             {isEditingProfile && (
                 <div className="profile-gradient-selector">
-                    <label className="profile-gradient-label">Choose Background Gradient:</label>
+                    <label className="profile-gradient-label">{t('pages.profile.chooseBackgroundGradient')}</label>
                     <div className="profile-gradients-container">
                         <button
                             className="profile-gradient-nav profile-gradient-nav--prev"
                             onClick={handleGradientPrev}
-                            aria-label="Previous page"
+                            aria-label={t('pages.profile.previousPage')}
                         >
                             ←
                         </button>
@@ -125,7 +128,7 @@ function ProfileCustomization({
                         <button
                             className="profile-gradient-nav profile-gradient-nav--next"
                             onClick={handleGradientNext}
-                            aria-label="Next page"
+                            aria-label={t('pages.profile.nextPage')}
                         >
                             →
                         </button>

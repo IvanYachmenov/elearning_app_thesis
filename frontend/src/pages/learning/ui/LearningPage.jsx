@@ -23,7 +23,7 @@ function LearningPage() {
             })
             .catch((err) => {
                 console.error(err);
-                setError('Failed to load your courses.');
+                setError(t('pages.learning.failedToLoadCourses'));
             })
             .finally(() => setLoading(false));
     }, []);
@@ -42,7 +42,7 @@ function LearningPage() {
                         {t('pages.learning.noCoursesText')}
                     </p>
                     <Link to="/courses" className="btn-primary">
-                        {t('pages.learning.exploreCourses')} →
+                        {t('pages.learning.exploreCourses')}
                     </Link>
                 </div>
             )}

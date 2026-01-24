@@ -21,8 +21,6 @@ function TeacherCourseEditPage({user}) {
         image_url: null
     });
     
-    const [expandedModules, setExpandedModules] = useState({});
-    const [expandedTopics, setExpandedTopics] = useState({});
 
     const fetchCourse = useCallback(async () => {
         setLoading(true);
@@ -44,21 +42,6 @@ function TeacherCourseEditPage({user}) {
                 data.image_url = data.image;
             }
             setCourseData(data);
-            // Initialize all modules and topics as expanded
-            const initialExpandedModules = {};
-            const initialExpandedTopics = {};
-            if (data && data.modules) {
-                data.modules.forEach((module, moduleIdx) => {
-                    initialExpandedModules[moduleIdx] = true;
-                    if (module.topics) {
-                        module.topics.forEach((topic, topicIdx) => {
-                            initialExpandedTopics[`${moduleIdx}-${topicIdx}`] = true;
-                        });
-                    }
-                });
-            }
-            setExpandedModules(initialExpandedModules);
-            setExpandedTopics(initialExpandedTopics);
         } catch (err) {
             setError(err.response?.data?.detail || err.response?.data?.message || 'Failed to load course.');
         } finally {
@@ -274,143 +257,28 @@ function TeacherCourseEditPage({user}) {
     };
 
     const handleAddTopic = (moduleIndex) => {
-        const updatedModules = [...courseData.modules];
-        const module = updatedModules[moduleIndex];
-        const existingTopics = module.topics || [];
-        const maxOrder = existingTopics.length > 0
-            ? Math.max(...existingTopics.map(t => typeof t.order === 'number' ? t.order : -1))
-            : -1;
-        const newTopicIndex = existingTopics.length;
-        const newTopic = {
-            title: '',
-            order: maxOrder + 1,
-            content: '',
-            is_timed_test: false,
-            time_limit_seconds: null,
-            questions: []
-        };
-        updatedModules[moduleIndex] = {
-            ...module,
-            topics: [...existingTopics, newTopic]
-        };
-        setCourseData({
-            ...courseData,
-            modules: updatedModules
-        });
-        setExpandedTopics(prev => ({
-            ...prev,
-            [`${moduleIndex}-${newTopicIndex}`]: true
-        }));
-        // Ensure module is expanded when adding topic
-        setExpandedModules(prev => ({
-            ...prev,
-            [moduleIndex]: true
-        }));
+        const module = courseData.modules[moduleIndex];
+        if (module.id) {
+            navigate(`/teacher/courses/${id}/modules/${module.id}/topics/new`);
+        } else {
+            setError('Please save the module first before adding topics');
+        }
     };
 
-    const handleTopicChange = (moduleIndex, topicIndex, field, value) => {
-        const updatedModules = [...courseData.modules];
-        updatedModules[moduleIndex].topics[topicIndex] = {
-            ...updatedModules[moduleIndex].topics[topicIndex],
-            [field]: value
-        };
-        setCourseData({
-            ...courseData,
-            modules: updatedModules
-        });
+    const handleEditTopic = (moduleIndex, topicIndex) => {
+        const module = courseData.modules[moduleIndex];
+        const topic = module.topics[topicIndex];
+        if (module.id && topic.id) {
+            navigate(`/teacher/courses/${id}/modules/${module.id}/topics/${topic.id}/edit`);
+        } else {
+            setError('Please save the module and topic first');
+        }
     };
 
     const handleDeleteTopic = (moduleIndex, topicIndex) => {
         const updatedModules = [...courseData.modules];
         updatedModules[moduleIndex].topics = updatedModules[moduleIndex].topics.filter(
             (_, index) => index !== topicIndex
-        );
-        setCourseData({
-            ...courseData,
-            modules: updatedModules
-        });
-    };
-
-    const handleAddQuestion = (moduleIndex, topicIndex) => {
-        const updatedModules = [...courseData.modules];
-        const topic = updatedModules[moduleIndex].topics[topicIndex];
-        const existingQuestions = topic.questions || [];
-        const maxOrder = existingQuestions.length > 0
-            ? Math.max(...existingQuestions.map(q => typeof q.order === 'number' ? q.order : -1))
-            : -1;
-        const newQuestion = {
-            text: '',
-            order: maxOrder + 1,
-            question_type: 'single_choice',
-            max_score: 100,
-            options: []
-        };
-        updatedModules[moduleIndex].topics[topicIndex] = {
-            ...topic,
-            questions: [...existingQuestions, newQuestion]
-        };
-        setCourseData({
-            ...courseData,
-            modules: updatedModules
-        });
-    };
-
-    const handleQuestionChange = (moduleIndex, topicIndex, questionIndex, field, value) => {
-        const updatedModules = [...courseData.modules];
-        updatedModules[moduleIndex].topics[topicIndex].questions[questionIndex] = {
-            ...updatedModules[moduleIndex].topics[topicIndex].questions[questionIndex],
-            [field]: value
-        };
-        setCourseData({
-            ...courseData,
-            modules: updatedModules
-        });
-    };
-
-    const handleDeleteQuestion = (moduleIndex, topicIndex, questionIndex) => {
-        const updatedModules = [...courseData.modules];
-        updatedModules[moduleIndex].topics[topicIndex].questions = updatedModules[moduleIndex].topics[topicIndex].questions.filter(
-            (_, index) => index !== questionIndex
-        );
-        setCourseData({
-            ...courseData,
-            modules: updatedModules
-        });
-    };
-
-    const handleAddOption = (moduleIndex, topicIndex, questionIndex) => {
-        const updatedModules = [...courseData.modules];
-        const question = updatedModules[moduleIndex].topics[topicIndex].questions[questionIndex];
-        const newOption = {
-            text: '',
-            is_correct: false
-        };
-        updatedModules[moduleIndex].topics[topicIndex].questions[questionIndex] = {
-            ...question,
-            options: [...(question.options || []), newOption]
-        };
-        setCourseData({
-            ...courseData,
-            modules: updatedModules
-        });
-    };
-
-    const handleOptionChange = (moduleIndex, topicIndex, questionIndex, optionIndex, field, value) => {
-        const updatedModules = [...courseData.modules];
-        updatedModules[moduleIndex].topics[topicIndex].questions[questionIndex].options[optionIndex] = {
-            ...updatedModules[moduleIndex].topics[topicIndex].questions[questionIndex].options[optionIndex],
-            [field]: value
-        };
-        setCourseData({
-            ...courseData,
-            modules: updatedModules
-        });
-    };
-
-    const handleDeleteOption = (moduleIndex, topicIndex, questionIndex, optionIndex) => {
-        const updatedModules = [...courseData.modules];
-        updatedModules[moduleIndex].topics[topicIndex].questions[questionIndex].options = updatedModules[moduleIndex].topics[topicIndex].questions[questionIndex].options.filter(
-            (_, index) => index !== optionIndex
         );
         setCourseData({
             ...courseData,
@@ -515,38 +383,28 @@ function TeacherCourseEditPage({user}) {
 
                     {courseData.modules && courseData.modules.length > 0 ? (
                         <div className="teacher-modules-list">
-                            {courseData.modules.map((module, moduleIndex) => {
-                                const isModuleExpanded = expandedModules[moduleIndex] !== false;
-                                return (
+                            {courseData.modules.map((module, moduleIndex) => (
                                 <div key={module.id || moduleIndex} className="teacher-module-item">
                                     <div className="teacher-module-header">
-                                        <button
-                                            type="button"
-                                            className="teacher-module-toggle"
-                                            onClick={() => toggleModule(moduleIndex)}
-                                        >
-                                            {isModuleExpanded ? '▼' : '▶'}
-                                        </button>
-                                        <h3 className="teacher-module-title">Module {moduleIndex + 1}</h3>
-                                        <button
-                                            className="teacher-module-delete-btn"
-                                            type="button"
-                                            onClick={() => handleDeleteModule(moduleIndex)}
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                    {isModuleExpanded && (
-                                        <>
-                                    <div className="teacher-form-group">
-                                        <label className="teacher-form-label">Module Title</label>
-                                        <input
-                                            type="text"
-                                            className="teacher-form-input"
-                                            value={module.title || ''}
-                                            onChange={(e) => handleModuleChange(moduleIndex, 'title', e.target.value)}
-                                            placeholder="Enter module title"
-                                        />
+                                        <h3 className="teacher-module-title">
+                                            {module.title || `Module ${moduleIndex + 1}`}
+                                        </h3>
+                                        <div style={{display: 'flex', gap: '8px'}}>
+                                            <button
+                                                className="teacher-module-edit-btn"
+                                                type="button"
+                                                onClick={() => handleEditModule(moduleIndex)}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                className="teacher-module-delete-btn"
+                                                type="button"
+                                                onClick={() => handleDeleteModule(moduleIndex)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
                                     
                                     <div className="teacher-topics-section">
@@ -556,6 +414,7 @@ function TeacherCourseEditPage({user}) {
                                                 className="teacher-add-topic-btn"
                                                 type="button"
                                                 onClick={() => handleAddTopic(moduleIndex)}
+                                                disabled={!module.id}
                                             >
                                                 + Add Topic
                                             </button>
@@ -563,218 +422,39 @@ function TeacherCourseEditPage({user}) {
                                         
                                         {module.topics && module.topics.length > 0 ? (
                                             <div className="teacher-topics-list">
-                                                {module.topics.map((topic, topicIndex) => {
-                                                    const topicKey = `${moduleIndex}-${topicIndex}`;
-                                                    const isTopicExpanded = expandedTopics[topicKey] !== false;
-                                                    return (
+                                                {module.topics.map((topic, topicIndex) => (
                                                     <div key={topic.id || topicIndex} className="teacher-topic-item">
                                                         <div className="teacher-topic-header">
-                                                            <button
-                                                                type="button"
-                                                                className="teacher-topic-toggle"
-                                                                onClick={() => toggleTopic(moduleIndex, topicIndex)}
-                                                            >
-                                                                {isTopicExpanded ? '▼' : '▶'}
-                                                            </button>
-                                                            <h5 className="teacher-topic-title">Topic {topicIndex + 1}</h5>
-                                                            <button
-                                                                className="teacher-topic-delete-btn"
-                                                                type="button"
-                                                                onClick={() => handleDeleteTopic(moduleIndex, topicIndex)}
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                        </div>
-                                                        {isTopicExpanded && (
-                                                            <>
-                                                        <div className="teacher-form-group">
-                                                            <label className="teacher-form-label">Topic Title</label>
-                                                            <input
-                                                                type="text"
-                                                                className="teacher-form-input"
-                                                                value={topic.title || ''}
-                                                                onChange={(e) => handleTopicChange(moduleIndex, topicIndex, 'title', e.target.value)}
-                                                                placeholder="Enter topic title"
-                                                            />
-                                                        </div>
-                                                        
-                                                        <div className="teacher-form-group">
-                                                            <label className="teacher-form-label">Theory Text</label>
-                                                            <textarea
-                                                                className="teacher-form-textarea"
-                                                                value={topic.content || ''}
-                                                                onChange={(e) => handleTopicChange(moduleIndex, topicIndex, 'content', e.target.value)}
-                                                                placeholder="Enter theory content for this topic"
-                                                                rows={8}
-                                                            />
-                                                        </div>
-                                                        
-                                                        <div className="teacher-form-group">
-                                                            <label className="teacher-form-checkbox-label">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={topic.is_timed_test || false}
-                                                                    onChange={(e) => handleTopicChange(moduleIndex, topicIndex, 'is_timed_test', e.target.checked)}
-                                                                />
-                                                                Timed test
-                                                            </label>
-                                                        </div>
-                                                        
-                                                        {topic.is_timed_test && (
-                                                            <div className="teacher-form-group">
-                                                                <label className="teacher-form-label">Time Limit (seconds)</label>
-                                                                <input
-                                                                    type="number"
-                                                                    className="teacher-form-input"
-                                                                    value={topic.time_limit_seconds || ''}
-                                                                    onChange={(e) => handleTopicChange(moduleIndex, topicIndex, 'time_limit_seconds', parseInt(e.target.value) || null)}
-                                                                    placeholder="Enter time limit in seconds"
-                                                                    min="120"
-                                                                />
-                                                            </div>
-                                                        )}
-
-                                                        <div className="teacher-questions-section">
-                                                            <div className="teacher-questions-header">
-                                                                <h5 className="teacher-questions-title">Questions</h5>
+                                                            <h5 className="teacher-topic-title">
+                                                                {topic.title || `Topic ${topicIndex + 1}`}
+                                                            </h5>
+                                                            <div style={{display: 'flex', gap: '8px'}}>
                                                                 <button
-                                                                    className="teacher-add-question-btn"
+                                                                    className="teacher-topic-edit-btn"
                                                                     type="button"
-                                                                    onClick={() => handleAddQuestion(moduleIndex, topicIndex)}
+                                                                    onClick={() => handleEditTopic(moduleIndex, topicIndex)}
+                                                                    disabled={!module.id || !topic.id}
                                                                 >
-                                                                    + Add Question
+                                                                    Edit
+                                                                </button>
+                                                                <button
+                                                                    className="teacher-topic-delete-btn"
+                                                                    type="button"
+                                                                    onClick={() => handleDeleteTopic(moduleIndex, topicIndex)}
+                                                                >
+                                                                    Delete
                                                                 </button>
                                                             </div>
-
-                                                            {topic.questions && topic.questions.length > 0 ? (
-                                                                <div className="teacher-questions-list">
-                                                                    {topic.questions.map((question, questionIndex) => (
-                                                                        <div key={question.id || questionIndex} className="teacher-question-item">
-                                                                            <div className="teacher-question-header">
-                                                                                <h6 className="teacher-question-title">Question {questionIndex + 1}</h6>
-                                                                                <button
-                                                                                    className="teacher-question-delete-btn"
-                                                                                    type="button"
-                                                                                    onClick={() => handleDeleteQuestion(moduleIndex, topicIndex, questionIndex)}
-                                                                                >
-                                                                                    Delete
-                                                                                </button>
-                                                                            </div>
-
-                                                                            <div className="teacher-form-group">
-                                                                                <label className="teacher-form-label">Question Text</label>
-                                                                                <textarea
-                                                                                    className="teacher-form-textarea"
-                                                                                    value={question.text || ''}
-                                                                                    onChange={(e) => handleQuestionChange(moduleIndex, topicIndex, questionIndex, 'text', e.target.value)}
-                                                                                    placeholder="Enter question text"
-                                                                                    rows={2}
-                                                                                />
-                                                                            </div>
-
-                                                                            <div className="teacher-form-group">
-                                                                                <label className="teacher-form-label">Question Type</label>
-                                                                                <select
-                                                                                    className="teacher-form-input"
-                                                                                    value={question.question_type || 'single_choice'}
-                                                                                    onChange={(e) => handleQuestionChange(moduleIndex, topicIndex, questionIndex, 'question_type', e.target.value)}
-                                                                                >
-                                                                                    <option value="single_choice">Single Choice</option>
-                                                                                    <option value="multiple_choice">Multiple Choice</option>
-                                                                                </select>
-                                                                            </div>
-
-                                                                            <div className="teacher-form-group">
-                                                                                <label className="teacher-form-label">Max Score</label>
-                                                                                <input
-                                                                                    type="number"
-                                                                                    className="teacher-form-input"
-                                                                                    value={question.max_score || 100}
-                                                                                    onChange={(e) => handleQuestionChange(moduleIndex, topicIndex, questionIndex, 'max_score', parseInt(e.target.value) || 100)}
-                                                                                    min="1"
-                                                                                    max="100"
-                                                                                />
-                                                                            </div>
-
-                                                                            <div className="teacher-options-section">
-                                                                                <div className="teacher-options-header">
-                                                                                    <label className="teacher-form-label">Options</label>
-                                                                                    <button
-                                                                                        className="teacher-add-option-btn"
-                                                                                        type="button"
-                                                                                        onClick={() => handleAddOption(moduleIndex, topicIndex, questionIndex)}
-                                                                                    >
-                                                                                        + Add Option
-                                                                                    </button>
-                                                                                </div>
-
-                                                                                {question.options && question.options.length > 0 ? (
-                                                                                    <div className="teacher-options-list">
-                                                                                        {question.options.map((option, optionIndex) => (
-                                                                                            <div key={optionIndex} className="teacher-option-item">
-                                                                                                <div className="teacher-option-content">
-                                                                                                    <input
-                                                                                                        type="text"
-                                                                                                        className="teacher-form-input"
-                                                                                                        value={option.text || ''}
-                                                                                                        onChange={(e) => handleOptionChange(moduleIndex, topicIndex, questionIndex, optionIndex, 'text', e.target.value)}
-                                                                                                        placeholder="Option text"
-                                                                                                    />
-                                                                                                    <label className="teacher-form-checkbox-label">
-                                                                                                        <input
-                                                                                                            type={question.question_type === 'single_choice' ? 'radio' : 'checkbox'}
-                                                                                                            name={`question-${moduleIndex}-${topicIndex}-${questionIndex}`}
-                                                                                                            checked={option.is_correct || false}
-                                                                                                            onChange={(e) => {
-                                                                                                                if (question.question_type === 'single_choice') {
-                                                                                                                    question.options.forEach((opt, idx) => {
-                                                                                                                        if (idx !== optionIndex) {
-                                                                                                                            handleOptionChange(moduleIndex, topicIndex, questionIndex, idx, 'is_correct', false);
-                                                                                                                        }
-                                                                                                                    });
-                                                                                                                }
-                                                                                                                handleOptionChange(moduleIndex, topicIndex, questionIndex, optionIndex, 'is_correct', e.target.checked);
-                                                                                                            }}
-                                                                                                        />
-                                                                                                        Correct
-                                                                                                    </label>
-                                                                                                    <button
-                                                                                                        className="teacher-option-delete-btn"
-                                                                                                        type="button"
-                                                                                                        onClick={() => handleDeleteOption(moduleIndex, topicIndex, questionIndex, optionIndex)}
-                                                                                                    >
-                                                                                                        ×
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        ))}
-                                                                                    </div>
-                                                                                ) : (
-                                                                                    <p className="teacher-empty-text-small">No options yet. Add at least 2 options.</p>
-                                                                                )}
-                                                                            </div>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            ) : (
-                                                                <p className="teacher-empty-text-small">No questions yet. Click "Add Question" to create one.</p>
-                                                            )}
                                                         </div>
-                                                            </>
-                                                        )}
                                                     </div>
-                                                );
-                                                })}
+                                                ))}
                                             </div>
                                         ) : (
                                             <p className="teacher-empty-text">No topics yet. Click "Add Topic" to create one.</p>
                                         )}
                                     </div>
-                                        </>
-                                    )}
                                 </div>
-                            );
-                            })}
+                            ))}
                         </div>
                     ) : (
                         <p className="teacher-empty-text">No modules yet. Click "Add Module" to create one.</p>

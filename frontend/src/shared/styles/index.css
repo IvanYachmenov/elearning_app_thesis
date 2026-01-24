@@ -58,7 +58,30 @@ body.theme-auth {
 }
 
 body.theme-app {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #f97316 70%, #fb923c 100%) !important;
+  min-height: 100vh;
+}
+
+[data-theme="dark"] body.theme-app {
+  background: linear-gradient(135deg, #1a1f3e 0%, #2a2f5e 25%, #3d2f6e 50%, #2a2f4e 75%, #1f2439 100%) !important;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.app-loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: var(--text-primary);
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #f97316 70%, #fb923c 100%);
+}
+
+[data-theme="dark"] .app-loading-screen {
+  background: linear-gradient(135deg, #1a1f3e 0%, #2a2f5e 25%, #3d2f6e 50%, #2a2f4e 75%, #1f2439 100%);
+  background-attachment: fixed;
+  color: var(--text-primary);
 }
 
 /* === THEME SUPPORT === */
@@ -211,7 +234,8 @@ body.theme-app {
 }
 
 [data-theme="dark"] .app-root {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #7c2d12 70%, #9a3412 100%);
+  background: linear-gradient(135deg, #1a1f3e 0%, #2a2f5e 25%, #3d2f6e 50%, #2a2f4e 75%, #1f2439 100%);
+  background-attachment: fixed;
 }
 
 /* ---------- LINKS ---------- */

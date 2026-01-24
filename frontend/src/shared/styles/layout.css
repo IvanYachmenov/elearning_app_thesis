@@ -35,8 +35,7 @@
     position: relative;
     z-index: 1;
 
-    max-width: none;
-    margin: 0;
+    width: 100%;
     padding: 0;
     height: 56px;
     display: flex;
@@ -55,7 +54,6 @@
     display: flex;
     align-items: stretch;
     gap: 0;
-    border-left: 2px solid var(--nav-black);
 }
 
 /* === Logo === */
@@ -104,9 +102,6 @@
     transition: background-color 0.14s ease;
 }
 
-.app-nav-link:first-child {
-    border-left: 0;
-}
 
 .app-nav-link:hover,
 .app-nav-link:focus,
@@ -240,6 +235,11 @@
     color: var(--nav-black);
 }
 
+[data-theme="dark"] .profile-button:hover,
+[data-theme="dark"] .profile-button:hover .profile-name {
+    color: var(--text-primary);
+}
+
 .profile-button:hover .profile-avatar {
     transform: scale(1.1);
     box-shadow: 0 0 0 2px var(--nav-black), 0 4px 12px rgba(124, 58, 237, 0.3);
@@ -289,6 +289,7 @@
 
     box-sizing: border-box;
     border-left: 2px solid var(--nav-black);
+    border-right: 2px solid var(--nav-black);
 
     transition: background-color 0.5s ease;
 }
@@ -606,6 +607,9 @@
 
 /* === Mobile: hide top nav links (Courses/Learning go into burger) === */
 @media (max-width: 768px) {
+    .app-header__container {
+        padding: 0;
+    }
     .app-nav {
         display: none;
     }

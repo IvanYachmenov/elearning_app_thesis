@@ -1,3 +1,5 @@
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
+
 function PracticeQuestionCard({
     question,
     selectedOptions,
@@ -15,6 +17,7 @@ function PracticeQuestionCard({
     showTimedNextButton,
     timedAnswerSaved,
 }) {
+    const {t} = useLanguage();
     // Remove dots at the start of option text
     const cleanOptionText = (text) => {
         if (!text) return text;
@@ -55,10 +58,10 @@ function PracticeQuestionCard({
             <div className="topic-practice__question-header">
                 <span className="topic-practice__type">
                     {question.question_type === 'single_choice'
-                        ? 'Single choice'
+                        ? t('pages.learning.singleChoice')
                         : question.question_type === 'multiple_choice'
-                            ? 'Multiple choice'
-                            : 'Code'}
+                            ? t('pages.learning.multipleChoice')
+                            : t('pages.learning.code')}
                 </span>
                 <div className="topic-practice__question-text">
                     {question.text}
@@ -107,7 +110,7 @@ function PracticeQuestionCard({
                                 disableSubmit
                             }
                         >
-                            {submitLoading ? 'Submitting...' : answerFeedback?.type === 'fail' ? 'Try again' : 'Submit answer'}
+                            {submitLoading ? t('pages.auth.submitting') : answerFeedback?.type === 'fail' ? t('pages.auth.tryAgain') : t('pages.auth.submitAnswer')}
                         </button>
                     )}
 
@@ -118,7 +121,7 @@ function PracticeQuestionCard({
                             onClick={onSubmit}
                             disabled={submitLoading || practiceLoading}
                         >
-                            {submitLoading ? 'Saving...' : 'Submit answer'}
+                            {submitLoading ? t('pages.auth.saving') : t('pages.auth.submitAnswer')}
                         </button>
                     )}
 
@@ -129,7 +132,7 @@ function PracticeQuestionCard({
                             onClick={onContinue}
                             disabled={practiceLoading}
                         >
-                            Next question
+                            {t('pages.auth.nextQuestion')}
                         </button>
                     )}
 
@@ -140,7 +143,7 @@ function PracticeQuestionCard({
                             onClick={onContinue}
                             disabled={practiceLoading}
                         >
-                            Finish test
+                            {t('pages.auth.finishTest')}
                         </button>
                     )}
 
@@ -151,7 +154,7 @@ function PracticeQuestionCard({
                             onClick={onContinue}
                             disabled={practiceLoading}
                         >
-                            Next question
+                            {t('pages.auth.nextQuestion')}
                         </button>
                     )}
 
@@ -162,7 +165,7 @@ function PracticeQuestionCard({
                             onClick={onContinue}
                             disabled={practiceLoading}
                         >
-                            Finish test
+                            {t('pages.auth.finishTest')}
                         </button>
                     )}
                 </div>

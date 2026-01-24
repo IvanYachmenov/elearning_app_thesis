@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../../shared/api';
+import { useLanguage } from '../../../shared/lib/i18n/LanguageContext';
 import CourseCardSimple from './CourseCardSimple';
 import '../styles/home.css';
 
 function HomePage({user}) {
     const navigate = useNavigate();
+    const {t} = useLanguage();
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     
@@ -53,11 +55,11 @@ function HomePage({user}) {
 
             {/* Featured Courses Section */}
             <section className="home-section">
-                <h2 className="home-section__title">Featured Courses</h2>
+                <h2 className="home-section__title">{t('pages.home.featuredCourses')}</h2>
                 {loading ? (
-                    <p className="home-section__text">Loading courses...</p>
+                    <p className="home-section__text">{t('pages.home.loadingCourses')}</p>
                 ) : courses.length === 0 ? (
-                    <p className="home-section__text">No courses available yet.</p>
+                    <p className="home-section__text">{t('pages.home.noCoursesAvailable')}</p>
                 ) : (
                     <div className="home-courses-scroll">
                         <div className="home-courses-scroll__container">
@@ -75,7 +77,7 @@ function HomePage({user}) {
                             className="home-courses-scroll__button"
                             onClick={() => navigate('/courses')}
                         >
-                            Go to catalog →
+                            {t('pages.home.goToCatalog')}
                         </button>
                     </div>
                 )}
@@ -83,7 +85,7 @@ function HomePage({user}) {
 
             {/* News/Updates Section */}
             <section className="home-section">
-                <h2 className="home-section__title">Latest Updates</h2>
+                <h2 className="home-section__title">{t('pages.home.latestUpdates')}</h2>
                 <div className="home-news-list">
                     {newsPosts.map((post) => (
                         <div key={post.id} className="home-news-item">
@@ -96,7 +98,7 @@ function HomePage({user}) {
             </section>
 
             <section className="home-section">
-                <h2 className="home-section__title">Shop</h2>
+                <h2 className="home-section__title">{t('pages.home.shop')}</h2>
                 <p className="home-section__text">
                     The shop is being redesigned. We’ll add it back once the earning and spending logic is defined.
                 </p>
@@ -104,22 +106,20 @@ function HomePage({user}) {
                     className="home-courses-scroll__button"
                     onClick={() => navigate('/shop')}
                 >
-                    Open shop →
+                    {t('pages.home.openShop')}
                 </button>
             </section>
 
             {/* Platform Info Section */}
             <section className="home-section">
                 <h2 className="home-section__title">
-                    What's E-Learning Platform?
+                    {t('pages.home.whatsELearning')}
                 </h2>
                 <p className="home-section__text">
-                    This is a modern, focused e-learning platform designed to help you connect
-                    theory and practice for programming languages like Python and many other topics.
+                    {t('pages.home.whatsELearningText1')}
                 </p>
                 <p className="home-section__text">
-                    Instead of just watching long video courses, you'll read concise lessons and
-                    immediately apply concepts through quizzes and coding tasks directly in the browser.
+                    {t('pages.home.whatsELearningText2')}
                 </p>
             </section>
         </div>

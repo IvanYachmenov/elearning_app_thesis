@@ -1,11 +1,13 @@
 import {useEffect, useState, useRef} from 'react';
 import {useParams, useNavigate, Link} from 'react-router-dom';
 import {api} from '../../../shared/api';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
 import '../styles/learning.css';
 
 function CourseLearningPage() {
     const {id} = useParams();
     const navigate = useNavigate();
+    const {t} = useLanguage();
 
     const [course, setCourse] = useState(null);
     const [expandedModules, setExpandedModules] = useState({});
@@ -32,11 +34,11 @@ function CourseLearningPage() {
             .catch((err) => {
                 console.error(err);
                 if (err.response && err.response.status === 404) {
-                    setError('Course not found or you are not enrolled.');
+                    setError(t('pages.learning.courseNotFoundOrNotEnrolled'));
                 } else if (err.response && err.response.status === 403) {
-                    setError('You are not enrolled in this course.');
+                    setError(t('pages.learning.notEnrolled'));
                 } else {
-                    setError('Failed to load course.');
+                    setError(t('pages.learning.failedToLoadCourse'));
                 }
             })
             .finally(() => {
@@ -59,7 +61,7 @@ function CourseLearningPage() {
     if (loading) {
         return (
             <div className="page page-enter">
-                <p>Loading course...</p>
+                <p>{t('pages.learning.loadingCourse')}</p>
             </div>
         );
     }
@@ -67,13 +69,13 @@ function CourseLearningPage() {
     if (error || !course) {
         return (
             <div className="page page-enter">
-                <p style={{color: '#dc2626'}}>{error || 'Course not found.'}</p>
+                <p style={{color: '#dc2626'}}>{error || t('pages.learning.courseNotFound')}</p>
                 <Link
                     to="/learning"
                     className="btn-primary"
                     style={{marginTop: '16px'}}
                 >
-                    ← Back to My Learning
+                    {t('pages.learning.backToMyLearning')}
                 </Link>
             </div>
         );
@@ -96,7 +98,7 @@ function CourseLearningPage() {
                     className="learning-back-link"
                     onClick={() => navigate('/learning')}
                 >
-                    ← Back to My Learning
+                    {t('pages.learning.backToMyLearning')}
                 </button>
 
                 <h1 className="page__title">{course.title}</h1>
@@ -109,7 +111,7 @@ function CourseLearningPage() {
                                 to={`/courses/${course.id}`}
                                 className="learning-course-description__link"
                             >
-                                Read more
+                                {t('pages.learning.readMore')}
                             </Link>
                         )}
                     </p>
@@ -117,9 +119,9 @@ function CourseLearningPage() {
 
                 <div className="learning-course-progress">
                     <div className="learning-course-progress__info">
-                        <span className="learning-course-progress__label">Progress:</span>
+                        <span className="learning-course-progress__label">{t('pages.learning.progress')}</span>
                         <span className="learning-course-progress__value">
-              {course.completed_topics}/{course.total_topics} topics
+              {course.completed_topics}/{course.total_topics} {t('pages.learning.topics')}
             </span>
                         <span className="learning-course-progress__percent">
               ({progressPercent}%)
@@ -160,7 +162,7 @@ function CourseLearningPage() {
                                     <div>
                                         <div className="learning-module__title">{mod.title}</div>
                                         <div className="learning-module__meta">
-                                            {mod.topics.length} topics
+                                            {mod.topics.length} {t('pages.learning.topics')}
                                         </div>
                                     </div>
                                     <div
@@ -193,7 +195,7 @@ function CourseLearningPage() {
                                                     <div className="learning-topic__title">
                                                         {topic.title}
                                                         {topic.is_timed_test && (
-                                                            <span className="learning-topic__timed-badge" title="Timed test">
+                                                            <span className="learning-topic__timed-badge" title={t('pages.learning.timedTest')}>
                                                                 ⏱
                                                             </span>
                                                         )}
@@ -201,7 +203,17 @@ function CourseLearningPage() {
 
                                                     <div className="learning-topic__status">
                             <span className="learning-topic__status-pill">
-                              {topic.status.replace('_', ' ')}
+                              {topic.status === 'not_started'
+                                  ? t('pages.learning.statusNotStarted')
+                                  : topic.status === 'in_progress'
+                                      ? t('pages.learning.statusInProgress')
+                                      : topic.status === 'completed'
+                                          ? (topic.score != null && topic.score >= 100)
+                                              ? t('pages.learning.statusPassed')
+                                              : t('pages.learning.statusCompleted')
+                                          : topic.status === 'failed'
+                                              ? t('pages.learning.statusFailed')
+                                              : topic.status.replace('_', ' ')}
                             </span>
                                                         {topic.score != null && (
                                                             <span className="learning-topic__score">
@@ -213,14 +225,14 @@ function CourseLearningPage() {
                                             ))}
                                         </ul>
                                     ) : (
-                                        <p className="learning-topic-empty">No topics yet.</p>
+                                        <p className="learning-topic-empty">{t('pages.learning.noTopicsYet')}</p>
                                     )}
                                 </div>
                             </article>
                         );
                     })
                 ) : (
-                    <p>No modules yet.</p>
+                    <p>{t('pages.learning.noModulesYet')}</p>
                 )}
             </section>
         </div>

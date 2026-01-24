@@ -1,8 +1,11 @@
+import {useLanguage} from '../../../../shared/lib/i18n/LanguageContext';
+
 function SettingsNav({activeKey, onChange}) {
+    const {t} = useLanguage();
     const items = [
-        {key: 'account', label: 'Account'},
-        {key: 'language', label: 'Language'},
-        {key: 'theme', label: 'Theme'},
+        {key: 'account', label: t('pages.settings.account')},
+        {key: 'language', label: t('pages.settings.language')},
+        {key: 'theme', label: t('pages.settings.theme')},
     ]; // alphabetical
 
     return (

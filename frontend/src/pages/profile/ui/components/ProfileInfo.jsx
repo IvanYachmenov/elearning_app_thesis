@@ -1,3 +1,5 @@
+import {useLanguage} from '../../../../shared/lib/i18n/LanguageContext';
+
 function ProfileInfo({
     isEditing,
     setIsEditing,
@@ -9,13 +11,14 @@ function ProfileInfo({
     formData,
     handleInputChange,
 }) {
+    const {t} = useLanguage();
     return (
         <div className="profile-section">
             <div className="profile-section-header">
-                <h3>Account Information</h3>
+                <h3>{t('pages.profile.accountInformation')}</h3>
                 {!isEditing ? (
                     <button className="profile-edit-btn" onClick={() => setIsEditing(true)}>
-                        Edit Profile
+                        {t('pages.profile.editProfile')}
                     </button>
                 ) : (
                     <div className="profile-action-buttons">
@@ -24,14 +27,14 @@ function ProfileInfo({
                             onClick={handleSave}
                             disabled={isSaving}
                         >
-                            {isSaving ? 'Saving...' : 'Save Changes'}
+                            {isSaving ? t('pages.auth.saving') : t('pages.profile.saveChanges')}
                         </button>
                         <button
                             className="profile-cancel-btn"
                             onClick={handleCancel}
                             disabled={isSaving}
                         >
-                            Cancel
+                            {t('pages.profile.cancel')}
                         </button>
                     </div>
                 )}
@@ -43,7 +46,7 @@ function ProfileInfo({
 
             <div className="profile-form">
                 <div className="profile-field">
-                    <label htmlFor="username">Username</label>
+                    <label htmlFor="username">{t('pages.auth.username')}</label>
                     <input
                         id="username"
                         name="username"
@@ -54,24 +57,23 @@ function ProfileInfo({
                         className={
                             isEditing ? 'profile-input' : 'profile-input profile-input--disabled'
                         }
-                        placeholder="Enter username"
+                        placeholder={t('pages.profile.enterUsername')}
                         required
                     />
                     {!isEditing && (
                         <p className="profile-field-hint">
-                            Click &quot;Edit Profile&quot; above to change username
+                            {t('pages.profile.clickEditToChangeUsername')}
                         </p>
                     )}
                     {isEditing && (
                         <p className="profile-field-hint">
-                            Username must be unique. If it&apos;s already taken, you&apos;ll see an
-                            error message.
+                            {t('pages.profile.usernameMustBeUnique')}
                         </p>
                     )}
                 </div>
 
                 <div className="profile-field">
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="email">{t('pages.auth.email')}</label>
                     <input
                         id="email"
                         type="email"
@@ -79,11 +81,11 @@ function ProfileInfo({
                         disabled
                         className="profile-input profile-input--disabled"
                     />
-                    <p className="profile-field-hint">Email cannot be changed</p>
+                    <p className="profile-field-hint">{t('pages.profile.emailCannotBeChanged')}</p>
                 </div>
 
                 <div className="profile-field">
-                    <label htmlFor="first_name">First Name</label>
+                    <label htmlFor="first_name">{t('pages.auth.firstName')}</label>
                     <input
                         id="first_name"
                         name="first_name"
@@ -92,12 +94,12 @@ function ProfileInfo({
                         onChange={handleInputChange}
                         disabled={!isEditing}
                         className={`profile-input ${!isEditing ? 'profile-input--disabled' : ''}`}
-                        placeholder="Enter your first name"
+                        placeholder={t('pages.auth.yourFirstName')}
                     />
                 </div>
 
                 <div className="profile-field">
-                    <label htmlFor="last_name">Last Name</label>
+                    <label htmlFor="last_name">{t('pages.auth.lastName')}</label>
                     <input
                         id="last_name"
                         name="last_name"
@@ -106,7 +108,7 @@ function ProfileInfo({
                         onChange={handleInputChange}
                         disabled={!isEditing}
                         className={`profile-input ${!isEditing ? 'profile-input--disabled' : ''}`}
-                        placeholder="Enter your last name"
+                        placeholder={t('pages.auth.yourLastName')}
                     />
                 </div>
             </div>

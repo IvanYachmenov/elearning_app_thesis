@@ -6,7 +6,7 @@ import '../shared/styles/index.css';
 import {
     LoginPage,
     RegisterPage,
-    LandingPage,
+    StartPage,
     HomePage,
     ProfilePage,
     SettingsPage,
@@ -20,6 +20,8 @@ import {
     TopicPracticePage,
     TeacherCoursesPage,
     TeacherCourseEditPage,
+    TeacherModuleEditPage,
+    TeacherTopicEditPage,
 } from '../pages';
 
 import {MainLayout} from '../widgets/layout';
@@ -76,15 +78,7 @@ function App() {
 
     if (isCheckingAuth) {
         return (
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: '100vh',
-                    fontSize: '18px',
-                }}
-            >
+            <div className="app-loading-screen">
                 Loading...
             </div>
         );
@@ -100,7 +94,7 @@ function App() {
                 <Route
                     path="/"
                     element={
-                        user ? <Navigate to="/home" replace/> : <LandingPage/>
+                        user ? <Navigate to="/home" replace/> : <StartPage/>
                     }
                 />
 
@@ -148,6 +142,22 @@ function App() {
                     <Route 
                         path="/teacher/courses/:id/edit" 
                         element={<TeacherCourseEditPage user={user}/>}
+                    />
+                    <Route 
+                        path="/teacher/courses/:courseId/modules/new" 
+                        element={<TeacherModuleEditPage user={user}/>}
+                    />
+                    <Route 
+                        path="/teacher/courses/:courseId/modules/:moduleId/edit" 
+                        element={<TeacherModuleEditPage user={user}/>}
+                    />
+                    <Route 
+                        path="/teacher/courses/:courseId/modules/:moduleId/topics/new" 
+                        element={<TeacherTopicEditPage user={user}/>}
+                    />
+                    <Route 
+                        path="/teacher/courses/:courseId/modules/:moduleId/topics/:topicId/edit" 
+                        element={<TeacherTopicEditPage user={user}/>}
                     />
                 </Route>
 
