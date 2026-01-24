@@ -54,14 +54,14 @@ class Topic(models.Model):
         related_name="topics",
     )
     title = models.CharField(max_length=200)
-    content = models.TextField()
+    content = models.TextField(blank=True, default='')
     order = models.PositiveIntegerField(default=0)
     is_timed_test = models.BooleanField(default=False)
     time_limit_seconds = models.PositiveIntegerField(
         null=True,
         blank=True,
-        validators=[MinValueValidator(120)],
-        help_text="Time limit for timed tests in seconds (minimum 120)",
+        validators=[MinValueValidator(30)],
+        help_text="Time limit for timed tests in seconds (minimum 30, maximum 1800)",
     )
 
     class Meta:

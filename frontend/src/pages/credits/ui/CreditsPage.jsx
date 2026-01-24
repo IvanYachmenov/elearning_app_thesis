@@ -1,15 +1,21 @@
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
+
 function CreditsPage() {
+    const {t} = useLanguage();
+
     return (
         <div className="page page-enter">
-            <h1 className="page__title">Credits & Attributions</h1>
+            <h1 className="page__title">{t('pages.credits.title')}</h1>
             <p className="page__subtitle">
-                This project uses various open-source libraries, icons, and resources. Below are all the required attributions and credits.
+                {t('pages.credits.subtitle')}
             </p>
 
             <section style={{marginBottom: '32px'}}>
-                <h2 style={{fontSize: '20px', fontWeight: 900, marginBottom: '16px', color: 'var(--text-primary)'}}>Icons</h2>
+                <h2 style={{fontSize: '20px', fontWeight: 900, marginBottom: '16px', color: 'var(--text-primary)'}}>
+                    {t('pages.credits.icons')}
+                </h2>
                 <p style={{marginBottom: '12px', color: 'var(--text-secondary)'}}>
-                    All icons used in this application are from Flaticon and are used in accordance with their free license terms.
+                    {t('pages.credits.iconsDescription')}
                 </p>
                 <ul style={{fontSize: '14px', lineHeight: 1.8, listStyle: 'none', padding: 0, margin: 0}}>
                     <li style={{marginBottom: '8px'}}>
@@ -71,7 +77,9 @@ function CreditsPage() {
             </section>
 
             <section style={{marginBottom: '32px'}}>
-                <h2 style={{fontSize: '20px', fontWeight: 900, marginBottom: '16px', color: 'var(--text-primary)'}}>Frontend Libraries</h2>
+                <h2 style={{fontSize: '20px', fontWeight: 900, marginBottom: '16px', color: 'var(--text-primary)'}}>
+                    {t('pages.credits.frontendLibraries')}
+                </h2>
                 <ul style={{fontSize: '14px', lineHeight: 1.8, listStyle: 'none', padding: 0, margin: 0}}>
                     <li style={{marginBottom: '8px'}}>
                         <strong>React</strong> - <a href="https://react.dev/" target="_blank" rel="noreferrer" style={{color: 'var(--text-primary)', textDecoration: 'underline'}}>https://react.dev/</a> (MIT License)
@@ -92,7 +100,9 @@ function CreditsPage() {
             </section>
 
             <section style={{marginBottom: '32px'}}>
-                <h2 style={{fontSize: '20px', fontWeight: 900, marginBottom: '16px', color: 'var(--text-primary)'}}>Backend Libraries</h2>
+                <h2 style={{fontSize: '20px', fontWeight: 900, marginBottom: '16px', color: 'var(--text-primary)'}}>
+                    {t('pages.credits.backendLibraries')}
+                </h2>
                 <ul style={{fontSize: '14px', lineHeight: 1.8, listStyle: 'none', padding: 0, margin: 0}}>
                     <li style={{marginBottom: '8px'}}>
                         <strong>Django</strong> - <a href="https://www.djangoproject.com/" target="_blank" rel="noreferrer" style={{color: 'var(--text-primary)', textDecoration: 'underline'}}>https://www.djangoproject.com/</a> (BSD License)
@@ -113,18 +123,17 @@ function CreditsPage() {
             </section>
 
             <section>
-                <h2 style={{fontSize: '20px', fontWeight: 900, marginBottom: '16px', color: 'var(--text-primary)'}}>Design & Inspiration</h2>
+                <h2 style={{fontSize: '20px', fontWeight: 900, marginBottom: '16px', color: 'var(--text-primary)'}}>
+                    {t('pages.credits.designInspiration')}
+                </h2>
                 <p style={{fontSize: '14px', lineHeight: 1.7, color: 'var(--text-secondary)'}}>
-                    The design system and UI patterns used in this application were created from scratch, 
-                    inspired by modern web design principles and best practices. Color schemes, gradients, 
-                    and layout structures were developed specifically for this project.
+                    {t('pages.credits.designDescription')}
                 </p>
             </section>
 
             <section style={{marginTop: '32px', paddingTop: '24px', borderTop: '2px solid var(--border-color)'}}>
                 <p style={{fontSize: '13px', lineHeight: 1.6, color: 'var(--text-muted)', fontStyle: 'italic'}}>
-                    All resources listed above are used in accordance with their respective licenses. 
-                    This project does not claim ownership of any third-party libraries or icons.
+                    {t('pages.credits.footerNote')}
                 </p>
             </section>
         </div>

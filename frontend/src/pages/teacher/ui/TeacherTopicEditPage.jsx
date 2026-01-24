@@ -1,12 +1,14 @@
 import {useState, useEffect, useCallback} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {api} from '../../../shared/api';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
 import '../styles/teacher.css';
 
 function TeacherTopicEditPage({user}) {
     const {courseId, moduleId, topicId} = useParams();
     const isEditMode = !!topicId;
     const navigate = useNavigate();
+    const {t} = useLanguage();
     
     const [loading, setLoading] = useState(isEditMode);
     const [saving, setSaving] = useState(false);
@@ -20,6 +22,48 @@ function TeacherTopicEditPage({user}) {
         time_limit_seconds: null,
         questions: []
     });
+
+    // Convert seconds to minutes and seconds
+    const secondsToMinutesAndSeconds = (totalSeconds) => {
+        if (!totalSeconds || totalSeconds < 30) return { minutes: 0, seconds: 30 };
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return { minutes: Math.min(minutes, 29), seconds: Math.min(seconds, 59) };
+    };
+
+    // Convert minutes and seconds to total seconds
+    const minutesAndSecondsToSeconds = (minutes, seconds) => {
+        const total = minutes * 60 + seconds;
+        if (total < 30) return 30;
+        if (total > 1800) return 1800;
+        return total;
+    };
+
+    // Get current minutes and seconds from time_limit_seconds
+    const getTimeDisplay = () => {
+        if (!topicData.time_limit_seconds) {
+            return { minutes: 0, seconds: 30 };
+        }
+        return secondsToMinutesAndSeconds(topicData.time_limit_seconds);
+    };
+
+    const handleTimeChange = (field, value) => {
+        const current = getTimeDisplay();
+        let newMinutes = current.minutes;
+        let newSeconds = current.seconds;
+
+        if (field === 'minutes') {
+            const numValue = parseInt(value) || 0;
+            newMinutes = Math.max(0, Math.min(29, numValue));
+        } else if (field === 'seconds') {
+            const numValue = parseInt(value) || 0;
+            newSeconds = Math.max(0, Math.min(59, numValue));
+        }
+
+        const totalSeconds = minutesAndSecondsToSeconds(newMinutes, newSeconds);
+        setTopicData({...topicData, time_limit_seconds: totalSeconds});
+    };
+
 
     const fetchTopic = useCallback(async () => {
         setLoading(true);
@@ -35,7 +79,7 @@ function TeacherTopicEditPage({user}) {
             }
             setTopicData(data);
         } catch (err) {
-            setError(err.response?.data?.detail || err.response?.data?.message || 'Failed to load topic.');
+            setError(err.response?.data?.detail || err.response?.data?.message || t('pages.teacher.failedToLoadTopic'));
         } finally {
             setLoading(false);
         }
@@ -83,17 +127,35 @@ function TeacherTopicEditPage({user}) {
         options: (question.options || []).map(prepareOption)
     });
 
-    const prepareTopicData = () => ({
-        title: topicData.title,
-        content: topicData.content || '',
-        order: topicData.order,
-        module: parseInt(moduleId),
-        is_timed_test: Boolean(topicData.is_timed_test),
-        time_limit_seconds: topicData.is_timed_test && topicData.time_limit_seconds 
-            ? parseInt(topicData.time_limit_seconds) 
-            : null,
-        questions: topicData.questions.map((q, idx) => prepareQuestion(q, idx))
-    });
+    const prepareTopicData = () => {
+        // If timed test is enabled but no time limit set, default to 30 seconds
+        let timeLimit = null;
+        if (topicData.is_timed_test) {
+            timeLimit = topicData.time_limit_seconds 
+                ? parseInt(topicData.time_limit_seconds) 
+                : 30;
+            // Ensure minimum 30 seconds
+            if (timeLimit < 30) timeLimit = 30;
+            // Ensure maximum 1800 seconds (30 minutes)
+            if (timeLimit > 1800) timeLimit = 1800;
+        }
+        
+        const data = {
+            title: topicData.title,
+            content: topicData.content || '',
+            order: topicData.order,
+            is_timed_test: Boolean(topicData.is_timed_test),
+            time_limit_seconds: timeLimit,
+            questions: topicData.questions.map((q, idx) => prepareQuestion(q, idx))
+        };
+        
+        // Only include module when creating new topic
+        if (!isEditMode && moduleId) {
+            data.module = parseInt(moduleId);
+        }
+        
+        return data;
+    };
 
     const handleSave = async () => {
         if (!topicData.title.trim()) {
@@ -115,10 +177,10 @@ function TeacherTopicEditPage({user}) {
             navigate(`/teacher/courses/${courseId}/edit`);
         } catch (err) {
             console.error('Save error:', err.response?.data);
-            let errorMessage = 'Failed to save topic.';
+            let errorMessage = t('pages.teacher.failedToSaveTopic');
             
             if (err.response?.status === 401) {
-                errorMessage = 'Your session has expired. Please refresh the page and log in again.';
+                errorMessage = t('pages.teacher.sessionExpired');
             } else if (err.response?.data) {
                 if (typeof err.response.data === 'string') {
                     errorMessage = err.response.data;
@@ -222,8 +284,8 @@ function TeacherTopicEditPage({user}) {
     if (loading) {
         return (
             <div className="page page-enter">
-                <h1 className="page__title">{isEditMode ? 'Edit Topic' : 'Create Topic'}</h1>
-                <p>Loading...</p>
+                <h1 className="page__title">{isEditMode ? t('pages.teacher.editTopic') : t('pages.teacher.createTopic')}</h1>
+                <p>{t('pages.teacher.loadingGeneric')}</p>
             </div>
         );
     }
@@ -231,14 +293,14 @@ function TeacherTopicEditPage({user}) {
     return (
         <div className="page page-enter">
             <div className="teacher-course-edit-top">
-                <h1 className="teacher-course-edit-title">{isEditMode ? 'Edit Topic' : 'Create Topic'}</h1>
+                <h1 className="teacher-course-edit-title">{isEditMode ? t('pages.teacher.editTopic') : t('pages.teacher.createTopic')}</h1>
                 <div className="teacher-course-edit-back">
                     <button
                         className="btn-primary"
                         onClick={handleCancel}
                         disabled={saving}
                     >
-                        ← Back
+                        {t('pages.teacher.back')}
                     </button>
                 </div>
             </div>
@@ -251,24 +313,24 @@ function TeacherTopicEditPage({user}) {
 
             <div className="teacher-course-edit-form">
                 <div className="teacher-form-group">
-                    <label className="teacher-form-label">Topic Title <span style={{color: 'red'}}>*</span></label>
+                    <label className="teacher-form-label">{t('pages.teacher.topicTitle')} <span style={{color: 'red'}}>*</span></label>
                     <input
                         type="text"
                         className="teacher-form-input"
                         value={topicData.title}
                         onChange={(e) => setTopicData({...topicData, title: e.target.value})}
-                        placeholder="Enter topic title"
+                        placeholder={t('pages.teacher.enterTopicTitle')}
                         required
                     />
                 </div>
                 
                 <div className="teacher-form-group">
-                    <label className="teacher-form-label">Theory Text</label>
+                    <label className="teacher-form-label">{t('pages.teacher.theoryText')}</label>
                     <textarea
                         className="teacher-form-textarea"
                         value={topicData.content || ''}
                         onChange={(e) => setTopicData({...topicData, content: e.target.value})}
-                        placeholder="Enter theory content for this topic"
+                        placeholder={t('pages.teacher.enterTheoryContent')}
                         rows={8}
                     />
                 </div>
@@ -278,35 +340,90 @@ function TeacherTopicEditPage({user}) {
                         <input
                             type="checkbox"
                             checked={topicData.is_timed_test || false}
-                            onChange={(e) => setTopicData({...topicData, is_timed_test: e.target.checked})}
+                            onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                setTopicData({
+                                    ...topicData,
+                                    is_timed_test: isChecked,
+                                    time_limit_seconds: isChecked && !topicData.time_limit_seconds ? 30 : topicData.time_limit_seconds
+                                });
+                            }}
                         />
-                        Timed test
+                        {t('pages.teacher.timedTest')}
                     </label>
                 </div>
                 
                 {topicData.is_timed_test && (
                     <div className="teacher-form-group">
-                        <label className="teacher-form-label">Time Limit (seconds)</label>
-                        <input
-                            type="number"
-                            className="teacher-form-input"
-                            value={topicData.time_limit_seconds || ''}
-                            onChange={(e) => setTopicData({...topicData, time_limit_seconds: parseInt(e.target.value) || null})}
-                            placeholder="Enter time limit in seconds"
-                            min="120"
-                        />
+                        <label className="teacher-form-label">{t('pages.teacher.timeLimit')}</label>
+                        <div style={{display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap'}}>
+                            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px'}}>
+                                <label style={{fontSize: '12px', color: '#666'}}>Minutes</label>
+                                <input
+                                    type="number"
+                                    className="teacher-form-input"
+                                    value={getTimeDisplay().minutes}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (value === '' || (!isNaN(value) && parseInt(value) >= 0 && parseInt(value) <= 29)) {
+                                            handleTimeChange('minutes', value);
+                                        }
+                                    }}
+                                    onBlur={(e) => {
+                                        const value = parseInt(e.target.value) || 0;
+                                        handleTimeChange('minutes', Math.max(0, Math.min(29, value)));
+                                    }}
+                                    style={{
+                                        width: '80px',
+                                        textAlign: 'center',
+                                        padding: '8px 4px'
+                                    }}
+                                    min="0"
+                                    max="29"
+                                />
+                            </div>
+                            <span style={{fontSize: '20px', fontWeight: 'bold', marginTop: '20px'}}>:</span>
+                            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px'}}>
+                                <label style={{fontSize: '12px', color: '#666'}}>Seconds</label>
+                                <input
+                                    type="number"
+                                    className="teacher-form-input"
+                                    value={getTimeDisplay().seconds}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (value === '' || (!isNaN(value) && parseInt(value) >= 0 && parseInt(value) <= 59)) {
+                                            handleTimeChange('seconds', value);
+                                        }
+                                    }}
+                                    onBlur={(e) => {
+                                        const value = parseInt(e.target.value) || 0;
+                                        handleTimeChange('seconds', Math.max(0, Math.min(59, value)));
+                                    }}
+                                    style={{
+                                        width: '80px',
+                                        textAlign: 'center',
+                                        padding: '8px 4px'
+                                    }}
+                                    min="0"
+                                    max="59"
+                                />
+                            </div>
+                            <div style={{fontSize: '12px', color: '#666', marginTop: '20px'}}>
+                                (30s - 30min)
+                            </div>
+                        </div>
                     </div>
                 )}
 
                 <div className="teacher-questions-section">
                     <div className="teacher-questions-header">
-                        <h5 className="teacher-questions-title">Questions</h5>
+                        <h5 className="teacher-questions-title">{t('pages.teacher.questions')}</h5>
                         <button
                             className="teacher-add-question-btn"
                             type="button"
                             onClick={handleAddQuestion}
                         >
-                            + Add Question
+                            + {t('pages.teacher.addQuestion')}
                         </button>
                     </div>
 
@@ -315,41 +432,41 @@ function TeacherTopicEditPage({user}) {
                             {topicData.questions.map((question, questionIndex) => (
                                 <div key={question.id || questionIndex} className="teacher-question-item">
                                     <div className="teacher-question-header">
-                                        <h6 className="teacher-question-title">Question {questionIndex + 1}</h6>
+                                        <h6 className="teacher-question-title">{t('pages.teacher.question')} {questionIndex + 1}</h6>
                                         <button
                                             className="teacher-question-delete-btn"
                                             type="button"
                                             onClick={() => handleDeleteQuestion(questionIndex)}
                                         >
-                                            Delete
+                                            {t('pages.teacher.delete')}
                                         </button>
                                     </div>
 
                                     <div className="teacher-form-group">
-                                        <label className="teacher-form-label">Question Text</label>
+                                        <label className="teacher-form-label">{t('pages.teacher.questionText')}</label>
                                         <textarea
                                             className="teacher-form-textarea"
                                             value={question.text || ''}
                                             onChange={(e) => handleQuestionChange(questionIndex, 'text', e.target.value)}
-                                            placeholder="Enter question text"
+                                            placeholder={t('pages.teacher.enterQuestionText')}
                                             rows={2}
                                         />
                                     </div>
 
                                     <div className="teacher-form-group">
-                                        <label className="teacher-form-label">Question Type</label>
+                                        <label className="teacher-form-label">{t('pages.teacher.questionType')}</label>
                                         <select
                                             className="teacher-form-input"
                                             value={question.question_type || 'single_choice'}
                                             onChange={(e) => handleQuestionChange(questionIndex, 'question_type', e.target.value)}
                                         >
-                                            <option value="single_choice">Single Choice</option>
-                                            <option value="multiple_choice">Multiple Choice</option>
+                                            <option value="single_choice">{t('pages.teacher.singleChoice')}</option>
+                                            <option value="multiple_choice">{t('pages.teacher.multipleChoice')}</option>
                                         </select>
                                     </div>
 
                                     <div className="teacher-form-group">
-                                        <label className="teacher-form-label">Max Score</label>
+                                        <label className="teacher-form-label">{t('pages.teacher.maxScore')}</label>
                                         <input
                                             type="number"
                                             className="teacher-form-input"
@@ -362,13 +479,13 @@ function TeacherTopicEditPage({user}) {
 
                                     <div className="teacher-options-section">
                                         <div className="teacher-options-header">
-                                            <label className="teacher-form-label">Options</label>
+                                            <label className="teacher-form-label">{t('pages.teacher.options')}</label>
                                             <button
                                                 className="teacher-add-option-btn"
                                                 type="button"
                                                 onClick={() => handleAddOption(questionIndex)}
                                             >
-                                                + Add Option
+                                                + {t('pages.teacher.addOption')}
                                             </button>
                                         </div>
 
@@ -382,7 +499,7 @@ function TeacherTopicEditPage({user}) {
                                                                 className="teacher-form-input"
                                                                 value={option.text || ''}
                                                                 onChange={(e) => handleOptionChange(questionIndex, optionIndex, 'text', e.target.value)}
-                                                                placeholder="Option text"
+                                                                placeholder={t('pages.teacher.optionText')}
                                                             />
                                                             <label className="teacher-form-checkbox-label">
                                                                 <input
@@ -400,7 +517,7 @@ function TeacherTopicEditPage({user}) {
                                                                         handleOptionChange(questionIndex, optionIndex, 'is_correct', e.target.checked);
                                                                     }}
                                                                 />
-                                                                Correct
+                                                                {t('pages.teacher.correct')}
                                                             </label>
                                                             <button
                                                                 className="teacher-option-delete-btn"
@@ -414,14 +531,14 @@ function TeacherTopicEditPage({user}) {
                                                 ))}
                                             </div>
                                         ) : (
-                                            <p className="teacher-empty-text-small">No options yet. Add at least 2 options.</p>
+                                            <p className="teacher-empty-text-small">{t('pages.teacher.noOptionsYet')}</p>
                                         )}
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <p className="teacher-empty-text-small">No questions yet. Click "Add Question" to create one.</p>
+                        <p className="teacher-empty-text-small">{t('pages.teacher.noQuestionsYet')}</p>
                     )}
                 </div>
             </div>
@@ -433,7 +550,7 @@ function TeacherTopicEditPage({user}) {
                         onClick={handleSave}
                         disabled={saving}
                     >
-                        {saving ? 'Saving...' : 'Save'}
+                        {saving ? t('pages.teacher.saving') : t('pages.teacher.save')}
                     </button>
                 </div>
             </div>

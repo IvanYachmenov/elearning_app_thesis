@@ -75,7 +75,23 @@ class TeacherCourseSerializer(serializers.ModelSerializer):
         return course
 
     def update(self, instance, validated_data):
+        # Get modules from initial_data if not in validated_data (for FormData)
         modules_data = validated_data.pop('modules', None)
+        if modules_data is None and hasattr(self, 'initial_data') and 'modules' in self.initial_data:
+            modules_value = self.initial_data['modules']
+            if isinstance(modules_value, list):
+                modules_data = modules_value
+            elif isinstance(modules_value, str):
+                import json
+                try:
+                    modules_data = json.loads(modules_value)
+                except (json.JSONDecodeError, TypeError):
+                    pass
+        
+        print(f"[COURSE UPDATE] Starting update, validated_data keys: {list(validated_data.keys())}")
+        print(f"[COURSE UPDATE] modules_data: {modules_data is not None}, type: {type(modules_data)}")
+        if modules_data is not None:
+            print(f"[COURSE UPDATE] modules_data length: {len(modules_data)}")
         
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
@@ -94,21 +110,66 @@ class TeacherCourseSerializer(serializers.ModelSerializer):
         instance.save()
         
         if modules_data is not None:
+            print(f"[COURSE UPDATE] Updating course with {len(modules_data)} modules")
+            
             existing_module_ids = set(instance.modules.values_list('id', flat=True))
             updated_module_ids = set()
             
             for module_data in modules_data:
                 module_id = module_data.get('id')
+                print(f"[COURSE UPDATE] Processing module: id={module_id}, title={module_data.get('title')}, topics={len(module_data.get('topics', []))}")
+                
                 if module_id and instance.modules.filter(id=module_id).exists():
                     module = instance.modules.get(id=module_id)
-                    module_serializer = TeacherModuleSerializer(module, data=module_data, partial=True)
-                    module_serializer.is_valid(raise_exception=True)
-                    module_serializer.save()
+                    print(f"[COURSE UPDATE] Updating existing module {module_id}")
+                    # Update module fields directly
+                    module.title = module_data.get('title', module.title)
+                    module.order = module_data.get('order', module.order)
+                    module.save()
+                    
+                    # Handle topics directly without serializer validation
+                    topics_data = module_data.get('topics', [])
+                    if topics_data is not None:
+                        existing_topic_ids = set(module.topics.values_list('id', flat=True))
+                        received_topic_ids = set()
+                        
+                        for topic_data in topics_data:
+                            topic_id = topic_data.get('id')
+                            if topic_id and module.topics.filter(id=topic_id).exists():
+                                received_topic_ids.add(topic_id)
+                                topic = module.topics.get(id=topic_id)
+                                topic.title = topic_data.get('title', topic.title)
+                                topic.content = topic_data.get('content', topic.content)
+                                topic.order = topic_data.get('order', topic.order)
+                                topic.is_timed_test = topic_data.get('is_timed_test', topic.is_timed_test)
+                                topic.time_limit_seconds = topic_data.get('time_limit_seconds', topic.time_limit_seconds)
+                                topic.save()
+                            else:
+                                # Create new topic
+                                topic_data.pop('id', None)
+                                questions_data = topic_data.pop('questions', [])
+                                topic = Topic.objects.create(module=module, **topic_data)
+                                for question_data in questions_data:
+                                    question_data.pop('id', None)
+                                    options_data = question_data.pop('options', [])
+                                    question = TopicQuestion.objects.create(topic=topic, **question_data)
+                                    for option_data in options_data:
+                                        option_data.pop('id', None)
+                                        TopicQuestionOption.objects.create(question=question, **option_data)
+                        
+                        # Delete topics not in received list
+                        topics_to_delete = existing_topic_ids - received_topic_ids
+                        if topics_to_delete:
+                            module.topics.filter(id__in=topics_to_delete).delete()
+                    
                     updated_module_ids.add(module_id)
+                    print(f"[COURSE UPDATE] Module {module_id} updated successfully")
                 else:
+                    print(f"[COURSE UPDATE] Creating new module")
                     module_data.pop('id', None)
                     topics_data = module_data.pop('topics', [])
                     module = Module.objects.create(course=instance, **module_data)
+                    print(f"[COURSE UPDATE] Created module {module.id} with {len(topics_data)} topics")
                     for topic_data in topics_data:
                         topic_data.pop('id', None)
                         questions_data = topic_data.pop('questions', [])
@@ -124,5 +185,15 @@ class TeacherCourseSerializer(serializers.ModelSerializer):
             modules_to_delete = existing_module_ids - updated_module_ids
             if modules_to_delete:
                 instance.modules.filter(id__in=modules_to_delete).delete()
+        
+        # Reload instance from database with all related data
+        from django.db.models import Prefetch
+        instance = Course.objects.prefetch_related(
+            Prefetch('modules', queryset=Module.objects.prefetch_related(
+                Prefetch('topics', queryset=Topic.objects.prefetch_related(
+                    'questions__options'
+                ))
+            ))
+        ).get(pk=instance.pk)
         
         return instance

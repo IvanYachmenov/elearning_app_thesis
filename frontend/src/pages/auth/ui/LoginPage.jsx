@@ -265,7 +265,7 @@ function LoginPage({onAuth}) {
                                         alt="Google" 
                                         className="auth-oauth-icon"
                                     />
-                                    {isLoading ? 'Signing in...' : 'Continue with Google'}
+                                    {isLoading ? t('pages.auth.signingIn') : t('pages.auth.continueGoogle')}
                                 </button>
                                 <button
                                     type="button"
@@ -333,7 +333,7 @@ function LoginPage({onAuth}) {
                                 className="auth-button-back"
                                 onClick={() => setShowEmailForm(false)}
                             >
-                                ← Back to other options
+                                {t('pages.auth.backToOptions')}
                             </button>
                         </>
                     )}

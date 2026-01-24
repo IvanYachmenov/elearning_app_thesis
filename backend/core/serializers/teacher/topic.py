@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ...models import Topic
+from ...models import Topic, Module
 from ...models.learning import TopicQuestion, TopicQuestionOption
 from .question import TeacherQuestionSerializer
 
@@ -7,11 +7,20 @@ from .question import TeacherQuestionSerializer
 class TeacherTopicSerializer(serializers.ModelSerializer):
     questions = TeacherQuestionSerializer(many=True, required=False)
     title = serializers.CharField(required=True, allow_blank=False)
+    content = serializers.CharField(required=False, allow_blank=True)
+    module = serializers.PrimaryKeyRelatedField(queryset=Module.objects.all(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set queryset from context if available to filter modules by teacher
+        if 'context' in kwargs and 'teacher_modules' in kwargs['context']:
+            self.fields['module'].queryset = kwargs['context']['teacher_modules']
 
     class Meta:
         model = Topic
         fields = (
             "id",
+            "module",
             "title",
             "content",
             "order",
@@ -21,12 +30,23 @@ class TeacherTopicSerializer(serializers.ModelSerializer):
         )
 
     def validate_time_limit_seconds(self, value):
-        if value is not None and value < 120:
-            raise serializers.ValidationError("Time limit must be at least 120 seconds.")
+        if value is not None:
+            if value < 30:
+                raise serializers.ValidationError("Time limit must be at least 30 seconds.")
+            if value > 1800:
+                raise serializers.ValidationError("Time limit must be at most 30 minutes (1800 seconds).")
         return value
+
+    def validate(self, attrs):
+        # When creating a new topic, module is required
+        if self.instance is None and 'module' not in attrs:
+            raise serializers.ValidationError({"module": "Module is required when creating a topic."})
+        return attrs
 
     def create(self, validated_data):
         questions_data = validated_data.pop('questions', [])
+        if 'module' not in validated_data:
+            raise serializers.ValidationError({"module": "Module is required."})
         topic = Topic.objects.create(**validated_data)
         for question_data in questions_data:
             options_data = question_data.pop('options', [])
@@ -42,7 +62,8 @@ class TeacherTopicSerializer(serializers.ModelSerializer):
         instance.content = validated_data.get('content', instance.content)
         instance.order = validated_data.get('order', instance.order)
         instance.is_timed_test = validated_data.get('is_timed_test', instance.is_timed_test)
-        instance.time_limit_seconds = validated_data.get('time_limit_seconds', instance.time_limit_seconds)
+        time_limit = validated_data.get('time_limit_seconds', instance.time_limit_seconds)
+        instance.time_limit_seconds = time_limit
         instance.save()
         
         if questions_data is not None:
@@ -68,5 +89,9 @@ class TeacherTopicSerializer(serializers.ModelSerializer):
             questions_to_delete = existing_question_ids - updated_question_ids
             if questions_to_delete:
                 instance.questions.filter(id__in=questions_to_delete).delete()
+        
+        # Reload instance from database with all related data
+        from ...models import Topic
+        instance = Topic.objects.prefetch_related('questions__options').get(pk=instance.pk)
         
         return instance

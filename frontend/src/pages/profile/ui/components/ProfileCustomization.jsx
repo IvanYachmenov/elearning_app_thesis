@@ -95,9 +95,7 @@ function ProfileCustomization({
                             className="profile-gradient-nav profile-gradient-nav--prev"
                             onClick={handleGradientPrev}
                             aria-label={t('pages.profile.previousPage')}
-                        >
-                            ←
-                        </button>
+                        />
                         <div className="profile-gradients-grid">
                             {visibleGradients.map((option, index) => (
                                 <div

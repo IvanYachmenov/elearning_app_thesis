@@ -1,12 +1,14 @@
 import {useState, useEffect, useCallback} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {api} from '../../../shared/api';
+import {useLanguage} from '../../../shared/lib/i18n/LanguageContext';
 import '../styles/teacher.css';
 
 function TeacherModuleEditPage({user}) {
     const {courseId, moduleId} = useParams();
     const isEditMode = !!moduleId;
     const navigate = useNavigate();
+    const {t} = useLanguage();
     
     const [loading, setLoading] = useState(isEditMode);
     const [saving, setSaving] = useState(false);
@@ -32,7 +34,7 @@ function TeacherModuleEditPage({user}) {
             }
             setModuleData(data);
         } catch (err) {
-            setError(err.response?.data?.detail || err.response?.data?.message || 'Failed to load module.');
+            setError(err.response?.data?.detail || err.response?.data?.message || t('pages.teacher.failedToLoadModule'));
         } finally {
             setLoading(false);
         }
@@ -109,16 +111,17 @@ function TeacherModuleEditPage({user}) {
             
             if (isEditMode) {
                 await api.put(`/api/teacher/modules/${moduleId}/`, dataToSend);
+                navigate(`/teacher/courses/${courseId}/edit`);
             } else {
-                await api.post('/api/teacher/modules/', dataToSend);
+                const res = await api.post('/api/teacher/modules/', dataToSend);
+                navigate(`/teacher/courses/${courseId}/modules/${res.data.id}/edit`);
             }
-            navigate(`/teacher/courses/${courseId}/edit`);
         } catch (err) {
             console.error('Save error:', err.response?.data);
-            let errorMessage = 'Failed to save module.';
+            let errorMessage = t('pages.teacher.failedToSaveModule');
             
             if (err.response?.status === 401) {
-                errorMessage = 'Your session has expired. Please refresh the page and log in again.';
+                errorMessage = t('pages.teacher.sessionExpired');
             } else if (err.response?.data) {
                 if (typeof err.response.data === 'string') {
                     errorMessage = err.response.data;
@@ -139,19 +142,19 @@ function TeacherModuleEditPage({user}) {
     };
 
     const handleAddTopic = () => {
-        if (moduleId) {
+        if (moduleId && moduleId !== 'new') {
             navigate(`/teacher/courses/${courseId}/modules/${moduleId}/topics/new`);
         } else {
-            setError('Please save the module first before adding topics');
+            setError('Please save the module first before adding topics.');
         }
     };
 
     const handleEditTopic = (topicIndex) => {
         const topic = moduleData.topics[topicIndex];
-        if (moduleId && topic.id) {
+        if (moduleId && moduleId !== 'new' && topic?.id) {
             navigate(`/teacher/courses/${courseId}/modules/${moduleId}/topics/${topic.id}/edit`);
         } else {
-            setError('Please save the module and topic first');
+            setError(t('pages.teacher.saveModuleAndTopicFirst'));
         }
     };
 
@@ -167,7 +170,7 @@ function TeacherModuleEditPage({user}) {
             return;
         }
 
-        if (!window.confirm('Are you sure you want to delete this topic? This action cannot be undone.')) {
+        if (!window.confirm(t('pages.teacher.deleteTopicConfirm'))) {
             return;
         }
 
@@ -179,7 +182,7 @@ function TeacherModuleEditPage({user}) {
                 topics: updatedTopics
             });
         } catch (err) {
-            setError(err.response?.data?.detail || err.response?.data?.message || 'Failed to delete topic.');
+            setError(err.response?.data?.detail || err.response?.data?.message || t('pages.teacher.failedToDeleteTopic'));
         }
     };
 
@@ -190,8 +193,8 @@ function TeacherModuleEditPage({user}) {
     if (loading) {
         return (
             <div className="page page-enter">
-                <h1 className="page__title">{isEditMode ? 'Edit Module' : 'Create Module'}</h1>
-                <p>Loading...</p>
+                <h1 className="page__title">{isEditMode ? t('pages.teacher.editModule') : t('pages.teacher.createModule')}</h1>
+                <p>{t('pages.teacher.loadingGeneric')}</p>
             </div>
         );
     }
@@ -199,14 +202,14 @@ function TeacherModuleEditPage({user}) {
     return (
         <div className="page page-enter">
             <div className="teacher-course-edit-top">
-                <h1 className="teacher-course-edit-title">{isEditMode ? 'Edit Module' : 'Create Module'}</h1>
+                <h1 className="teacher-course-edit-title">{isEditMode ? t('pages.teacher.editModule') : t('pages.teacher.createModule')}</h1>
                 <div className="teacher-course-edit-back">
                     <button
                         className="btn-primary"
                         onClick={handleCancel}
                         disabled={saving}
                     >
-                        ← Back
+                        {t('pages.teacher.back')}
                     </button>
                 </div>
             </div>
@@ -219,27 +222,29 @@ function TeacherModuleEditPage({user}) {
 
             <div className="teacher-course-edit-form">
                 <div className="teacher-form-group">
-                    <label className="teacher-form-label">Module Title <span style={{color: 'red'}}>*</span></label>
+                    <label className="teacher-form-label">{t('pages.teacher.moduleTitle')} <span style={{color: 'red'}}>*</span></label>
                     <input
                         type="text"
                         className="teacher-form-input"
                         value={moduleData.title}
                         onChange={(e) => setModuleData({...moduleData, title: e.target.value})}
-                        placeholder="Enter module title"
+                        placeholder={t('pages.teacher.enterModuleTitle')}
                         required
                     />
                 </div>
 
                 <div className="teacher-topics-section">
                     <div className="teacher-topics-header">
-                        <h4 className="teacher-topics-title">Topics</h4>
-                        <button
-                            className="teacher-add-topic-btn"
-                            type="button"
-                            onClick={handleAddTopic}
-                        >
-                            + Add Topic
-                        </button>
+                        <h4 className="teacher-topics-title">{t('pages.teacher.topics')}</h4>
+                                        <button
+                                            className="teacher-add-topic-btn"
+                                            type="button"
+                                            onClick={handleAddTopic}
+                                            disabled={!moduleId || moduleId === 'new'}
+                                            title={(!moduleId || moduleId === 'new') ? t('pages.teacher.saveModuleFirst') : ''}
+                                        >
+                                            + {t('pages.teacher.addTopic')}
+                                        </button>
                     </div>
                     
                     {moduleData.topics && moduleData.topics.length > 0 ? (
@@ -255,16 +260,17 @@ function TeacherModuleEditPage({user}) {
                                                 className="teacher-topic-edit-btn"
                                                 type="button"
                                                 onClick={() => handleEditTopic(topicIndex)}
-                                                disabled={!moduleId || !topic.id}
+                                                disabled={!moduleId || moduleId === 'new' || !topic.id}
+                                                title={(!moduleId || moduleId === 'new' || !topic.id) ? t('pages.teacher.saveModuleFirst') : ''}
                                             >
-                                                Edit
+                                                {t('pages.teacher.edit')}
                                             </button>
                                             <button
                                                 className="teacher-topic-delete-btn"
                                                 type="button"
                                                 onClick={() => handleDeleteTopic(topicIndex)}
                                             >
-                                                Delete
+                                                {t('pages.teacher.delete')}
                                             </button>
                                         </div>
                                     </div>
@@ -272,7 +278,7 @@ function TeacherModuleEditPage({user}) {
                             ))}
                         </div>
                     ) : (
-                        <p className="teacher-empty-text">No topics yet. Click "Add Topic" to create one.</p>
+                        <p className="teacher-empty-text">{t('pages.teacher.noTopicsYet')}</p>
                     )}
                 </div>
             </div>
@@ -284,7 +290,7 @@ function TeacherModuleEditPage({user}) {
                         onClick={handleSave}
                         disabled={saving}
                     >
-                        {saving ? 'Saving...' : 'Save'}
+                        {saving ? t('pages.teacher.saving') : t('pages.teacher.save')}
                     </button>
                 </div>
             </div>

@@ -1,3 +1,4 @@
+import json
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -31,6 +32,24 @@ class TeacherCourseViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
+    
+    def update(self, request, *args, **kwargs):
+        # Parse modules from FormData before validation
+        if 'modules' in request.data and isinstance(request.data['modules'], str):
+            request.data._mutable = True
+            parsed_modules = json.loads(request.data['modules'])
+            print(f"[UPDATE] Parsed {len(parsed_modules)} modules")
+            request.data['modules'] = parsed_modules
+            request.data._mutable = False
+        
+        return super().update(request, *args, **kwargs)
+    
+    def create(self, request, *args, **kwargs):
+        if 'modules' in request.data and isinstance(request.data['modules'], str):
+            request.data._mutable = True
+            request.data['modules'] = json.loads(request.data['modules'])
+            request.data._mutable = False
+        return super().create(request, *args, **kwargs)
 
 
 # GET/POST /api/teacher/modules/
@@ -67,4 +86,7 @@ class TeacherTopicViewSet(viewsets.ModelViewSet):
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context['request'] = self.request
+        # Filter modules to only those belonging to the teacher's courses
+        teacher_courses = Course.objects.filter(author=self.request.user)
+        context['teacher_modules'] = Module.objects.filter(course__in=teacher_courses)
         return context
