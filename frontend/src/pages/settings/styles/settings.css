@@ -1,3 +1,19 @@
+.settings-section-anchor {
+  scroll-margin-top: 72px;
+}
+
+.settings-section-anchor:nth-child(3) .settings-section {
+  animation-delay: 0.1s;
+}
+
+.settings-section-anchor:nth-child(4) .settings-section {
+  animation-delay: 0.15s;
+}
+
+.settings-section-anchor:nth-child(5) .settings-section {
+  animation-delay: 0.2s;
+}
+
 .settings-section {
   background-color: #ffffff;
   padding: 22px;
@@ -205,14 +221,6 @@
   background: var(--bg-primary);
   border-color: var(--border-color);
   color: var(--text-primary);
-}
-
-.settings-section:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.settings-section:nth-child(3) {
-  animation-delay: 0.2s;
 }
 
 .settings-section__title {

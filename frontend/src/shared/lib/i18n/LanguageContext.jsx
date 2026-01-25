@@ -240,7 +240,7 @@ const translations = {
                 sessionExpired: 'Your session has expired. Please refresh the page and log in again.'
             },
             landing: {
-                title: 'Easy Learn',
+                title: 'E-learning web application',
                 subtitle: 'Your journey to knowledge starts here',
                 logIn: 'Log In',
                 registration: 'Registration',
@@ -312,6 +312,11 @@ const translations = {
                 footerSeeFullCredits: 'See full credits on the',
                 footerCreditsPage: 'Credits page'
             }
+        },
+        cookie: {
+            title: 'Cookies',
+            message: 'We use cookies to enhance your experience and keep your data secure.',
+            accept: 'Accept'
         }
     },
     sk: {
@@ -365,7 +370,7 @@ const translations = {
                 answered: 'Odpovedané',
                 accuracy: 'Presnosť',
                 progress: 'Pokrok:',
-                topics: 'tém',
+                topics: 'témy',
                 readMore: 'Čítať viac',
                 courseContent: 'Obsah kurzu',
                 timedTest: 'Časovaný test',
@@ -553,7 +558,7 @@ const translations = {
                 sessionExpired: 'Vaša relácia vypršala. Obnovte stránku a prihláste sa znova.'
             },
             landing: {
-                title: 'Easy Learn',
+                title: 'E-learning web application',
                 subtitle: 'Vaša cesta k vedomostiam začína tu',
                 logIn: 'Prihlásiť sa',
                 registration: 'Registrácia',
@@ -625,6 +630,11 @@ const translations = {
                 footerSeeFullCredits: 'Pozrite si úplné kredity na stránke',
                 footerCreditsPage: 'Kredity'
             }
+        },
+        cookie: {
+            title: 'Cookies',
+            message: 'Používame cookies na zlepšenie stránky a ochranu vašich údajov.',
+            accept: 'Súhlasím'
         }
     }
 };

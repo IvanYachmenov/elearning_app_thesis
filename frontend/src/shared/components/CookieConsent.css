@@ -41,7 +41,8 @@
     margin: 0 auto;
     display: flex;
     align-items: center;
-    gap: 20px;
+    justify-content: center;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
@@ -51,9 +52,16 @@
     flex-shrink: 0;
 }
 
+.cookie-consent__text-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .cookie-consent__text {
-    flex: 1;
-    min-width: 300px;
+    max-width: 340px;
 }
 
 .cookie-consent__text strong {
@@ -115,10 +123,22 @@
 @media (max-width: 768px) {
     .cookie-consent__content {
         flex-direction: column;
-        align-items: stretch;
+        align-items: center;
+    }
+
+    .cookie-consent__text-wrap {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .cookie-consent__text {
+        max-width: 100%;
+        text-align: center;
     }
 
     .cookie-consent__button {
         width: 100%;
+        max-width: 200px;
     }
 }

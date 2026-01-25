@@ -159,7 +159,7 @@ function CourseLearningPage() {
                                     className="learning-module__header"
                                     onClick={() => toggleModule(mod.id)}
                                 >
-                                    <div>
+                                    <div className="learning-module__header-left">
                                         <div className="learning-module__title">{mod.title}</div>
                                         <div className="learning-module__meta">
                                             {mod.topics.length} {t('pages.learning.topics')}

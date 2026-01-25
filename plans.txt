@@ -40,7 +40,9 @@ Role: študent a učiteľ
 
 Kompletný vzdelávací cyklus:
 
-prihlásenie → zápis do kurzu → štúdium → testovanie → vyhodnotenie
+prihlásenie → zápis do kurzu → štúdium → overenie znalosti → vyhodnotenie vysledkov
+
+vytvaranie kurzov vo svojom vlastnom prostredi
 
 Responzívne webové rozhranie
 
@@ -80,9 +82,9 @@ Oddelenie prezentačnej a aplikačnej logiky
 
 6 Technologický stack
 
-Backend: Django / Django REST Framework
+Backend: Django REST Framework
 
-Frontend: React
+Frontend: React(JavaScript + TypeScript)
 
 Databáza: PostgreSQL
 
@@ -103,11 +105,13 @@ Google
 
 GitHub
 
-OAuth 2.0 (allauth)
+cez OAuth 2.0 (allauth)
 
 Cookies:
 
 ukladanie relácie
+
+da sa vyuzit aj na zlepsenie aplikacie v buducnosti(Google Analytics)
 
 bezpečná autentifikácia používateľa
 
@@ -119,11 +123,11 @@ bezpečná autentifikácia používateľa
 
 Úprava profilu používateľa
 
-Avatar
+Avatar(custom)
 
 Vlastné pozadie / gradient
 
-Príprava na gamifikáciu (body, vizuálne prvky)
+Príprava na gamifikáciu (shop, vizuálne prvky)
 
 
 

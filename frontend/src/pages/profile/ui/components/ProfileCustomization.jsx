@@ -32,7 +32,7 @@ function ProfileCustomization({
             <div className="profile-header-content">
                 <div className="profile-header-main">
                     <div
-                        className={`profile-avatar-large ${isEditingProfile ? 'editable' : ''}`}
+                        className={`profile-avatar-large ${isEditingProfile ? 'editable' : ''} ${avatarPreview ? 'profile-avatar-large--with-image' : ''}`}
                         onClick={handleAvatarClick}
                         style={{cursor: isEditingProfile ? 'pointer' : 'default'}}
                     >

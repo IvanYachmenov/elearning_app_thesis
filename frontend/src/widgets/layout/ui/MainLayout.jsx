@@ -93,7 +93,7 @@ function MainLayout({user, onLogout}) {
             <header className="app-header">
                 <div className="app-header__container">
                     <div className="app-header__left">
-                        <div className="app-logo">E-Learning</div>
+                        <div className="app-logo">E-learning web application</div>
                     </div>
 
                     <div className="app-header__right">

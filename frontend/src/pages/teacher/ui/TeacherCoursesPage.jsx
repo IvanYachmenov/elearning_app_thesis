@@ -207,9 +207,7 @@ function TeacherCoursesPage({user}) {
                             }}
                         >
                             <div className="teacher-dropdown-modal__header">
-                                <h2 id="teacher-dropdown-title" className="teacher-dropdown-modal__title">
-                                    {openCourse.title}
-                                </h2>
+                                
                             </div>
                             <div className="teacher-dropdown-modal__options">
                                 <button

@@ -73,7 +73,7 @@ function ProfilePage({user, onUserUpdate}) {
     };
 
     const handleAvatarClick = () => {
-        if (isEditing) {
+        if (isEditingProfile) {
             avatarInputRef.current?.click();
         }
     };

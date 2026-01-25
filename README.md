@@ -31,24 +31,28 @@ The system features a responsive design that works on desktop and mobile devices
 ### For Teachers
 
 - Dedicated teacher's cabinet accessible via role-based permissions
-- Create, edit, and delete courses
-- Upload course cover images
-- Manage modules and topics within courses (with collapsible sections)
-- Set up theory content for each topic
+- Create, edit, and delete courses with inline module and topic management
+- Upload course cover images displayed in course cards
+- Manage modules and topics directly within the course edit page
+- Add modules and topics inline without navigating to separate pages
+- Set up theory content for each topic (optional)
 - Configure practice questions with single or multiple correct answers
-- Enable timed tests with configurable time limits
-- View all courses created by the teacher
+- Enable timed tests with configurable time limits (30 seconds to 30 minutes)
+- Time limit configuration with separate minutes (0-29) and seconds (0-59) inputs
+- View all courses created by the teacher with course images in cards
+- Course card dropdown menu with Edit and Delete options
+- Confirmation modal for course deletion
 - Automatic slug generation for courses
-- Full CRUD operations via REST API
+- Full CRUD operations via REST API with nested data support
 
 ## Technology Stack
 
 ### Backend
 
 - Django 5.2.8 - Web framework
-- Django REST Framework - API development
+- Django REST Framework - API development with nested serializers
 - Django REST Framework Simple JWT - Authentication
-- django-allauth - OAuth authentication (Google)
+- django-allauth - OAuth authentication (Google, GitHub)
 - django-cors-headers - CORS handling
 - django-filter - API filtering
 - PostgreSQL - Database
@@ -57,12 +61,12 @@ The system features a responsive design that works on desktop and mobile devices
 
 ### Frontend
 
-- React 19 - UI library
+- React 19 - UI library with hooks
 - Vite - Build tool and development server
 - React Router - Client-side routing
-- Redux Toolkit - State management (if applicable)
-- Axios - HTTP client for API calls
-- CSS3 - Styling with custom themes
+- Axios - HTTP client for API calls with FormData support
+- CSS3 - Styling with custom themes and responsive design
+- Context API - Theme and language management
 
 ### Development Tools
 
@@ -184,11 +188,19 @@ There are two ways to create courses:
 #### Via Teacher's Cabinet
 
 1. Log in as a user with teacher role
-2. Navigate to "My Courses" from the navigation menu
-3. Click "Create New Course"
-4. Fill in the course title and description
-5. Add modules and topics directly from the interface
-6. Save the course
+2. Navigate to "My Courses" (Moje kurzy) from the navigation menu
+3. Click "Create New Course" to create a new course, or click on an existing course card to open a dropdown menu
+4. In the dropdown menu, select "Edit" to edit the course or "Delete" to remove it (with confirmation)
+5. On the course edit page:
+   - Fill in the course title and description
+   - Upload a course cover image (optional)
+   - Click "Add Module" to add a new module inline
+   - Enter module title directly in the input field
+   - Click "Add Topic" within a module to add topics inline
+   - Enter topic title and theory content
+   - Enable timed test and configure time limit using minutes (0-29) and seconds (0-59) inputs
+   - Add questions with options for each topic
+6. Click "Save" to save all changes. New modules and topics will receive IDs after saving.
 
 ![Teacher courses list](screenshots/teacher_courses_list.png)
 
@@ -229,9 +241,10 @@ There are two ways to create courses:
 ### Additional Features
 
 - **Profile Customization**: Upload an avatar and choose from various background gradients for your profile page
-- **Dark Theme**: Switch between light and dark themes in Settings
-- **Language Selection**: Choose between English and Slovak
+- **Dark Theme**: Switch between light and dark themes in Settings (with theme selector on landing, login, and register pages)
+- **Language Selection**: Choose between English and Slovak (full internationalization support)
 - **Mobile Responsive**: The application adapts to different screen sizes
+- **Credits Page**: Dedicated page showing all technologies, libraries, and resources used
 
 ![Mobile view](screenshots/mobile_devices.png)
 
@@ -295,18 +308,19 @@ All teacher endpoints require authentication and the `IsTeacher` permission.
   - Returns: List of courses with nested modules and topics
 
 - `POST /api/teacher/courses/` - Create a new course
-  - Request body: `title`, `description`, `image` (file, optional), `modules` (array with nested topics)
-  - Content-Type: `multipart/form-data` (when image is included)
+  - Request body: `title`, `description`, `image` (file, optional), `modules` (JSON string in FormData with nested topics)
+  - Content-Type: `multipart/form-data` (always used, even without image)
   - Returns: Created course data with `image_url`
-  - Note: `author` is automatically set to the current user, `slug` is auto-generated
+  - Note: `author` is automatically set to the current user, `slug` is auto-generated. `modules` must be sent as a JSON string in FormData.
 
 - `GET /api/teacher/courses/<id>/` - Get course details for editing
   - Returns: Course data with all nested modules and topics
 
 - `PUT /api/teacher/courses/<id>/` - Update a course
-  - Request body: `title`, `description`, `image` (file, optional), `modules` (array with nested topics)
-  - Content-Type: `multipart/form-data` (when image is included)
+  - Request body: `title`, `description`, `image` (file, optional), `modules` (JSON string in FormData with nested topics)
+  - Content-Type: `multipart/form-data` (always used, even without image)
   - Returns: Updated course data with `image_url`
+  - Note: `modules` must be sent as a JSON string in FormData. The backend automatically parses it.
 
 - `PATCH /api/teacher/courses/<id>/` - Partially update a course
   - Request body: Any subset of course fields
@@ -317,6 +331,9 @@ All teacher endpoints require authentication and the `IsTeacher` permission.
 
 - `GET /api/teacher/modules/` - List modules for teacher's courses
 - `POST /api/teacher/modules/` - Create a new module
+  - Request body: `title`, `order`, `course`, `topics` (array with nested questions, optional)
+  - Returns: Created module data
+  - Note: Modules can be created without topics initially
 - `GET /api/teacher/modules/<id>/` - Get module details
 - `PUT /api/teacher/modules/<id>/` - Update a module
 - `PATCH /api/teacher/modules/<id>/` - Partially update a module
@@ -324,8 +341,14 @@ All teacher endpoints require authentication and the `IsTeacher` permission.
 
 - `GET /api/teacher/topics/` - List topics for teacher's courses
 - `POST /api/teacher/topics/` - Create a new topic
+  - Request body: `title`, `content` (optional), `order`, `module` (required), `is_timed_test`, `time_limit_seconds` (30-1800 seconds), `questions` (array, optional)
+  - Returns: Created topic data
+  - Note: `time_limit_seconds` must be between 30 and 1800 seconds (30 minutes) when `is_timed_test` is true. `module` is required when creating a new topic.
 - `GET /api/teacher/topics/<id>/` - Get topic details
 - `PUT /api/teacher/topics/<id>/` - Update a topic
+  - Request body: `title`, `content` (optional), `order`, `is_timed_test`, `time_limit_seconds` (30-1800 seconds), `questions` (array)
+  - Returns: Updated topic data
+  - Note: `time_limit_seconds` must be between 30 and 1800 seconds when `is_timed_test` is true. `module` field should not be included when updating.
 - `PATCH /api/teacher/topics/<id>/` - Partially update a topic
 - `DELETE /api/teacher/topics/<id>/` - Delete a topic
 
@@ -440,14 +463,21 @@ web_application_thesis/
 - The application uses JWT tokens stored in cookies for authentication (with cookie consent banner)
 - Cookie consent is required on first visit - users must accept cookies to continue
 - Google OAuth authentication via `django-allauth` - accounts are automatically linked by email
+- GitHub OAuth authentication is also supported
 - Image uploads are handled via FormData and stored in `backend/media/users/` (for avatars) and `backend/media/courses/` (for course images)
 - Profile background gradients are stored as CSS gradient strings
 - Course slugs are automatically generated from titles and made unique
 - Course images are displayed in course cards and detail pages
 - Teacher permissions are enforced via the `IsTeacher` permission class
 - All teacher operations are filtered to only show/modify courses created by the current user
-- Course editing interface includes collapsible modules and topics for better space management
+- Course editing interface supports inline module and topic creation/editing
+- Modules and topics can be added and edited directly on the course edit page
+- Time limit configuration: 30 seconds minimum, 30 minutes (1800 seconds) maximum
+- Time limit input uses separate fields for minutes (0-29) and seconds (0-59)
 - Navigation is locked during timed tests with a visual notification banner
+- Full internationalization (i18n) support for English and Slovak languages
+- All user-facing text is translatable via LanguageContext
+- Course cards in teacher's cabinet show course images with dropdown menus for Edit/Delete actions
 
 ## Next Steps After Setup
 
@@ -459,6 +489,29 @@ web_application_thesis/
 6. Test authentication: Register, Login, Google OAuth
 
 See `explaining_account_linking.md` for detailed explanation of how account linking works (in Russian).
+
+## Recent Updates
+
+### Teacher's Cabinet Improvements
+
+- **Inline Module and Topic Management**: Modules and topics can now be added and edited directly on the course edit page without navigating to separate pages
+- **Course Card UI**: Course images are displayed in cards with dropdown menus for Edit/Delete actions
+- **Time Limit Configuration**: Improved time limit input with separate fields for minutes (0-29) and seconds (0-59), with validation for 30 seconds to 30 minutes range
+- **CRUD Operations**: Fixed issues with saving modules and topics, ensuring proper data serialization and backend processing
+- **Data Persistence**: Modules and topics now correctly receive IDs after saving and are properly displayed after page reload
+
+### Internationalization
+
+- **Full i18n Support**: Complete translation coverage for English and Slovak languages
+- **Status Labels**: All learning status labels (Not started, In progress, Completed, Failed, Passed) are now properly translated
+- **OAuth Buttons**: Google and GitHub authentication buttons display translated text based on selected language
+- **Credits Page**: Fully translated credits page with footer links
+
+### UI/UX Improvements
+
+- **Theme Selectors**: Unified theme switching buttons across landing, login, and register pages
+- **Course Cards**: Enhanced course cards in teacher's cabinet with images and dropdown menus
+- **Form Validation**: Improved validation and error handling for course, module, and topic creation
 
 ## Future Development Plans
 

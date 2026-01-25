@@ -219,11 +219,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
   cursor: pointer;
   background: #ffffff;
   border: none;
   transition: background-color var(--transition-speed);
+}
+
+.learning-module__header-left {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
 }
 
 [data-theme="dark"] .learning-module__header {
@@ -267,6 +273,7 @@
   margin-top: 4px;
   display: block;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 [data-theme="dark"] .learning-module__meta {
@@ -278,6 +285,7 @@
   color: var(--text-muted);
   transition: transform var(--transition-speed);
   font-weight: 400;
+  flex-shrink: 0;
 }
 
 .learning-module__chevron.open {
